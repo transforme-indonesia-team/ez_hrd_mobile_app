@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hrd_app/core/utils/validators.dart';
 import 'package:hrd_app/data/services/auth_service.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 class LoginForm extends StatefulWidget {
   const LoginForm({super.key});
@@ -18,20 +19,16 @@ class _LoginFormState extends State<LoginForm> {
   bool _isLoading = false;
   bool _rememberMe = false;
 
-  // Modern Corporate Colors
   static const _primaryBlue = Color(0xFF2563EB);
   static const _darkBlue = Color(0xFF1D4ED8);
-  // Navy blue for button (darker for better contrast)
   static const _navyBlue = Color(0xFF1E3A8A);
   static const _navyDark = Color(0xFF172554);
   static const _inputFillColor = Color(0xFFF8FAFC);
   static const _inputBorderColor = Color(0xFFE2E8F0);
   static const _subtitleColor = Color(0xFF6B7280);
 
-  // App Version
-  static const _appVersion = '1.0.0';
+  String _appVersion = '';
 
-  // Cek apakah form valid untuk enable/disable button
   bool get _isFormValid =>
       _usernameController.text.isNotEmpty &&
       _passwordController.text.isNotEmpty;
@@ -41,6 +38,16 @@ class _LoginFormState extends State<LoginForm> {
     super.initState();
     _usernameController.addListener(() => setState(() {}));
     _passwordController.addListener(() => setState(() {}));
+    _loadAppVersion();
+  }
+
+  Future<void> _loadAppVersion() async {
+    final packageInfo = await PackageInfo.fromPlatform();
+    if (mounted) {
+      setState(() {
+        _appVersion = packageInfo.version;
+      });
+    }
   }
 
   @override
@@ -92,7 +99,6 @@ class _LoginFormState extends State<LoginForm> {
     }
   }
 
-  // Modern input decoration with border
   InputDecoration _buildInputDecoration({
     required String hintText,
     required IconData prefixIcon,
@@ -140,10 +146,7 @@ class _LoginFormState extends State<LoginForm> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // Extra space at top for better positioning
           const SizedBox(height: 20),
-
-          // Logo with consistent border-radius (matches input fields)
           Center(
             child: ClipRRect(
               borderRadius: BorderRadius.circular(12),
@@ -156,8 +159,6 @@ class _LoginFormState extends State<LoginForm> {
             ),
           ),
           const SizedBox(height: 28),
-
-          // Title with Poppins font
           Text(
             'EZ HRD APP',
             textAlign: TextAlign.center,
@@ -169,16 +170,12 @@ class _LoginFormState extends State<LoginForm> {
             ),
           ),
           const SizedBox(height: 8),
-
-          // Subtitle
           Text(
             'Silakan login untuk melanjutkan',
             textAlign: TextAlign.center,
             style: GoogleFonts.poppins(fontSize: 14, color: _subtitleColor),
           ),
           const SizedBox(height: 40),
-
-          // Username Label
           Text(
             'Nama Pengguna',
             style: GoogleFonts.poppins(
@@ -188,8 +185,6 @@ class _LoginFormState extends State<LoginForm> {
             ),
           ),
           const SizedBox(height: 8),
-
-          // Username TextField with shadow
           Container(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(12),
@@ -215,8 +210,6 @@ class _LoginFormState extends State<LoginForm> {
             ),
           ),
           const SizedBox(height: 20),
-
-          // Password Label
           Text(
             'Kata Sandi',
             style: GoogleFonts.poppins(
@@ -226,8 +219,6 @@ class _LoginFormState extends State<LoginForm> {
             ),
           ),
           const SizedBox(height: 8),
-
-          // Password TextField with shadow
           Container(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(12),
@@ -269,12 +260,9 @@ class _LoginFormState extends State<LoginForm> {
             ),
           ),
           const SizedBox(height: 20),
-
-          // Remember Me & Forgot Password Row
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              // "Biarkan saya tetap masuk" checkbox
               Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -315,7 +303,6 @@ class _LoginFormState extends State<LoginForm> {
                   ),
                 ],
               ),
-              // "Lupa Kata Sandi" link
               TextButton(
                 onPressed: () {
                   // TODO: Navigate ke halaman forgot password
@@ -337,8 +324,6 @@ class _LoginFormState extends State<LoginForm> {
             ],
           ),
           const SizedBox(height: 28),
-
-          // Login Button with Gradient
           Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(
@@ -397,8 +382,6 @@ class _LoginFormState extends State<LoginForm> {
             ),
           ),
           const SizedBox(height: 32),
-
-          // Version at bottom
           Text(
             'Versi $_appVersion',
             textAlign: TextAlign.center,

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../widgets/login_form.dart';
+import 'package:hrd_app/features/auth/widgets/login_form.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
@@ -8,14 +8,13 @@ class LoginScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        // Soft blue gradient background
         decoration: const BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              Color.fromARGB(255, 127, 176, 251), // Light gray
-              Color.fromARGB(255, 205, 225, 240), // Soft blue
+              Color.fromARGB(255, 127, 176, 251),
+              Color.fromARGB(255, 205, 225, 240),
             ],
           ),
         ),
