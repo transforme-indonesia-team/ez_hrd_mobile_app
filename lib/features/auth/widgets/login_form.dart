@@ -21,10 +21,10 @@ class _LoginFormState extends State<LoginForm> {
 
   static const _primaryBlue = Color(0xFF2563EB);
   static const _darkBlue = Color(0xFF1D4ED8);
-  static const _navyBlue = Color(0xFF1E3A8A);
-  static const _navyDark = Color(0xFF172554);
+  static const _buttonBlue = Color(0xFF3B82F6);
+  static const _buttonBlueDark = Color(0xFF2563EB);
   static const _inputFillColor = Color(0xFFF8FAFC);
-  static const _inputBorderColor = Color(0xFFE2E8F0);
+  static const _inputBorderColor = Color(0xFF93C5FD);
   static const _subtitleColor = Color(0xFF6B7280);
 
   String _appVersion = '';
@@ -106,7 +106,7 @@ class _LoginFormState extends State<LoginForm> {
   }) {
     return InputDecoration(
       hintText: hintText,
-      hintStyle: GoogleFonts.poppins(
+      hintStyle: GoogleFonts.inter(
         color: _subtitleColor.withValues(alpha: 0.6),
         fontSize: 14,
       ),
@@ -162,7 +162,7 @@ class _LoginFormState extends State<LoginForm> {
           Text(
             'EZ HRD APP',
             textAlign: TextAlign.center,
-            style: GoogleFonts.poppins(
+            style: GoogleFonts.inter(
               fontSize: 28,
               fontWeight: FontWeight.bold,
               color: _darkBlue,
@@ -173,12 +173,12 @@ class _LoginFormState extends State<LoginForm> {
           Text(
             'Silakan login untuk melanjutkan',
             textAlign: TextAlign.center,
-            style: GoogleFonts.poppins(fontSize: 14, color: _subtitleColor),
+            style: GoogleFonts.inter(fontSize: 14, color: _subtitleColor),
           ),
           const SizedBox(height: 40),
           Text(
             'Nama Pengguna',
-            style: GoogleFonts.poppins(
+            style: GoogleFonts.inter(
               fontSize: 14,
               fontWeight: FontWeight.w600,
               color: Colors.black87,
@@ -201,7 +201,7 @@ class _LoginFormState extends State<LoginForm> {
               keyboardType: TextInputType.text,
               autovalidateMode: AutovalidateMode.onUserInteraction,
               maxLength: 30,
-              style: GoogleFonts.poppins(fontSize: 14),
+              style: GoogleFonts.inter(fontSize: 14),
               decoration: _buildInputDecoration(
                 hintText: 'Masukkan nama pengguna',
                 prefixIcon: Icons.person_outlined,
@@ -212,7 +212,7 @@ class _LoginFormState extends State<LoginForm> {
           const SizedBox(height: 20),
           Text(
             'Kata Sandi',
-            style: GoogleFonts.poppins(
+            style: GoogleFonts.inter(
               fontSize: 14,
               fontWeight: FontWeight.w600,
               color: Colors.black87,
@@ -237,7 +237,7 @@ class _LoginFormState extends State<LoginForm> {
               maxLength: 20,
               textInputAction: TextInputAction.done,
               onFieldSubmitted: (_) => _handleLogin(),
-              style: GoogleFonts.poppins(fontSize: 14),
+              style: GoogleFonts.inter(fontSize: 14),
               decoration: _buildInputDecoration(
                 hintText: 'Masukkan kata sandi',
                 prefixIcon: Icons.lock_outlined,
@@ -259,7 +259,7 @@ class _LoginFormState extends State<LoginForm> {
               validator: (value) => Validators.password(value, maxLength: 20),
             ),
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 28),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -267,8 +267,8 @@ class _LoginFormState extends State<LoginForm> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   SizedBox(
-                    height: 22,
-                    width: 22,
+                    height: 24,
+                    width: 24,
                     child: Checkbox(
                       value: _rememberMe,
                       activeColor: _primaryBlue,
@@ -295,8 +295,8 @@ class _LoginFormState extends State<LoginForm> {
                     },
                     child: Text(
                       'Biarkan saya tetap masuk',
-                      style: GoogleFonts.poppins(
-                        fontSize: 12,
+                      style: GoogleFonts.inter(
+                        fontSize: 14,
                         color: const Color.fromARGB(255, 55, 58, 66),
                       ),
                     ),
@@ -315,8 +315,8 @@ class _LoginFormState extends State<LoginForm> {
                 ),
                 child: Text(
                   'Lupa Kata Sandi?',
-                  style: GoogleFonts.poppins(
-                    fontSize: 12,
+                  style: GoogleFonts.inter(
+                    fontSize: 14,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -327,25 +327,23 @@ class _LoginFormState extends State<LoginForm> {
           Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors:
-                    _isFormValid && !_isLoading
-                        ? [_navyBlue, _navyDark]
-                        : [
-                          _navyBlue.withValues(alpha: 0.5),
-                          _navyDark.withValues(alpha: 0.5),
-                        ],
+                colors: _isFormValid && !_isLoading
+                    ? [_buttonBlue, _buttonBlueDark]
+                    : [
+                        _buttonBlue.withValues(alpha: 0.5),
+                        _buttonBlueDark.withValues(alpha: 0.5),
+                      ],
               ),
               borderRadius: BorderRadius.circular(12),
-              boxShadow:
-                  _isFormValid && !_isLoading
-                      ? [
-                        BoxShadow(
-                          color: _navyBlue.withValues(alpha: 0.4),
-                          blurRadius: 16,
-                          offset: const Offset(0, 6),
-                        ),
-                      ]
-                      : null,
+              boxShadow: _isFormValid && !_isLoading
+                  ? [
+                      BoxShadow(
+                        color: _buttonBlue.withValues(alpha: 0.4),
+                        blurRadius: 16,
+                        offset: const Offset(0, 6),
+                      ),
+                    ]
+                  : null,
             ),
             child: Material(
               color: Colors.transparent,
@@ -355,27 +353,25 @@ class _LoginFormState extends State<LoginForm> {
                 child: Padding(
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   child: Center(
-                    child:
-                        _isLoading
-                            ? const SizedBox(
-                              height: 22,
-                              width: 22,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2.5,
-                                color: Colors.white,
-                              ),
-                            )
-                            : Text(
-                              'Login',
-                              style: GoogleFonts.poppins(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                                color:
-                                    _isFormValid
-                                        ? Colors.white
-                                        : Colors.white.withValues(alpha: 0.7),
-                              ),
+                    child: _isLoading
+                        ? const SizedBox(
+                            height: 22,
+                            width: 22,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2.5,
+                              color: Colors.white,
                             ),
+                          )
+                        : Text(
+                            'Login',
+                            style: GoogleFonts.inter(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              color: _isFormValid
+                                  ? Colors.white
+                                  : Colors.white.withValues(alpha: 0.7),
+                            ),
+                          ),
                   ),
                 ),
               ),
@@ -385,7 +381,7 @@ class _LoginFormState extends State<LoginForm> {
           Text(
             'Versi $_appVersion',
             textAlign: TextAlign.center,
-            style: GoogleFonts.poppins(
+            style: GoogleFonts.inter(
               fontSize: 12,
               color: const Color.fromARGB(
                 255,
