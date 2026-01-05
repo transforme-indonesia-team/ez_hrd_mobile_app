@@ -21,6 +21,9 @@ class _LoginFormState extends State<LoginForm> {
   // Modern Corporate Colors
   static const _primaryBlue = Color(0xFF2563EB);
   static const _darkBlue = Color(0xFF1D4ED8);
+  // Navy blue for button (darker for better contrast)
+  static const _navyBlue = Color(0xFF1E3A8A);
+  static const _navyDark = Color(0xFF172554);
   static const _inputFillColor = Color(0xFFF8FAFC);
   static const _inputBorderColor = Color(0xFFE2E8F0);
   static const _subtitleColor = Color(0xFF6B7280);
@@ -140,10 +143,10 @@ class _LoginFormState extends State<LoginForm> {
           // Extra space at top for better positioning
           const SizedBox(height: 20),
 
-          // Logo
+          // Logo with consistent border-radius (matches input fields)
           Center(
             child: ClipRRect(
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(12),
               child: Image.asset(
                 'assets/images/logo.jpeg',
                 height: 90,
@@ -341,10 +344,10 @@ class _LoginFormState extends State<LoginForm> {
               gradient: LinearGradient(
                 colors:
                     _isFormValid && !_isLoading
-                        ? [_primaryBlue, _darkBlue]
+                        ? [_navyBlue, _navyDark]
                         : [
-                          _primaryBlue.withValues(alpha: 0.5),
-                          _darkBlue.withValues(alpha: 0.5),
+                          _navyBlue.withValues(alpha: 0.5),
+                          _navyDark.withValues(alpha: 0.5),
                         ],
               ),
               borderRadius: BorderRadius.circular(12),
@@ -352,7 +355,7 @@ class _LoginFormState extends State<LoginForm> {
                   _isFormValid && !_isLoading
                       ? [
                         BoxShadow(
-                          color: _primaryBlue.withValues(alpha: 0.35),
+                          color: _navyBlue.withValues(alpha: 0.4),
                           blurRadius: 16,
                           offset: const Offset(0, 6),
                         ),
