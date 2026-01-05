@@ -1,19 +1,11 @@
 class Validators {
-  static String? email(String? value, {int? maxLength}) {
+  static String? username(String? value, {int? maxLength}) {
     if (value == null || value.isEmpty) {
-      return 'Email tidak boleh kosong';
+      return 'Nama Pengguna tidak boleh kosong';
     }
 
     if (maxLength != null && value.length > maxLength) {
-      return 'Email tidak boleh lebih dari $maxLength karakter';
-    }
-
-    final emailRegex = RegExp(
-      r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',
-    );
-
-    if (!emailRegex.hasMatch(value)) {
-      return 'Email tidak valid';
+      return 'Nama Pengguna tidak boleh lebih dari $maxLength karakter';
     }
 
     return null;
@@ -21,15 +13,15 @@ class Validators {
 
   static String? password(String? value, {int minLength = 2, int? maxLength}) {
     if (value == null || value.isEmpty) {
-      return 'Password tidak boleh kosong';
+      return 'Kata Sandi tidak boleh kosong';
     }
 
     if (maxLength != null && value.length > maxLength) {
-      return 'Password tidak boleh lebih dari $maxLength karakter';
+      return 'Kata Sandi tidak boleh lebih dari $maxLength karakter';
     }
 
     if (value.length < minLength) {
-      return 'Password minimal $minLength karakter';
+      return 'Kata Sandi minimal $minLength karakter';
     }
 
     return null;

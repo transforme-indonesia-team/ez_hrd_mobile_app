@@ -23,11 +23,11 @@ class AuthService {
   final _crypto = CryptoUtils();
 
   Future<Map<String, dynamic>> login({
-    required String email,
+    required String username,
     required String password,
   }) async {
     try {
-      final payload = {'email': email, 'password': password};
+      final payload = {'username': username, 'password': password};
 
       final encryptedPayload = _crypto.encryptPayload(payload);
 
