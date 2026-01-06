@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:hrd_app/features/auth/screens/login_screen.dart';
+import 'package:hrd_app/routes/app_routes.dart';
 import 'core/theme/app_theme.dart';
 import 'package:hrd_app/core/utils/crypto_utils.dart';
 
@@ -27,7 +27,9 @@ class MyApp extends StatelessWidget {
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
       themeMode: ThemeMode.system,
-      home: const LoginScreen(),
+      // Menggunakan onGenerateRoute untuk route dengan parameter
+      initialRoute: AppRoutes.initialRoute,
+      onGenerateRoute: AppRoutes.onGenerateRoute,
     );
   }
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hrd_app/core/utils/validators.dart';
 import 'package:hrd_app/data/services/auth_service.dart';
+import 'package:hrd_app/routes/app_routes.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 class LoginForm extends StatefulWidget {
@@ -305,7 +306,7 @@ class _LoginFormState extends State<LoginForm> {
               ),
               TextButton(
                 onPressed: () {
-                  // TODO: Navigate ke halaman forgot password
+                  Navigator.pushNamed(context, AppRoutes.forgotPassword);
                 },
                 style: TextButton.styleFrom(
                   padding: EdgeInsets.zero,
