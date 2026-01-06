@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hrd_app/core/theme/app_colors.dart';
+import 'package:hrd_app/features/fitur/screens/fitur_screen.dart';
 import 'package:hrd_app/features/profile/screens/profile_screen.dart';
 
 class DashboardScreen extends StatefulWidget {
@@ -16,7 +17,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   // Daftar halaman untuk setiap tab
   List<Widget> get _pages => [
     const _BerandaPage(),
-    const _FiturPage(),
+    const FiturScreen(),
     const _PostinganPage(),
     const _RuangKerjaPage(),
     const ProfileScreen(),
@@ -120,37 +121,6 @@ class _BerandaPage extends StatelessWidget {
       body: Center(
         child: Text(
           'Halaman Beranda',
-          style: TextStyle(color: colors.textPrimary),
-        ),
-      ),
-    );
-  }
-}
-
-class _FiturPage extends StatelessWidget {
-  const _FiturPage();
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = context.colors;
-    return Scaffold(
-      backgroundColor: colors.background,
-      appBar: AppBar(
-        backgroundColor: colors.background,
-        surfaceTintColor: Colors.transparent,
-        title: Text(
-          'Fitur',
-          style: GoogleFonts.inter(
-            fontWeight: FontWeight.w600,
-            color: colors.textPrimary,
-          ),
-        ),
-        centerTitle: true,
-        elevation: 0,
-      ),
-      body: Center(
-        child: Text(
-          'Halaman Fitur',
           style: TextStyle(color: colors.textPrimary),
         ),
       ),
