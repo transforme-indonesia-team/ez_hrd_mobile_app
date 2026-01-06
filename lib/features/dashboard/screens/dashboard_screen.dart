@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hrd_app/core/theme/app_colors.dart';
-import 'package:hrd_app/features/profile/widgets/profile_page.dart';
+import 'package:hrd_app/features/profile/screens/profile_screen.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -19,7 +19,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     const _FiturPage(),
     const _PostinganPage(),
     const _RuangKerjaPage(),
-    const ProfilePage(),
+    const ProfileScreen(),
   ];
 
   @override
