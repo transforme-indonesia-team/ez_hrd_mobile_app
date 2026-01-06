@@ -10,15 +10,11 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: ".env");
 
-  // Initialize crypto
   try {
     CryptoUtils().initialize();
-    debugPrint('✅ Crypto initialized');
-  } catch (e) {
-    debugPrint('❌ Crypto initialization failed: $e');
-  }
+    // ignore: empty_catches
+  } catch (e) {}
 
-  // Initialize theme provider
   final themeProvider = ThemeProvider();
   await themeProvider.initialize();
 
