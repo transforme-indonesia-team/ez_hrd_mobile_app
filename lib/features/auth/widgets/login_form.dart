@@ -112,7 +112,7 @@ class _LoginFormState extends State<LoginForm> {
     return InputDecoration(
       hintText: hintText,
       hintStyle: GoogleFonts.inter(
-        color: colors.textSubtitle.withOpacity(0.6),
+        color: colors.textSubtitle.withValues(alpha: 0.6),
         fontSize: 14,
       ),
       prefixIcon: Icon(prefixIcon, color: colors.textSubtitle, size: 20),
@@ -161,7 +161,7 @@ class _LoginFormState extends State<LoginForm> {
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
                   BoxShadow(
-                    color: colors.primaryBlue.withOpacity(0.2),
+                    color: colors.primaryBlue.withValues(alpha: 0.2),
                     blurRadius: 20,
                     spreadRadius: 2,
                   ),
@@ -210,7 +210,7 @@ class _LoginFormState extends State<LoginForm> {
               borderRadius: BorderRadius.circular(12),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.06),
+                  color: Colors.black.withValues(alpha: 0.06),
                   blurRadius: 10,
                   offset: const Offset(0, 4),
                 ),
@@ -245,7 +245,7 @@ class _LoginFormState extends State<LoginForm> {
               borderRadius: BorderRadius.circular(12),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.06),
+                  color: Colors.black.withValues(alpha: 0.06),
                   blurRadius: 10,
                   offset: const Offset(0, 4),
                 ),
@@ -354,7 +354,7 @@ class _LoginFormState extends State<LoginForm> {
               boxShadow: _isFormValid && !_isLoading
                   ? [
                       BoxShadow(
-                        color: colors.buttonBlue.withOpacity(0.4),
+                        color: colors.buttonBlue.withValues(alpha: 0.4),
                         blurRadius: 16,
                         offset: const Offset(0, 6),
                       ),
@@ -385,7 +385,7 @@ class _LoginFormState extends State<LoginForm> {
                               fontWeight: FontWeight.w600,
                               color: _isFormValid
                                   ? Colors.white
-                                  : Colors.white.withOpacity(0.7),
+                                  : Colors.white.withValues(alpha: 0.7),
                             ),
                           ),
                   ),
@@ -399,7 +399,7 @@ class _LoginFormState extends State<LoginForm> {
             textAlign: TextAlign.center,
             style: GoogleFonts.inter(
               fontSize: 12,
-              color: colors.textSecondary.withOpacity(0.6),
+              color: colors.textSecondary.withValues(alpha: 0.6),
             ),
           ),
         ],

@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 
 class AppTheme {
-  // Modern professional color scheme
-  static const Color primaryColor = Color(0xFF2196F3); // Material Blue
+  static const Color primaryColor = Color(0xFF2196F3);
   static const Color primaryDark = Color(0xFF1565C0);
   static const Color primaryLight = Color(0xFF42A5F5);
 
-  // Border radius constants
   static const double borderRadiusSmall = 8.0;
   static const double borderRadiusMedium = 12.0;
   static const double borderRadiusLarge = 16.0;
@@ -19,7 +17,6 @@ class AppTheme {
       ),
       useMaterial3: true,
 
-      // Input Decoration Theme
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: Colors.grey[50],
@@ -49,7 +46,6 @@ class AppTheme {
         ),
       ),
 
-      // Filled Button Theme
       filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(
           backgroundColor: primaryColor,
@@ -62,10 +58,9 @@ class AppTheme {
         ),
       ),
 
-      // Card Theme
       cardTheme: CardThemeData(
         elevation: 8,
-        shadowColor: Colors.black.withOpacity(0.1),
+        shadowColor: Colors.black.withValues(alpha: 0.1),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(borderRadiusLarge),
         ),
@@ -74,7 +69,6 @@ class AppTheme {
   }
 
   static ThemeData get darkTheme {
-    // Warna premium untuk dark mode
     const darkBackground = Color(0xFF0F172A);
     const darkSurface = Color(0xFF1E293B);
     const darkInputFill = Color(0xFF1F2937);
@@ -131,7 +125,7 @@ class AppTheme {
       cardTheme: CardThemeData(
         elevation: 4,
         color: darkSurface,
-        shadowColor: Colors.black.withOpacity(0.4),
+        shadowColor: Colors.black.withValues(alpha: 0.4),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(borderRadiusLarge),
         ),

@@ -75,7 +75,7 @@ class _ForgotPasswordFormState extends State<ForgotPasswordForm> {
     return InputDecoration(
       hintText: hintText,
       hintStyle: GoogleFonts.inter(
-        color: colors.textSubtitle.withOpacity(0.6),
+        color: colors.textSubtitle.withValues(alpha: 0.6),
         fontSize: 14,
       ),
       prefixIcon: Icon(prefixIcon, color: colors.textSubtitle, size: 20),
@@ -163,7 +163,7 @@ class _ForgotPasswordFormState extends State<ForgotPasswordForm> {
               borderRadius: BorderRadius.circular(12),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.06),
+                  color: Colors.black.withValues(alpha: 0.06),
                   blurRadius: 10,
                   offset: const Offset(0, 4),
                 ),
@@ -197,7 +197,7 @@ class _ForgotPasswordFormState extends State<ForgotPasswordForm> {
                 padding: EdgeInsets.zero,
                 minimumSize: Size.zero,
                 tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                foregroundColor: colors.linkColor, // Cyan terang di dark mode
+                foregroundColor: colors.linkColor,
               ),
               child: Text(
                 'Kembali ke Login?',
@@ -220,7 +220,7 @@ class _ForgotPasswordFormState extends State<ForgotPasswordForm> {
               boxShadow: _isFormValid && !_isLoading
                   ? [
                       BoxShadow(
-                        color: colors.buttonBlue.withOpacity(0.4),
+                        color: colors.buttonBlue.withValues(alpha: 0.4),
                         blurRadius: 16,
                         offset: const Offset(0, 6),
                       ),
@@ -251,7 +251,7 @@ class _ForgotPasswordFormState extends State<ForgotPasswordForm> {
                               fontWeight: FontWeight.w600,
                               color: _isFormValid
                                   ? Colors.white
-                                  : Colors.white.withOpacity(0.7),
+                                  : Colors.white.withValues(alpha: 0.7),
                             ),
                           ),
                   ),

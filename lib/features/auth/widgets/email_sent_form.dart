@@ -122,7 +122,7 @@ class _EmailSentFormState extends State<EmailSentForm> {
             boxShadow: _canResend
                 ? [
                     BoxShadow(
-                      color: colors.buttonBlue.withOpacity(0.4),
+                      color: colors.buttonBlue.withValues(alpha: 0.4),
                       blurRadius: 16,
                       offset: const Offset(0, 6),
                     ),
@@ -146,7 +146,7 @@ class _EmailSentFormState extends State<EmailSentForm> {
                       fontWeight: FontWeight.w600,
                       color: _canResend
                           ? Colors.white
-                          : Colors.white.withOpacity(0.7),
+                          : Colors.white.withValues(alpha: 0.7),
                     ),
                   ),
                 ),
@@ -169,7 +169,7 @@ class _EmailSentFormState extends State<EmailSentForm> {
               padding: EdgeInsets.zero,
               minimumSize: Size.zero,
               tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-              foregroundColor: colors.linkColor, // Cyan terang di dark mode
+              foregroundColor: colors.linkColor,
             ),
             child: Text(
               'Kembali ke Login?',

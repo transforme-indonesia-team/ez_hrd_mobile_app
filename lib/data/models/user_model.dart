@@ -11,7 +11,6 @@ class UserModel {
     this.token,
   });
 
-  /// Convert dari JSON (response API) ke object UserModel
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
       id: json['id'] ?? 0,
@@ -21,7 +20,6 @@ class UserModel {
     );
   }
 
-  /// Convert dari object UserModel ke JSON (untuk kirim ke API)
   Map<String, dynamic> toJson() {
     return {'id': id, 'name': name, 'email': email, 'token': token};
   }
