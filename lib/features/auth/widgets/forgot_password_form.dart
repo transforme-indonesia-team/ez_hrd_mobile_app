@@ -173,7 +173,7 @@ class _ForgotPasswordFormState extends State<ForgotPasswordForm> {
               controller: _usernameOrEmailController,
               keyboardType: TextInputType.emailAddress,
               autovalidateMode: AutovalidateMode.onUserInteraction,
-              maxLength: 50,
+              maxLength: 20,
               style: GoogleFonts.inter(fontSize: 14, color: colors.textPrimary),
               decoration: _buildInputDecoration(
                 hintText: 'Masukkan Nama Pengguna atau Email',
