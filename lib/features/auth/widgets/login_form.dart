@@ -67,7 +67,6 @@ class _LoginFormState extends State<LoginForm> {
           setState(() {
             _isLoading = false;
           });
-          //langsung ke dashboard dummy
 
           final dummyUser = <Map<String, dynamic>>[
             {
@@ -85,12 +84,6 @@ class _LoginFormState extends State<LoginForm> {
             arguments: {'user': dummyUser},
           );
 
-          // ScaffoldMessenger.of(context).showSnackBar(
-          //   SnackBar(
-          //     content: Text('Selamat datang, ${user['name']}!'),
-          //     backgroundColor: Colors.green,
-          //   ),
-          // );
           debugPrint('Login sukses! Token: ${user['token']}');
         }
       } catch (e) {
@@ -113,31 +106,32 @@ class _LoginFormState extends State<LoginForm> {
   InputDecoration _buildInputDecoration({
     required String hintText,
     required IconData prefixIcon,
+    required dynamic colors,
     Widget? suffixIcon,
   }) {
     return InputDecoration(
       hintText: hintText,
       hintStyle: GoogleFonts.inter(
-        color: AppColors.textSubtitle.withOpacity(0.6),
+        color: colors.textSubtitle.withOpacity(0.6),
         fontSize: 14,
       ),
-      prefixIcon: Icon(prefixIcon, color: AppColors.textSubtitle, size: 20),
+      prefixIcon: Icon(prefixIcon, color: colors.textSubtitle, size: 20),
       suffixIcon: suffixIcon,
       filled: true,
-      fillColor: AppColors.inputFillColor,
+      fillColor: colors.inputFill,
       counterText: '',
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide(color: AppColors.inputBorderColor, width: 1),
+        borderSide: BorderSide(color: colors.inputBorder, width: 1),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide(color: AppColors.inputBorderColor, width: 1),
+        borderSide: BorderSide(color: colors.inputBorder, width: 1),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide(color: AppColors.primaryBlue, width: 2),
+        borderSide: BorderSide(color: colors.primaryBlue, width: 2),
       ),
       errorBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
@@ -152,20 +146,35 @@ class _LoginFormState extends State<LoginForm> {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.colors;
+
     return Form(
       key: _formKey,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           const SizedBox(height: 20),
+          // Logo dengan shadow halus untuk dark mode
           Center(
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(12),
-              child: Image.asset(
-                'assets/images/logo.jpeg',
-                height: 90,
-                width: 90,
-                fit: BoxFit.contain,
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: colors.primaryBlue.withOpacity(0.2),
+                    blurRadius: 20,
+                    spreadRadius: 2,
+                  ),
+                ],
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(16),
+                child: Image.asset(
+                  'assets/images/logo.jpeg',
+                  height: 90,
+                  width: 90,
+                  fit: BoxFit.contain,
+                ),
               ),
             ),
           ),
@@ -176,7 +185,7 @@ class _LoginFormState extends State<LoginForm> {
             style: GoogleFonts.inter(
               fontSize: 28,
               fontWeight: FontWeight.bold,
-              color: AppColors.primaryBlueDark,
+              color: colors.appTitle, // Putih di dark, biru tua di light
               letterSpacing: 1,
             ),
           ),
@@ -184,10 +193,7 @@ class _LoginFormState extends State<LoginForm> {
           Text(
             'Silakan login untuk melanjutkan',
             textAlign: TextAlign.center,
-            style: GoogleFonts.inter(
-              fontSize: 14,
-              color: AppColors.textSubtitle,
-            ),
+            style: GoogleFonts.inter(fontSize: 14, color: colors.textSubtitle),
           ),
           const SizedBox(height: 40),
           Text(
@@ -195,7 +201,7 @@ class _LoginFormState extends State<LoginForm> {
             style: GoogleFonts.inter(
               fontSize: 14,
               fontWeight: FontWeight.w600,
-              color: Colors.black87,
+              color: colors.textPrimary,
             ),
           ),
           const SizedBox(height: 8),
@@ -204,7 +210,7 @@ class _LoginFormState extends State<LoginForm> {
               borderRadius: BorderRadius.circular(12),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.06),
+                  color: Colors.black.withOpacity(0.06),
                   blurRadius: 10,
                   offset: const Offset(0, 4),
                 ),
@@ -215,10 +221,11 @@ class _LoginFormState extends State<LoginForm> {
               keyboardType: TextInputType.text,
               autovalidateMode: AutovalidateMode.onUserInteraction,
               maxLength: 30,
-              style: GoogleFonts.inter(fontSize: 14),
+              style: GoogleFonts.inter(fontSize: 14, color: colors.textPrimary),
               decoration: _buildInputDecoration(
                 hintText: 'Masukkan nama pengguna',
                 prefixIcon: Icons.person_outlined,
+                colors: colors,
               ),
               validator: (value) => Validators.username(value, maxLength: 30),
             ),
@@ -229,7 +236,7 @@ class _LoginFormState extends State<LoginForm> {
             style: GoogleFonts.inter(
               fontSize: 14,
               fontWeight: FontWeight.w600,
-              color: Colors.black87,
+              color: colors.textPrimary,
             ),
           ),
           const SizedBox(height: 8),
@@ -238,7 +245,7 @@ class _LoginFormState extends State<LoginForm> {
               borderRadius: BorderRadius.circular(12),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.06),
+                  color: Colors.black.withOpacity(0.06),
                   blurRadius: 10,
                   offset: const Offset(0, 4),
                 ),
@@ -251,16 +258,17 @@ class _LoginFormState extends State<LoginForm> {
               maxLength: 20,
               textInputAction: TextInputAction.done,
               onFieldSubmitted: (_) => _handleLogin(),
-              style: GoogleFonts.inter(fontSize: 14),
+              style: GoogleFonts.inter(fontSize: 14, color: colors.textPrimary),
               decoration: _buildInputDecoration(
                 hintText: 'Masukkan kata sandi',
                 prefixIcon: Icons.lock_outlined,
+                colors: colors,
                 suffixIcon: IconButton(
                   icon: Icon(
                     _obscurePassword
                         ? Icons.visibility_outlined
                         : Icons.visibility_off_outlined,
-                    color: AppColors.textSubtitle,
+                    color: colors.textSubtitle,
                     size: 20,
                   ),
                   onPressed: () {
@@ -285,14 +293,11 @@ class _LoginFormState extends State<LoginForm> {
                     width: 24,
                     child: Checkbox(
                       value: _rememberMe,
-                      activeColor: AppColors.primaryBlue,
+                      activeColor: colors.primaryBlue,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(4),
                       ),
-                      side: BorderSide(
-                        color: AppColors.inputBorderColor,
-                        width: 1.5,
-                      ),
+                      side: BorderSide(color: colors.inputBorder, width: 1.5),
                       onChanged: (value) {
                         setState(() {
                           _rememberMe = value ?? false;
@@ -311,7 +316,7 @@ class _LoginFormState extends State<LoginForm> {
                       'Biarkan saya tetap masuk',
                       style: GoogleFonts.inter(
                         fontSize: 14,
-                        color: const Color.fromARGB(255, 55, 58, 66),
+                        color: colors.textSecondary,
                       ),
                     ),
                   ),
@@ -325,7 +330,7 @@ class _LoginFormState extends State<LoginForm> {
                   padding: EdgeInsets.zero,
                   minimumSize: Size.zero,
                   tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                  foregroundColor: AppColors.primaryBlue,
+                  foregroundColor: colors.linkColor, // Cyan terang di dark mode
                 ),
                 child: Text(
                   'Lupa Kata Sandi?',
@@ -342,14 +347,14 @@ class _LoginFormState extends State<LoginForm> {
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: _isFormValid && !_isLoading
-                    ? AppColors.buttonGradient
-                    : AppColors.buttonGradientDisabled,
+                    ? colors.buttonGradient
+                    : colors.buttonGradientDisabled,
               ),
               borderRadius: BorderRadius.circular(12),
               boxShadow: _isFormValid && !_isLoading
                   ? [
                       BoxShadow(
-                        color: AppColors.buttonBlue.withOpacity(0.4),
+                        color: colors.buttonBlue.withOpacity(0.4),
                         blurRadius: 16,
                         offset: const Offset(0, 6),
                       ),
@@ -380,7 +385,7 @@ class _LoginFormState extends State<LoginForm> {
                               fontWeight: FontWeight.w600,
                               color: _isFormValid
                                   ? Colors.white
-                                  : Colors.white.withValues(alpha: 0.7),
+                                  : Colors.white.withOpacity(0.7),
                             ),
                           ),
                   ),
@@ -394,12 +399,7 @@ class _LoginFormState extends State<LoginForm> {
             textAlign: TextAlign.center,
             style: GoogleFonts.inter(
               fontSize: 12,
-              color: const Color.fromARGB(
-                255,
-                23,
-                24,
-                27,
-              ).withValues(alpha: 0.6),
+              color: colors.textSecondary.withOpacity(0.6),
             ),
           ),
         ],

@@ -74,27 +74,41 @@ class AppTheme {
   }
 
   static ThemeData get darkTheme {
+    // Warna premium untuk dark mode
+    const darkBackground = Color(0xFF0F172A);
+    const darkSurface = Color(0xFF1E293B);
+    const darkInputFill = Color(0xFF1F2937);
+    const darkBorder = Color(0xFF4B5563);
+
     return ThemeData(
       colorScheme: ColorScheme.fromSeed(
         seedColor: primaryColor,
         brightness: Brightness.dark,
+        surface: darkSurface,
       ),
+      scaffoldBackgroundColor: darkBackground,
       useMaterial3: true,
+
+      appBarTheme: AppBarTheme(
+        backgroundColor: darkBackground,
+        surfaceTintColor: Colors.transparent,
+        elevation: 0,
+      ),
 
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: Colors.grey[850],
+        fillColor: darkInputFill,
         contentPadding: const EdgeInsets.symmetric(
           horizontal: 20,
           vertical: 16,
         ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(borderRadiusMedium),
-          borderSide: BorderSide(color: Colors.grey[700]!),
+          borderSide: BorderSide(color: darkBorder),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(borderRadiusMedium),
-          borderSide: BorderSide(color: Colors.grey[700]!),
+          borderSide: BorderSide(color: darkBorder),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(borderRadiusMedium),
@@ -115,11 +129,18 @@ class AppTheme {
       ),
 
       cardTheme: CardThemeData(
-        elevation: 8,
-        shadowColor: Colors.black.withOpacity(0.3),
+        elevation: 4,
+        color: darkSurface,
+        shadowColor: Colors.black.withOpacity(0.4),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(borderRadiusLarge),
         ),
+      ),
+
+      bottomNavigationBarTheme: BottomNavigationBarThemeData(
+        backgroundColor: darkBackground,
+        selectedItemColor: primaryLight,
+        unselectedItemColor: const Color(0xFF64748B),
       ),
     );
   }

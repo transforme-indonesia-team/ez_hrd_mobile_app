@@ -37,15 +37,13 @@ class _ForgotPasswordFormState extends State<ForgotPasswordForm> {
       });
 
       try {
-        // TODO: Panggil AuthService untuk forgot password
-        await Future.delayed(const Duration(seconds: 2)); // Simulasi
+        await Future.delayed(const Duration(seconds: 2));
 
         if (mounted) {
           setState(() {
             _isLoading = false;
           });
 
-          // Navigasi ke halaman Email Sent
           Navigator.pushReplacementNamed(
             context,
             AppRoutes.emailSent,
@@ -72,29 +70,30 @@ class _ForgotPasswordFormState extends State<ForgotPasswordForm> {
   InputDecoration _buildInputDecoration({
     required String hintText,
     required IconData prefixIcon,
+    required dynamic colors,
   }) {
     return InputDecoration(
       hintText: hintText,
       hintStyle: GoogleFonts.inter(
-        color: AppColors.textSubtitle.withOpacity(0.6),
+        color: colors.textSubtitle.withOpacity(0.6),
         fontSize: 14,
       ),
-      prefixIcon: Icon(prefixIcon, color: AppColors.textSubtitle, size: 20),
+      prefixIcon: Icon(prefixIcon, color: colors.textSubtitle, size: 20),
       filled: true,
-      fillColor: AppColors.inputFillColor,
+      fillColor: colors.inputFill,
       counterText: '',
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide(color: AppColors.inputBorderColor, width: 1),
+        borderSide: BorderSide(color: colors.inputBorder, width: 1),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide(color: AppColors.inputBorderColor, width: 1),
+        borderSide: BorderSide(color: colors.inputBorder, width: 1),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide(color: AppColors.primaryBlue, width: 2),
+        borderSide: BorderSide(color: colors.primaryBlue, width: 2),
       ),
       errorBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
@@ -109,13 +108,14 @@ class _ForgotPasswordFormState extends State<ForgotPasswordForm> {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.colors;
+
     return Form(
       key: _formKey,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           const SizedBox(height: 40),
-          // Logo
           Center(
             child: ClipRRect(
               borderRadius: BorderRadius.circular(12),
@@ -128,46 +128,42 @@ class _ForgotPasswordFormState extends State<ForgotPasswordForm> {
             ),
           ),
           const SizedBox(height: 40),
-          // Title
           Text(
             'Jangan khawatir! Kami \nmembantu Anda.',
             textAlign: TextAlign.left,
             style: GoogleFonts.inter(
               fontSize: 24,
               fontWeight: FontWeight.bold,
-              color: Colors.black87,
+              color: colors.textPrimary,
               height: 1.3,
             ),
           ),
           const SizedBox(height: 12),
-          // Subtitle
           Text(
             'Masukkan nama pengguna atau email yang telah terdaftar di EZ HRD.',
             textAlign: TextAlign.left,
             style: GoogleFonts.inter(
               fontSize: 14,
-              color: AppColors.textSubtitle,
+              color: colors.textSubtitle,
               height: 1.5,
             ),
           ),
           const SizedBox(height: 32),
-          // Label
           Text(
             'Nama Pengguna / Email',
             style: GoogleFonts.inter(
               fontSize: 14,
               fontWeight: FontWeight.w600,
-              color: Colors.black87,
+              color: colors.textPrimary,
             ),
           ),
           const SizedBox(height: 8),
-          // Input field
           Container(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(12),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.06),
+                  color: Colors.black.withOpacity(0.06),
                   blurRadius: 10,
                   offset: const Offset(0, 4),
                 ),
@@ -178,10 +174,11 @@ class _ForgotPasswordFormState extends State<ForgotPasswordForm> {
               keyboardType: TextInputType.emailAddress,
               autovalidateMode: AutovalidateMode.onUserInteraction,
               maxLength: 50,
-              style: GoogleFonts.inter(fontSize: 14),
+              style: GoogleFonts.inter(fontSize: 14, color: colors.textPrimary),
               decoration: _buildInputDecoration(
                 hintText: 'Masukkan Nama Pengguna atau Email',
                 prefixIcon: Icons.person_outlined,
+                colors: colors,
               ),
               validator: (value) => Validators.required(
                 value,
@@ -200,7 +197,7 @@ class _ForgotPasswordFormState extends State<ForgotPasswordForm> {
                 padding: EdgeInsets.zero,
                 minimumSize: Size.zero,
                 tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                foregroundColor: AppColors.primaryBlue,
+                foregroundColor: colors.linkColor, // Cyan terang di dark mode
               ),
               child: Text(
                 'Kembali ke Login?',
@@ -216,14 +213,14 @@ class _ForgotPasswordFormState extends State<ForgotPasswordForm> {
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: _isFormValid && !_isLoading
-                    ? AppColors.buttonGradient
-                    : AppColors.buttonGradientDisabled,
+                    ? colors.buttonGradient
+                    : colors.buttonGradientDisabled,
               ),
               borderRadius: BorderRadius.circular(12),
               boxShadow: _isFormValid && !_isLoading
                   ? [
                       BoxShadow(
-                        color: AppColors.buttonBlue.withOpacity(0.4),
+                        color: colors.buttonBlue.withOpacity(0.4),
                         blurRadius: 16,
                         offset: const Offset(0, 6),
                       ),
@@ -254,7 +251,7 @@ class _ForgotPasswordFormState extends State<ForgotPasswordForm> {
                               fontWeight: FontWeight.w600,
                               color: _isFormValid
                                   ? Colors.white
-                                  : Colors.white.withValues(alpha: 0.7),
+                                  : Colors.white.withOpacity(0.7),
                             ),
                           ),
                   ),

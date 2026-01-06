@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hrd_app/core/theme/app_colors.dart';
 import 'package:hrd_app/features/auth/widgets/email_sent_form.dart';
 
 class EmailSentScreen extends StatelessWidget {
@@ -8,9 +9,12 @@ class EmailSentScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.colors;
+
     return Scaffold(
+      backgroundColor: colors.background,
       body: Container(
-        decoration: const BoxDecoration(color: Colors.white),
+        decoration: BoxDecoration(color: colors.background),
         child: SafeArea(
           child: Center(
             child: SingleChildScrollView(
