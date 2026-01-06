@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hrd_app/features/auth/screens/login_screen.dart';
 import 'package:hrd_app/features/auth/screens/forgot_password_screen.dart';
 import 'package:hrd_app/features/auth/screens/email_sent_screen.dart';
+import 'package:hrd_app/features/dashboard/screens/dashboard_screen.dart';
 
 /// Kelas untuk mengelola semua route dalam aplikasi.
 /// Semua nama route dan mapping didefinisikan di sini untuk kemudahan maintenance.
@@ -17,6 +18,7 @@ class AppRoutes {
   static const String login = '/login';
   static const String forgotPassword = '/forgot-password';
   static const String emailSent = '/email-sent';
+  static const String dashboard = '/dashboard';
 
   // Main app routes (tambahkan nanti)
   // static const String home = '/home';
@@ -51,6 +53,12 @@ class AppRoutes {
         final email = args?['email'] as String? ?? '';
         return MaterialPageRoute(
           builder: (context) => EmailSentScreen(email: email),
+          settings: settings,
+        );
+
+      case dashboard:
+        return MaterialPageRoute(
+          builder: (context) => const DashboardScreen(),
           settings: settings,
         );
 

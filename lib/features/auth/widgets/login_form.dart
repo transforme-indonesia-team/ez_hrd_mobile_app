@@ -74,13 +74,30 @@ class _LoginFormState extends State<LoginForm> {
           setState(() {
             _isLoading = false;
           });
+          //langsung ke dashboard dummy
 
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Selamat datang, ${user['name']}!'),
-              backgroundColor: Colors.green,
-            ),
+          final dummyUser = <Map<String, dynamic>>[
+            {
+              'id': '1',
+              'name': 'John Doe',
+              'email': 'john.doe@example.com',
+              'role': 'admin',
+            },
+          ];
+
+          Navigator.pushNamedAndRemoveUntil(
+            context,
+            AppRoutes.dashboard,
+            (route) => false,
+            arguments: {'user': dummyUser},
           );
+
+          // ScaffoldMessenger.of(context).showSnackBar(
+          //   SnackBar(
+          //     content: Text('Selamat datang, ${user['name']}!'),
+          //     backgroundColor: Colors.green,
+          //   ),
+          // );
           debugPrint('Login sukses! Token: ${user['token']}');
         }
       } catch (e) {
