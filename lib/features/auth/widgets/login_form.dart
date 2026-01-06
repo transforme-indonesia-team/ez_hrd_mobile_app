@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:hrd_app/core/theme/app_colors.dart';
 import 'package:hrd_app/core/utils/validators.dart';
 import 'package:hrd_app/data/services/auth_service.dart';
 import 'package:hrd_app/routes/app_routes.dart';
@@ -19,14 +20,6 @@ class _LoginFormState extends State<LoginForm> {
   bool _obscurePassword = true;
   bool _isLoading = false;
   bool _rememberMe = false;
-
-  static const _primaryBlue = Color(0xFF2563EB);
-  static const _darkBlue = Color(0xFF1D4ED8);
-  static const _buttonBlue = Color(0xFF3B82F6);
-  static const _buttonBlueDark = Color(0xFF2563EB);
-  static const _inputFillColor = Color(0xFFF8FAFC);
-  static const _inputBorderColor = Color(0xFF93C5FD);
-  static const _subtitleColor = Color(0xFF6B7280);
 
   String _appVersion = '';
 
@@ -125,26 +118,26 @@ class _LoginFormState extends State<LoginForm> {
     return InputDecoration(
       hintText: hintText,
       hintStyle: GoogleFonts.inter(
-        color: _subtitleColor.withValues(alpha: 0.6),
+        color: AppColors.textSubtitle.withOpacity(0.6),
         fontSize: 14,
       ),
-      prefixIcon: Icon(prefixIcon, color: _subtitleColor, size: 20),
+      prefixIcon: Icon(prefixIcon, color: AppColors.textSubtitle, size: 20),
       suffixIcon: suffixIcon,
       filled: true,
-      fillColor: _inputFillColor,
+      fillColor: AppColors.inputFillColor,
       counterText: '',
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: const BorderSide(color: _inputBorderColor, width: 1),
+        borderSide: BorderSide(color: AppColors.inputBorderColor, width: 1),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: const BorderSide(color: _inputBorderColor, width: 1),
+        borderSide: BorderSide(color: AppColors.inputBorderColor, width: 1),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: const BorderSide(color: _primaryBlue, width: 2),
+        borderSide: BorderSide(color: AppColors.primaryBlue, width: 2),
       ),
       errorBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
@@ -183,7 +176,7 @@ class _LoginFormState extends State<LoginForm> {
             style: GoogleFonts.inter(
               fontSize: 28,
               fontWeight: FontWeight.bold,
-              color: _darkBlue,
+              color: AppColors.primaryBlueDark,
               letterSpacing: 1,
             ),
           ),
@@ -191,7 +184,10 @@ class _LoginFormState extends State<LoginForm> {
           Text(
             'Silakan login untuk melanjutkan',
             textAlign: TextAlign.center,
-            style: GoogleFonts.inter(fontSize: 14, color: _subtitleColor),
+            style: GoogleFonts.inter(
+              fontSize: 14,
+              color: AppColors.textSubtitle,
+            ),
           ),
           const SizedBox(height: 40),
           Text(
@@ -264,7 +260,7 @@ class _LoginFormState extends State<LoginForm> {
                     _obscurePassword
                         ? Icons.visibility_outlined
                         : Icons.visibility_off_outlined,
-                    color: _subtitleColor,
+                    color: AppColors.textSubtitle,
                     size: 20,
                   ),
                   onPressed: () {
@@ -289,12 +285,12 @@ class _LoginFormState extends State<LoginForm> {
                     width: 24,
                     child: Checkbox(
                       value: _rememberMe,
-                      activeColor: _primaryBlue,
+                      activeColor: AppColors.primaryBlue,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(4),
                       ),
-                      side: const BorderSide(
-                        color: _inputBorderColor,
+                      side: BorderSide(
+                        color: AppColors.inputBorderColor,
                         width: 1.5,
                       ),
                       onChanged: (value) {
@@ -329,7 +325,7 @@ class _LoginFormState extends State<LoginForm> {
                   padding: EdgeInsets.zero,
                   minimumSize: Size.zero,
                   tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                  foregroundColor: _primaryBlue,
+                  foregroundColor: AppColors.primaryBlue,
                 ),
                 child: Text(
                   'Lupa Kata Sandi?',
@@ -346,17 +342,14 @@ class _LoginFormState extends State<LoginForm> {
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: _isFormValid && !_isLoading
-                    ? [_buttonBlue, _buttonBlueDark]
-                    : [
-                        _buttonBlue.withValues(alpha: 0.5),
-                        _buttonBlueDark.withValues(alpha: 0.5),
-                      ],
+                    ? AppColors.buttonGradient
+                    : AppColors.buttonGradientDisabled,
               ),
               borderRadius: BorderRadius.circular(12),
               boxShadow: _isFormValid && !_isLoading
                   ? [
                       BoxShadow(
-                        color: _buttonBlue.withValues(alpha: 0.4),
+                        color: AppColors.buttonBlue.withOpacity(0.4),
                         blurRadius: 16,
                         offset: const Offset(0, 6),
                       ),

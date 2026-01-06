@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:hrd_app/core/theme/app_colors.dart';
 import 'package:hrd_app/routes/app_routes.dart';
 
 class EmailSentForm extends StatefulWidget {
@@ -13,11 +14,6 @@ class EmailSentForm extends StatefulWidget {
 }
 
 class _EmailSentFormState extends State<EmailSentForm> {
-  static const _primaryBlue = Color(0xFF2563EB);
-  static const _buttonBlue = Color(0xFF3B82F6);
-  static const _buttonBlueDark = Color(0xFF2563EB);
-  static const _subtitleColor = Color(0xFF6B7280);
-
   // Cooldown 5 menit = 300 detik
   static const int _cooldownDuration = 300;
   int _remainingSeconds = _cooldownDuration;
@@ -112,7 +108,7 @@ class _EmailSentFormState extends State<EmailSentForm> {
             textAlign: TextAlign.left,
             style: GoogleFonts.inter(
               fontSize: 14,
-              color: _subtitleColor,
+              color: AppColors.textSubtitle,
               height: 1.6,
             ),
           ),
@@ -123,17 +119,14 @@ class _EmailSentFormState extends State<EmailSentForm> {
           decoration: BoxDecoration(
             gradient: LinearGradient(
               colors: _canResend
-                  ? [_buttonBlue, _buttonBlueDark]
-                  : [
-                      _buttonBlue.withValues(alpha: 0.5),
-                      _buttonBlueDark.withValues(alpha: 0.5),
-                    ],
+                  ? AppColors.buttonGradient
+                  : AppColors.buttonGradientDisabled,
             ),
             borderRadius: BorderRadius.circular(12),
             boxShadow: _canResend
                 ? [
                     BoxShadow(
-                      color: _buttonBlue.withValues(alpha: 0.4),
+                      color: AppColors.buttonBlue.withOpacity(0.4),
                       blurRadius: 16,
                       offset: const Offset(0, 6),
                     ),
@@ -181,7 +174,7 @@ class _EmailSentFormState extends State<EmailSentForm> {
               padding: EdgeInsets.zero,
               minimumSize: Size.zero,
               tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-              foregroundColor: _primaryBlue,
+              foregroundColor: AppColors.primaryBlue,
             ),
             child: Text(
               'Kembali ke Login?',

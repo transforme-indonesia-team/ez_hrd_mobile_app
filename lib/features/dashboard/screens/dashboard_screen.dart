@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:hrd_app/core/theme/app_colors.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -10,10 +11,6 @@ class DashboardScreen extends StatefulWidget {
 
 class _DashboardScreenState extends State<DashboardScreen> {
   int _currentIndex = 0;
-
-  // Warna tema
-  static const _primaryBlue = Color(0xFF2563EB);
-  static const _inactiveGray = Color(0xFF9CA3AF);
 
   // Daftar halaman untuk setiap tab
   final List<Widget> _pages = [
@@ -48,8 +45,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
           },
           type: BottomNavigationBarType.fixed,
           backgroundColor: Colors.white,
-          selectedItemColor: _primaryBlue,
-          unselectedItemColor: _inactiveGray,
+          selectedItemColor: AppColors.primaryBlue,
+          unselectedItemColor: AppColors.inactiveGray,
           selectedLabelStyle: GoogleFonts.inter(
             fontSize: 12,
             fontWeight: FontWeight.w600,

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:hrd_app/core/theme/app_colors.dart';
 import 'package:hrd_app/core/utils/validators.dart';
 import 'package:hrd_app/routes/app_routes.dart';
 
@@ -14,13 +15,6 @@ class _ForgotPasswordFormState extends State<ForgotPasswordForm> {
   final _usernameOrEmailController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   bool _isLoading = false;
-
-  static const _primaryBlue = Color(0xFF2563EB);
-  static const _buttonBlue = Color(0xFF3B82F6);
-  static const _buttonBlueDark = Color(0xFF2563EB);
-  static const _inputFillColor = Color(0xFFF8FAFC);
-  static const _inputBorderColor = Color(0xFF93C5FD);
-  static const _subtitleColor = Color(0xFF6B7280);
 
   bool get _isFormValid => _usernameOrEmailController.text.isNotEmpty;
 
@@ -82,25 +76,25 @@ class _ForgotPasswordFormState extends State<ForgotPasswordForm> {
     return InputDecoration(
       hintText: hintText,
       hintStyle: GoogleFonts.inter(
-        color: _subtitleColor.withValues(alpha: 0.6),
+        color: AppColors.textSubtitle.withOpacity(0.6),
         fontSize: 14,
       ),
-      prefixIcon: Icon(prefixIcon, color: _subtitleColor, size: 20),
+      prefixIcon: Icon(prefixIcon, color: AppColors.textSubtitle, size: 20),
       filled: true,
-      fillColor: _inputFillColor,
+      fillColor: AppColors.inputFillColor,
       counterText: '',
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: const BorderSide(color: _inputBorderColor, width: 1),
+        borderSide: BorderSide(color: AppColors.inputBorderColor, width: 1),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: const BorderSide(color: _inputBorderColor, width: 1),
+        borderSide: BorderSide(color: AppColors.inputBorderColor, width: 1),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: const BorderSide(color: _primaryBlue, width: 2),
+        borderSide: BorderSide(color: AppColors.primaryBlue, width: 2),
       ),
       errorBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
@@ -152,7 +146,7 @@ class _ForgotPasswordFormState extends State<ForgotPasswordForm> {
             textAlign: TextAlign.left,
             style: GoogleFonts.inter(
               fontSize: 14,
-              color: _subtitleColor,
+              color: AppColors.textSubtitle,
               height: 1.5,
             ),
           ),
@@ -206,7 +200,7 @@ class _ForgotPasswordFormState extends State<ForgotPasswordForm> {
                 padding: EdgeInsets.zero,
                 minimumSize: Size.zero,
                 tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                foregroundColor: _primaryBlue,
+                foregroundColor: AppColors.primaryBlue,
               ),
               child: Text(
                 'Kembali ke Login?',
@@ -222,17 +216,14 @@ class _ForgotPasswordFormState extends State<ForgotPasswordForm> {
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: _isFormValid && !_isLoading
-                    ? [_buttonBlue, _buttonBlueDark]
-                    : [
-                        _buttonBlue.withValues(alpha: 0.5),
-                        _buttonBlueDark.withValues(alpha: 0.5),
-                      ],
+                    ? AppColors.buttonGradient
+                    : AppColors.buttonGradientDisabled,
               ),
               borderRadius: BorderRadius.circular(12),
               boxShadow: _isFormValid && !_isLoading
                   ? [
                       BoxShadow(
-                        color: _buttonBlue.withValues(alpha: 0.4),
+                        color: AppColors.buttonBlue.withOpacity(0.4),
                         blurRadius: 16,
                         offset: const Offset(0, 6),
                       ),
