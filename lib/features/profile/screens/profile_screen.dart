@@ -98,7 +98,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
             ]),
             const SizedBox(height: 16),
-
+            Divider(height: 1, thickness: 5, color: colors.divider),
             // Settings Section
             _buildSettingsSection(colors, themeProvider),
             const SizedBox(height: 16),
@@ -226,7 +226,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ],
             ),
           ),
-          Divider(height: 1, color: colors.divider),
 
           // Kebijakan Privasi
           ListTile(
