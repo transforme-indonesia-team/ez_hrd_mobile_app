@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hrd_app/core/theme/app_colors.dart';
+import 'package:hrd_app/features/beranda/screens/beranda_screen.dart';
 import 'package:hrd_app/features/fitur/screens/fitur_screen.dart';
 import 'package:hrd_app/features/profile/screens/profile_screen.dart';
 
@@ -17,7 +18,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   // Daftar halaman untuk setiap tab
   List<Widget> get _pages => [
-    const _BerandaPage(),
+    const BerandaScreen(),
     const FiturScreen(),
     const _PostinganPage(),
     const _RuangKerjaPage(),
@@ -97,37 +98,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
 // ============================================
 // HALAMAN-HALAMAN PLACEHOLDER
 // ============================================
-
-class _BerandaPage extends StatelessWidget {
-  const _BerandaPage();
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = context.colors;
-    return Scaffold(
-      backgroundColor: colors.background,
-      appBar: AppBar(
-        backgroundColor: colors.background,
-        surfaceTintColor: Colors.transparent,
-        title: Text(
-          'Beranda',
-          style: GoogleFonts.inter(
-            fontWeight: FontWeight.w600,
-            color: colors.textPrimary,
-          ),
-        ),
-        centerTitle: true,
-        elevation: 0,
-      ),
-      body: Center(
-        child: Text(
-          'Halaman Beranda',
-          style: TextStyle(color: colors.textPrimary),
-        ),
-      ),
-    );
-  }
-}
 
 class _PostinganPage extends StatelessWidget {
   const _PostinganPage();
