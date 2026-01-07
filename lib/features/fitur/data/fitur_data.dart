@@ -107,11 +107,14 @@ class FiturData {
         ),
       ],
     ),
+
     FiturSectionModel(
       name: 'Aktivitas',
+      hasLainnya: true,
+      lainnyaTitle: 'Tugas & Saran',
       categories: [
         FiturCategoryModel(
-          name: 'Tugas & Harian',
+          name: 'Aktivitas',
           backgroundColor: Colors.green.withValues(alpha: 0.2),
           iconColor: Colors.green,
           items: [
@@ -125,45 +128,92 @@ class FiturData {
               title: 'Saran',
               icon: Icons.chat_bubble_outline,
             ),
+          ],
+        ),
+        FiturCategoryModel(
+          name: 'Manajemen',
+          backgroundColor: Colors.green.withValues(alpha: 0.2),
+          iconColor: Colors.green,
+          items: [
             FiturItemModel(
               id: 'manajemen_tugas',
-              title: 'Manajemen Tugas',
+              title: 'Manajemen Jenis Tugas',
               icon: Icons.task_alt_outlined,
             ),
+          ],
+        ),
+        FiturCategoryModel(
+          name: 'Laporan',
+          backgroundColor: Colors.green.withValues(alpha: 0.2),
+          iconColor: Colors.green,
+          items: [
             FiturItemModel(
               id: 'laporan_tugas',
               title: 'Laporan Tugas',
-              icon: Icons.list,
+              icon: Icons.list_alt,
+            ),
+            FiturItemModel(
+              id: 'laporan_saran',
+              title: 'Laporan Saran',
+              icon: Icons.list_alt,
             ),
           ],
         ),
-
+      ],
+      directCategories: [
         FiturCategoryModel(
-          name: 'Cuti',
+          name: "Aktivitas Harian",
+          backgroundColor: Colors.green.withValues(alpha: 0.2),
+          iconColor: Colors.green,
+          items: [
+            FiturItemModel(
+              id: 'aktivitas_harian',
+              title: 'Aktivitas Harian',
+              icon: Icons.task_alt_rounded,
+            ),
+            FiturItemModel(
+              id: 'manajemen_jenis_aktivitas',
+              title: 'Manajemen Jenis Aktivitas',
+              icon: Icons.list_alt_outlined,
+            ),
+            FiturItemModel(
+              id: 'laporan_rekam_aktivitas',
+              title: 'Laporan Rekam Aktivitas',
+              icon: Icons.list_alt,
+            ),
+          ],
+        ),
+        FiturCategoryModel(
+          name: "Pooling",
           backgroundColor: Colors.blue.withValues(alpha: 0.2),
           iconColor: const Color.fromARGB(255, 101, 191, 244),
           items: [
             FiturItemModel(
-              id: 'pengajuan_cuti',
-              title: 'Pengajuan Cuti',
-              icon: Icons.calendar_month_outlined,
-            ),
-            FiturItemModel(
-              id: 'saldo_cuti',
-              title: 'Saldo Cuti',
-              icon: Icons.event_available_outlined,
+              id: 'polling',
+              title: 'Polling',
+              icon: Icons.poll_outlined,
             ),
           ],
         ),
+      ],
+    ),
+    FiturSectionModel(
+      name: 'Keuangan',
+      categories: [
         FiturCategoryModel(
-          name: "Lembur",
-          backgroundColor: Colors.blue.withValues(alpha: 0.2),
-          iconColor: const Color.fromARGB(255, 101, 191, 244),
+          name: 'Slip Gaji Saya',
+          backgroundColor: Colors.orange.withValues(alpha: 0.2),
+          iconColor: Colors.orange,
           items: [
             FiturItemModel(
-              id: 'permintaan_lembur',
-              title: 'Permintaan Lembur',
-              icon: Icons.work_history_outlined,
+              id: 'slip_gaji_saya',
+              title: 'Slip Gaji Saya',
+              icon: Icons.monetization_on_outlined,
+            ),
+            FiturItemModel(
+              id: 'kata_sandi_slip_gaji',
+              title: 'Kata Sandi Slip Gaji',
+              icon: Icons.lock_outlined,
             ),
           ],
         ),

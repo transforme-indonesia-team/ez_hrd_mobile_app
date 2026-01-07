@@ -8,6 +8,7 @@ import 'package:hrd_app/features/fitur/widgets/fitur_section_header.dart';
 import 'package:hrd_app/features/fitur/widgets/fitur_category_header.dart';
 import 'package:hrd_app/features/fitur/widgets/fitur_item_grid.dart';
 import 'package:hrd_app/features/fitur/widgets/fitur_item_list.dart';
+import 'package:hrd_app/features/fitur/widgets/fitur_bottom_sheet.dart';
 
 class FiturScreen extends StatefulWidget {
   const FiturScreen({super.key});
@@ -153,43 +154,175 @@ class _FiturScreenState extends State<FiturScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           for (final section in sections) ...[
-            // Section header
-            FiturSectionHeader(title: section.name),
-            // Categories
-            for (final category in section.categories) ...[
-              Container(
-                margin: const EdgeInsets.symmetric(vertical: 2),
-                padding: const EdgeInsets.only(bottom: 12),
-                decoration: BoxDecoration(
-                  color: colors.background,
-                  // borderRadius: BorderRadius.circular(12),
+            // Check if section has Lainnya button
+            if (section.hasLainnya) ...[
+              // Section with Lainnya button
+              _buildSectionWithLainnya(section, colors),
+            ] else ...[
+              // Normal section
+              FiturSectionHeader(title: section.name),
+              // Categories
+              for (final category in section.categories) ...[
+                Container(
+                  margin: const EdgeInsets.symmetric(vertical: 2),
+                  padding: const EdgeInsets.only(bottom: 12),
+                  decoration: BoxDecoration(color: colors.background),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      FiturCategoryHeader(title: category.name),
+                      const SizedBox(height: 16),
+                      if (_isGridView)
+                        _buildGridItems(
+                          category.items,
+                          category.backgroundColor,
+                          category.iconColor,
+                        )
+                      else
+                        _buildListItems(
+                          category.items,
+                          category.backgroundColor,
+                          category.iconColor,
+                        ),
+                    ],
+                  ),
                 ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    FiturCategoryHeader(title: category.name),
-                    const SizedBox(height: 16),
-                    if (_isGridView)
-                      _buildGridItems(
-                        category.items,
-                        category.backgroundColor,
-                        category.iconColor,
-                      )
-                    else
-                      _buildListItems(
-                        category.items,
-                        category.backgroundColor,
-                        category.iconColor,
-                      ),
-                  ],
-                ),
-              ),
+              ],
             ],
           ],
           // Bottom padding
           const SizedBox(height: 16),
         ],
       ),
+    );
+  }
+
+  /// Build section with "Lainnya >" button
+  Widget _buildSectionWithLainnya(FiturSectionModel section, dynamic colors) {
+    // Collect all items from ALL categories to show directly
+    final allItems = <FiturItemModel>[];
+    Color? bgColor;
+    Color? iconColor;
+
+    for (final category in section.categories) {
+      allItems.addAll(category.items);
+      // Use first category's colors
+      bgColor ??= category.backgroundColor;
+      iconColor ??= category.iconColor;
+    }
+
+    // Only show first 4 items
+    final displayItems = allItems.take(4).toList();
+
+    // Use lainnyaTitle if provided, otherwise use section name
+    final lainnyaDisplayTitle = section.lainnyaTitle ?? section.name;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Section header (gray background)
+        FiturSectionHeader(title: section.name),
+
+        // Container with Lainnya button and items
+        Container(
+          margin: const EdgeInsets.symmetric(vertical: 2),
+          padding: const EdgeInsets.only(bottom: 12),
+          decoration: BoxDecoration(color: colors.background),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Category header with Lainnya button
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 12, 8, 8),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      lainnyaDisplayTitle,
+                      style: GoogleFonts.inter(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
+                        color: colors.textPrimary,
+                      ),
+                    ),
+                    // Lainnya button
+                    TextButton(
+                      onPressed: () => _showLainnyaBottomSheet(section),
+                      style: TextButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(horizontal: 8),
+                        minimumSize: Size.zero,
+                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            'Lainnya',
+                            style: GoogleFonts.inter(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500,
+                              color: colors.primaryBlue,
+                            ),
+                          ),
+                          const SizedBox(width: 4),
+                          Icon(
+                            Icons.chevron_right_rounded,
+                            color: colors.primaryBlue,
+                            size: 20,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              // Show only first 4 items from all categories
+              const SizedBox(height: 8),
+              if (_isGridView)
+                _buildGridItems(displayItems, bgColor, iconColor)
+              else
+                _buildListItems(displayItems, bgColor, iconColor),
+            ],
+          ),
+        ),
+        // Display directCategories (categories that show directly on main screen)
+        for (final category in section.directCategories) ...[
+          Container(
+            margin: const EdgeInsets.symmetric(vertical: 2),
+            padding: const EdgeInsets.only(bottom: 12),
+            decoration: BoxDecoration(color: colors.background),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                FiturCategoryHeader(title: category.name),
+                const SizedBox(height: 16),
+                if (_isGridView)
+                  _buildGridItems(
+                    category.items,
+                    category.backgroundColor,
+                    category.iconColor,
+                  )
+                else
+                  _buildListItems(
+                    category.items,
+                    category.backgroundColor,
+                    category.iconColor,
+                  ),
+              ],
+            ),
+          ),
+        ],
+      ],
+    );
+  }
+
+  /// Show bottom sheet with all categories
+  void _showLainnyaBottomSheet(FiturSectionModel section) {
+    FiturBottomSheet.show(
+      context,
+      title: section.name.toUpperCase(),
+      categories: section.categories,
+      onItemTap: _onItemTap,
     );
   }
 

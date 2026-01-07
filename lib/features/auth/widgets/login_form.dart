@@ -52,6 +52,22 @@ class _LoginFormState extends State<LoginForm> {
   }
 
   void _handleLogin() async {
+    final dummyUser = <Map<String, dynamic>>[
+      {
+        'id': '1',
+        'name': 'John Doe',
+        'email': 'john.doe@example.com',
+        'role': 'admin',
+      },
+    ];
+
+    Navigator.pushNamedAndRemoveUntil(
+      context,
+      AppRoutes.dashboard,
+      (route) => false,
+      arguments: {'user': dummyUser},
+    );
+
     if (_formKey.currentState!.validate()) {
       setState(() {
         _isLoading = true;
@@ -67,22 +83,6 @@ class _LoginFormState extends State<LoginForm> {
           setState(() {
             _isLoading = false;
           });
-
-          final dummyUser = <Map<String, dynamic>>[
-            {
-              'id': '1',
-              'name': 'John Doe',
-              'email': 'john.doe@example.com',
-              'role': 'admin',
-            },
-          ];
-
-          Navigator.pushNamedAndRemoveUntil(
-            context,
-            AppRoutes.dashboard,
-            (route) => false,
-            arguments: {'user': dummyUser},
-          );
 
           debugPrint('Login sukses! Token: ${user['token']}');
         }

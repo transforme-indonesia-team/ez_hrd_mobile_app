@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:hrd_app/features/dashboard/screens/dashboard_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:hrd_app/core/providers/theme_provider.dart';
 import 'package:hrd_app/routes/app_routes.dart';
@@ -36,8 +37,9 @@ class MyApp extends StatelessWidget {
           theme: AppTheme.lightTheme,
           darkTheme: AppTheme.darkTheme,
           themeMode: themeProvider.themeMode,
-          initialRoute: AppRoutes.initialRoute,
-          onGenerateRoute: AppRoutes.onGenerateRoute,
+          home: const DashboardScreen(),
+          // initialRoute: AppRoutes.initialRoute,
+          // onGenerateRoute: AppRoutes.onGenerateRoute,
         );
       },
     );
