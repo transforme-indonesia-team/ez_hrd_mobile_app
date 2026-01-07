@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import 'package:hrd_app/core/providers/theme_provider.dart';
 import 'package:hrd_app/core/theme/app_colors.dart';
 import 'package:hrd_app/routes/app_routes.dart';
+import 'package:hrd_app/features/profile/screens/profile_detail_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -78,7 +79,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 icon: Icons.person_outline,
                 title: 'Profil Saya',
                 onTap: () {
-                  // TODO: Navigate to profile detail
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const ProfileDetailScreen(),
+                    ),
+                  );
                 },
               ),
               _MenuItem(
@@ -87,7 +93,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 onTap: () {
                   // TODO: Navigate to settings
                 },
-                showBackground: true,
               ),
               _MenuItem(
                 icon: Icons.local_parking_outlined,

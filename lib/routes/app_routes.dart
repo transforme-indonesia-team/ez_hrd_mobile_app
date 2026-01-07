@@ -3,6 +3,7 @@ import 'package:hrd_app/features/auth/screens/login_screen.dart';
 import 'package:hrd_app/features/auth/screens/forgot_password_screen.dart';
 import 'package:hrd_app/features/auth/screens/email_sent_screen.dart';
 import 'package:hrd_app/features/dashboard/screens/dashboard_screen.dart';
+import 'package:hrd_app/features/profile/screens/profile_detail_screen.dart';
 
 class AppRoutes {
   AppRoutes._();
@@ -11,6 +12,7 @@ class AppRoutes {
   static const String forgotPassword = '/forgot-password';
   static const String emailSent = '/email-sent';
   static const String dashboard = '/dashboard';
+  static const String profileDetail = '/profile-detail';
 
   static const String initialRoute = login;
 
@@ -39,6 +41,12 @@ class AppRoutes {
       case dashboard:
         return MaterialPageRoute(
           builder: (context) => const DashboardScreen(),
+          settings: settings,
+        );
+
+      case profileDetail:
+        return MaterialPageRoute(
+          builder: (context) => const ProfileDetailScreen(),
           settings: settings,
         );
 

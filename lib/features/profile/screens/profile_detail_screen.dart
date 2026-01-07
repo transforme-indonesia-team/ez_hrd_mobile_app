@@ -1,0 +1,202 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:hrd_app/core/theme/app_colors.dart';
+import 'package:hrd_app/features/profile/models/profile_detail_model.dart';
+import 'package:hrd_app/features/profile/widgets/profile_header.dart';
+import 'package:hrd_app/features/profile/widgets/profile_info_section.dart';
+import 'package:hrd_app/features/profile/widgets/profile_menu_item.dart';
+import 'package:hrd_app/features/profile/widgets/profile_empty_state.dart';
+
+class ProfileDetailScreen extends StatefulWidget {
+  const ProfileDetailScreen({super.key});
+
+  @override
+  State<ProfileDetailScreen> createState() => _ProfileDetailScreenState();
+}
+
+class _ProfileDetailScreenState extends State<ProfileDetailScreen> {
+  final ProfileDetailModel _profile = const ProfileDetailModel(
+    employeeId: '90035857',
+    name: 'SARUL PADILLAH',
+    role: 'CASHIER',
+    company: 'EZ Parking',
+    location: 'LOKASI BARU PARKIR',
+  );
+
+  late final List<ProfileMenuItemModel> _menuItems;
+
+  @override
+  void initState() {
+    super.initState();
+    _initMenuItems();
+  }
+
+  void _initMenuItems() {
+    _menuItems = [
+      ProfileMenuItemModel(
+        icon: Icons.person_outline,
+        title: 'Pribadi',
+        subItems: [
+          'Informasi Dasar',
+          'Alamat',
+          'Kontak',
+          'Kontak darurat',
+          'Keluarga & Tanggungan',
+          'Pendidikan',
+          'Rekam Medis',
+          'Pengalaman',
+          'Daftar Bank',
+          'Data Asuransi',
+          'Catatan Pelatihan',
+        ],
+        onTap: () => _onMenuTap('Pribadi'),
+      ),
+      ProfileMenuItemModel(
+        icon: Icons.work_outline,
+        title: 'Data Ketenagakerjaan',
+        subItems: [
+          'Info Ketenagakerjaan',
+          'Disiplin',
+          'Penghargaan',
+          'Kontrol Dokumen',
+        ],
+        onTap: () => _onMenuTap('Data Ketenagakerjaan'),
+      ),
+      ProfileMenuItemModel(
+        icon: Icons.calendar_today_outlined,
+        title: 'Daftar Kehadiran',
+        subItems: ['Kehadiran Karyawan'],
+        onTap: () => _onMenuTap('Daftar Kehadiran'),
+      ),
+      ProfileMenuItemModel(
+        icon: Icons.description_outlined,
+        title: 'Permohonan Karyawan',
+        subItems: [
+          'Koreksi Kehadiran',
+          'Cuti',
+          'Lembur',
+          'Permintaan Khusus Kehadiran',
+          'Permohonan Karyawan',
+        ],
+        onTap: () => _onMenuTap('Permohonan Karyawan'),
+      ),
+      ProfileMenuItemModel(
+        icon: Icons.beach_access_outlined,
+        title: 'Jatah Cuti',
+        subItems: ['Cuti Kehadiran Karyawan'],
+        onTap: () => _onMenuTap('Jatah Cuti'),
+      ),
+    ];
+  }
+
+  void _onMenuTap(String menuName) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Menu "$menuName" belum tersedia'),
+        duration: const Duration(seconds: 1),
+      ),
+    );
+  }
+
+  void _onQRTap() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('QR Code belum tersedia'),
+        duration: Duration(seconds: 1),
+      ),
+    );
+  }
+
+  void _onMoreMenuTap() {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => Container(
+        padding: EdgeInsets.all(16.w),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(Icons.edit),
+              title: const Text('Edit Profil'),
+              onTap: () {
+                Navigator.pop(context);
+                // TODO: Navigate to edit profile
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.share),
+              title: const Text('Bagikan Profil'),
+              onTap: () {
+                Navigator.pop(context);
+                // TODO: Share profile
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _onEditSocialMedia() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Edit media sosial belum tersedia'),
+        duration: Duration(seconds: 1),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.colors;
+
+    return Scaffold(
+      backgroundColor: colors.backgroundDetail,
+      appBar: AppBar(
+        backgroundColor: colors.appBar,
+        elevation: 0,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: colors.textPrimary),
+          onPressed: () => Navigator.pop(context),
+        ),
+        title: Text(
+          'Profil Karyawan',
+          style: GoogleFonts.inter(
+            fontSize: 18.sp,
+            fontWeight: FontWeight.w600,
+            color: colors.textPrimary,
+          ),
+        ),
+      ),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            ProfileHeader(
+              profile: _profile,
+              onQRTap: _onQRTap,
+              onMenuTap: _onMoreMenuTap,
+            ),
+
+            ProfileInfoSection(
+              company: _profile.company,
+              location: _profile.location,
+              socialMediaLinks: _profile.socialMediaLinks,
+              onEditSocialMedia: _onEditSocialMedia,
+            ),
+            SizedBox(height: 16.h),
+
+            Column(
+              children: _menuItems.map((item) {
+                return ProfileMenuItem(item: item);
+              }).toList(),
+            ),
+
+            const ProfileEmptyState(),
+            SizedBox(height: 32.h),
+          ],
+        ),
+      ),
+    );
+  }
+}

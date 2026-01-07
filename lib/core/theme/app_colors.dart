@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hrd_app/core/theme/color_palette.dart';
 
 class AppColors {
   AppColors._();
@@ -20,10 +21,11 @@ class AppColors {
   static const Color textSecondaryLight = Color(0xFF6B7280);
 
   static const Color backgroundLight = Color(0xFFFFFFFF);
-  static const Color surfaceLight = Color(0xFFF8FAFC);
-  static const Color dividerLight = Color(0xFFE5E7EB);
+  static const Color backgroundDetailLight = ColorPalette.slate100;
+  static const Color surfaceLight = ColorPalette.slate50;
+  static const Color dividerLight = ColorPalette.gray200;
 
-  static const Color inactiveGrayLight = Color(0xFF9CA3AF);
+  static const Color inactiveGrayLight = ColorPalette.gray400;
 
   // ============================================
   // DARK MODE COLORS
@@ -42,13 +44,13 @@ class AppColors {
   static const Color textPrimaryDark = Color(0xFFE5E7EB);
   static const Color textSecondaryDark = Color(0xFFD1D5DB);
 
-  static const Color backgroundDark = Color(0xFF0F172A);
-  static const Color surfaceDark = Color(0xFF1E293B);
-  static const Color dividerDark = Color(0xFF334155);
+  static const Color backgroundDark = ColorPalette.gray950;
+  static const Color surfaceDark = ColorPalette.gray900;
+  static const Color dividerDark = ColorPalette.gray800;
 
-  static const Color inactiveGrayDark = Color(0xFF64748B);
+  static const Color inactiveGrayDark = ColorPalette.gray600;
 
-  static const Color success = Color(0xFF10B981);
+  static const Color success = ColorPalette.green500;
   static const Color error = Color(0xFFEF4444);
   static const Color warning = Color(0xFFF59E0B);
   static const Color info = Color(0xFF3B82F6);
@@ -115,6 +117,12 @@ class _ThemeColors {
 
   Color get inactiveGray =>
       isDark ? AppColors.inactiveGrayDark : AppColors.inactiveGrayLight;
+
+  Color get backgroundDetail =>
+      isDark ? AppColors.dividerDark : AppColors.backgroundLight;
+
+  Color get appBar =>
+      isDark ? AppColors.surfaceDark : AppColors.backgroundDetailLight;
 
   Color get success => AppColors.success;
   Color get error => AppColors.error;
