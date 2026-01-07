@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hrd_app/core/theme/app_colors.dart';
 import 'package:hrd_app/features/fitur/models/fitur_item_model.dart';
@@ -24,12 +25,13 @@ class FiturItemGrid extends StatelessWidget {
     return InkWell(
       onTap: onTap,
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.start,
         children: [
+          SizedBox(height: 4.h),
           // Icon container
           Container(
-            width: 56,
-            height: 56,
+            width: 48.w,
+            height: 48.w,
             decoration: BoxDecoration(
               color: categoryBackgroundColor ?? colors.surface,
               shape: BoxShape.circle,
@@ -37,26 +39,23 @@ class FiturItemGrid extends StatelessWidget {
             ),
             child: Icon(
               item.icon,
-              size: 28,
+              size: 24.sp,
               color: categoryIconColor ?? colors.primaryBlue,
             ),
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: 6.h),
           // Title
-          SizedBox(
-            height: 32,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 4),
-              child: Text(
-                item.title,
-                textAlign: TextAlign.center,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: GoogleFonts.inter(
-                  fontSize: 11,
-                  fontWeight: FontWeight.w500,
-                  color: colors.textPrimary,
-                ),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 2.w),
+            child: Text(
+              item.title,
+              textAlign: TextAlign.center,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: GoogleFonts.inter(
+                fontSize: 10.sp,
+                fontWeight: FontWeight.w500,
+                color: colors.textPrimary,
               ),
             ),
           ),

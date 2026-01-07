@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hrd_app/features/dashboard/screens/dashboard_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:hrd_app/core/providers/theme_provider.dart';
@@ -29,17 +30,24 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<ThemeProvider>(
-      builder: (context, themeProvider, child) {
-        return MaterialApp(
-          title: 'EZ HRD APP',
-          debugShowCheckedModeBanner: false,
-          theme: AppTheme.lightTheme,
-          darkTheme: AppTheme.darkTheme,
-          themeMode: themeProvider.themeMode,
-          home: const DashboardScreen(),
-          // initialRoute: AppRoutes.initialRoute,
-          // onGenerateRoute: AppRoutes.onGenerateRoute,
+    return ScreenUtilInit(
+      designSize: const Size(375, 812),
+      minTextAdapt: true,
+      splitScreenMode: true,
+      builder: (context, child) {
+        return Consumer<ThemeProvider>(
+          builder: (context, themeProvider, child) {
+            return MaterialApp(
+              title: 'EZ HRD APP',
+              debugShowCheckedModeBanner: false,
+              theme: AppTheme.lightTheme,
+              darkTheme: AppTheme.darkTheme,
+              themeMode: themeProvider.themeMode,
+              // home: const DashboardScreen(),
+              initialRoute: AppRoutes.initialRoute,
+              onGenerateRoute: AppRoutes.onGenerateRoute,
+            );
+          },
         );
       },
     );

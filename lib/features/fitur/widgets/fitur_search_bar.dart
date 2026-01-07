@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hrd_app/core/theme/app_colors.dart';
 
@@ -14,10 +15,11 @@ class FiturSearchBar extends StatelessWidget {
     final colors = context.colors;
 
     return Container(
-      margin: const EdgeInsets.fromLTRB(16, 8, 16, 12),
+      margin: EdgeInsets.fromLTRB(16.w, 8.h, 16.w, 12.h),
+      // height: 40.h,
       decoration: BoxDecoration(
         color: colors.surface,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(12.r),
         border: Border.all(color: colors.divider, width: 1),
         boxShadow: [
           BoxShadow(
@@ -31,23 +33,23 @@ class FiturSearchBar extends StatelessWidget {
         controller: controller,
         onChanged: onChanged,
         style: GoogleFonts.inter(
-          fontSize: 14,
+          fontSize: 14.sp,
           color: colors.textPrimary,
           fontWeight: FontWeight.w500,
         ),
         decoration: InputDecoration(
           hintText: 'Cari fitur...',
           hintStyle: GoogleFonts.inter(
-            fontSize: 14,
+            fontSize: 14.sp,
             color: colors.textSecondary.withValues(alpha: 0.6),
             fontWeight: FontWeight.w400,
           ),
           prefixIcon: Padding(
-            padding: const EdgeInsets.only(left: 12, right: 8),
+            padding: EdgeInsets.only(left: 12.w, right: 8.w),
             child: Icon(
               Icons.search_rounded,
               color: colors.primaryBlue,
-              size: 20,
+              size: 20.sp,
             ),
           ),
           suffixIcon: ValueListenableBuilder<TextEditingValue>(
@@ -58,7 +60,7 @@ class FiturSearchBar extends StatelessWidget {
                 icon: Icon(
                   Icons.clear_rounded,
                   color: colors.textSecondary,
-                  size: 18,
+                  size: 18.sp,
                 ),
                 onPressed: () {
                   controller.clear();
@@ -69,10 +71,8 @@ class FiturSearchBar extends StatelessWidget {
             },
           ),
           border: InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(
-            horizontal: 4,
-            vertical: 10,
-          ),
+          contentPadding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 8.h),
+          isDense: true,
           prefixIconConstraints: const BoxConstraints(
             minWidth: 0,
             minHeight: 0,

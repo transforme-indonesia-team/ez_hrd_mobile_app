@@ -17,6 +17,7 @@ class _LoginFormState extends State<LoginForm> {
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+  final _passwordFocusNode = FocusNode();
   bool _obscurePassword = true;
   bool _isLoading = false;
   bool _rememberMe = false;
@@ -48,6 +49,7 @@ class _LoginFormState extends State<LoginForm> {
   void dispose() {
     _usernameController.dispose();
     _passwordController.dispose();
+    _passwordFocusNode.dispose();
     super.dispose();
   }
 
@@ -221,6 +223,8 @@ class _LoginFormState extends State<LoginForm> {
               keyboardType: TextInputType.text,
               autovalidateMode: AutovalidateMode.onUserInteraction,
               maxLength: 30,
+              textInputAction: TextInputAction.next,
+              onFieldSubmitted: (_) => _passwordFocusNode.requestFocus(),
               style: GoogleFonts.inter(fontSize: 14, color: colors.textPrimary),
               decoration: _buildInputDecoration(
                 hintText: 'Masukkan nama pengguna',
@@ -253,6 +257,7 @@ class _LoginFormState extends State<LoginForm> {
             ),
             child: TextFormField(
               controller: _passwordController,
+              focusNode: _passwordFocusNode,
               obscureText: _obscurePassword,
               autovalidateMode: AutovalidateMode.onUserInteraction,
               maxLength: 20,

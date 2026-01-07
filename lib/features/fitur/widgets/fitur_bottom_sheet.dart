@@ -209,6 +209,7 @@ class _FiturBottomSheetState extends State<FiturBottomSheet> {
           children: category.items.map((item) {
             return SizedBox(
               width: 72,
+              height: 90, // Fixed height for proper layout
               child: FiturItemGrid(
                 item: item,
                 categoryBackgroundColor: category.backgroundColor,

@@ -237,14 +237,25 @@ class FiturData {
 
         if (filteredItems.isNotEmpty) {
           filteredCategories.add(
-            FiturCategoryModel(name: category.name, items: filteredItems),
+            FiturCategoryModel(
+              name: category.name,
+              items: filteredItems,
+              backgroundColor: category.backgroundColor,
+              iconColor: category.iconColor,
+            ),
           );
         }
       }
 
       if (filteredCategories.isNotEmpty) {
         result.add(
-          FiturSectionModel(name: section.name, categories: filteredCategories),
+          FiturSectionModel(
+            name: section.name,
+            categories: filteredCategories,
+            hasLainnya: section.hasLainnya,
+            lainnyaTitle: section.lainnyaTitle,
+            directCategories: section.directCategories,
+          ),
         );
       }
     }

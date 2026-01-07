@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hrd_app/core/theme/app_colors.dart';
 import 'package:hrd_app/features/fitur/data/fitur_data.dart';
@@ -79,15 +80,16 @@ class _FiturScreenState extends State<FiturScreen> {
   Widget _buildHeader(dynamic colors) {
     return Container(
       color: colors.background,
+      // color: Colors.red,
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(16, 8, 8, 8),
+        padding: EdgeInsets.fromLTRB(16.w, 2.h, 16.w, 2.h),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
               'Fitur',
               style: GoogleFonts.inter(
-                fontSize: 20,
+                fontSize: 16.sp,
                 fontWeight: FontWeight.w600,
                 color: colors.textPrimary,
               ),
@@ -106,9 +108,11 @@ class _FiturScreenState extends State<FiturScreen> {
                     color: !_isGridView
                         ? colors.primaryBlue
                         : colors.inactiveGray,
-                    size: 24,
+                    size: 20.sp,
                   ),
                 ),
+                // Divider
+                Container(height: 20.h, width: 1, color: colors.divider),
                 // Grid view button
                 IconButton(
                   onPressed: () {
@@ -121,7 +125,7 @@ class _FiturScreenState extends State<FiturScreen> {
                     color: _isGridView
                         ? colors.primaryBlue
                         : colors.inactiveGray,
-                    size: 24,
+                    size: 20.sp,
                   ),
                 ),
               ],
@@ -154,24 +158,18 @@ class _FiturScreenState extends State<FiturScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           for (final section in sections) ...[
-            // Check if section has Lainnya button
             if (section.hasLainnya) ...[
-              // Section with Lainnya button
               _buildSectionWithLainnya(section, colors),
             ] else ...[
-              // Normal section
               FiturSectionHeader(title: section.name),
-              // Categories
               for (final category in section.categories) ...[
                 Container(
                   margin: const EdgeInsets.symmetric(vertical: 2),
-                  padding: const EdgeInsets.only(bottom: 12),
                   decoration: BoxDecoration(color: colors.background),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       FiturCategoryHeader(title: category.name),
-                      const SizedBox(height: 16),
                       if (_isGridView)
                         _buildGridItems(
                           category.items,
@@ -190,40 +188,32 @@ class _FiturScreenState extends State<FiturScreen> {
               ],
             ],
           ],
-          // Bottom padding
           const SizedBox(height: 16),
         ],
       ),
     );
   }
 
-  /// Build section with "Lainnya >" button
   Widget _buildSectionWithLainnya(FiturSectionModel section, dynamic colors) {
-    // Collect all items from ALL categories to show directly
     final allItems = <FiturItemModel>[];
     Color? bgColor;
     Color? iconColor;
 
     for (final category in section.categories) {
       allItems.addAll(category.items);
-      // Use first category's colors
       bgColor ??= category.backgroundColor;
       iconColor ??= category.iconColor;
     }
 
-    // Only show first 4 items
     final displayItems = allItems.take(4).toList();
 
-    // Use lainnyaTitle if provided, otherwise use section name
     final lainnyaDisplayTitle = section.lainnyaTitle ?? section.name;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Section header (gray background)
         FiturSectionHeader(title: section.name),
 
-        // Container with Lainnya button and items
         Container(
           margin: const EdgeInsets.symmetric(vertical: 2),
           padding: const EdgeInsets.only(bottom: 12),
@@ -231,7 +221,6 @@ class _FiturScreenState extends State<FiturScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Category header with Lainnya button
               Padding(
                 padding: const EdgeInsets.fromLTRB(16, 12, 8, 8),
                 child: Row(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hrd_app/core/theme/app_colors.dart';
 import 'package:hrd_app/features/fitur/models/fitur_item_model.dart';
@@ -26,31 +27,31 @@ class FiturItemList extends StatelessWidget {
     return InkWell(
       onTap: onTap,
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
         child: Row(
           children: [
             // Icon container
             Container(
-              width: 40,
-              height: 40,
+              width: 40.w,
+              height: 40.w,
               decoration: BoxDecoration(
                 color: categoryBackgroundColor ?? colors.surface,
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(10.r),
                 border: Border.all(color: colors.divider, width: 1),
               ),
               child: Icon(
                 item.icon,
-                size: 22,
+                size: 22.sp,
                 color: categoryIconColor ?? colors.primaryBlue,
               ),
             ),
-            const SizedBox(width: 16),
+            SizedBox(width: 16.w),
             // Title
             Expanded(
               child: Text(
                 item.title,
                 style: GoogleFonts.inter(
-                  fontSize: 14,
+                  fontSize: 14.sp,
                   fontWeight: FontWeight.w500,
                   color: colors.textPrimary,
                 ),
