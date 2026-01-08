@@ -22,4 +22,19 @@ class FormatDate {
   static String time(DateTime date) {
     return DateFormat('HH:mm').format(date);
   }
+
+  // Format: Senin, 05 Jan 2026
+  static String dayWithFullDate(DateTime date) {
+    return DateFormat('EEEE, dd MMM yyyy', 'id_ID').format(date);
+  }
+
+  // Format: 5 Jan 2026
+  static String shortDateWithYear(DateTime date) {
+    return DateFormat('d MMM yyyy', 'id_ID').format(date);
+  }
+
+  // Format: 5 Jan 2026 - 11 Jan 2026
+  static String dateRange(DateTime start, DateTime end) {
+    return '${shortDateWithYear(start)} - ${shortDateWithYear(end)}';
+  }
 }

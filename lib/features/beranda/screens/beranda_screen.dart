@@ -8,6 +8,7 @@ import 'package:hrd_app/features/beranda/widgets/favorite_menu_section.dart';
 import 'package:hrd_app/features/beranda/widgets/company_info_section.dart';
 import 'package:hrd_app/features/fitur/models/fitur_item_model.dart';
 import 'package:hrd_app/features/notification/screens/notification_screen.dart';
+import 'package:hrd_app/features/shift/screens/shift_screen.dart';
 
 class BerandaScreen extends StatelessWidget {
   const BerandaScreen({super.key});
@@ -57,6 +58,12 @@ class BerandaScreen extends StatelessWidget {
                     content: Text('Fitur Lainnya belum tersedia'),
                     duration: Duration(seconds: 1),
                   ),
+                );
+              },
+              onShiftTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const ShiftScreen()),
                 );
               },
             ),

@@ -14,6 +14,7 @@ class AttendanceCard extends StatefulWidget {
   final VoidCallback? onRekamWaktuTap;
   final VoidCallback? onLainnyaTap;
   final VoidCallback? onBarcodeTap;
+  final VoidCallback? onShiftTap;
   final String? name;
 
   const AttendanceCard({
@@ -25,6 +26,7 @@ class AttendanceCard extends StatefulWidget {
     this.onRekamWaktuTap,
     this.onLainnyaTap,
     this.onBarcodeTap,
+    this.onShiftTap,
     this.name,
   });
 
@@ -108,7 +110,7 @@ class _AttendanceCardState extends State<AttendanceCard> {
             ),
           ),
           IconButton(
-            onPressed: () {},
+            onPressed: widget.onShiftTap ?? () {},
             icon: Icon(
               Icons.description_outlined,
               color: colors.textSecondary,
