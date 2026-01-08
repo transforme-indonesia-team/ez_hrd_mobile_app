@@ -7,6 +7,7 @@ import 'package:hrd_app/features/beranda/widgets/attendance_card.dart';
 import 'package:hrd_app/features/beranda/widgets/favorite_menu_section.dart';
 import 'package:hrd_app/features/beranda/widgets/company_info_section.dart';
 import 'package:hrd_app/features/fitur/models/fitur_item_model.dart';
+import 'package:hrd_app/features/notification/screens/notification_screen.dart';
 
 class BerandaScreen extends StatelessWidget {
   const BerandaScreen({super.key});
@@ -26,7 +27,18 @@ class BerandaScreen extends StatelessWidget {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            UserProfileHeader(name: userName, position: userPosition),
+            UserProfileHeader(
+              name: userName,
+              position: userPosition,
+              onNotificationTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const NotificationScreen(),
+                  ),
+                );
+              },
+            ),
             AttendanceCard(
               name: userName,
               date: 'Hari ini ${FormatDate.todayWithDayName(date)}',
