@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hrd_app/core/theme/app_colors.dart';
 import 'package:hrd_app/core/theme/color_palette.dart';
+import 'package:hrd_app/core/utils/string_utils.dart';
 
 /// Attendance Card dengan expandable toggle
 class AttendanceCard extends StatefulWidget {
@@ -13,6 +14,7 @@ class AttendanceCard extends StatefulWidget {
   final VoidCallback? onRekamWaktuTap;
   final VoidCallback? onLainnyaTap;
   final VoidCallback? onBarcodeTap;
+  final String? name;
 
   const AttendanceCard({
     super.key,
@@ -23,6 +25,7 @@ class AttendanceCard extends StatefulWidget {
     this.onRekamWaktuTap,
     this.onLainnyaTap,
     this.onBarcodeTap,
+    this.name,
   });
 
   @override
@@ -54,6 +57,7 @@ class _AttendanceCardState extends State<AttendanceCard> {
           // Header info (selalu tampil)
           _buildHeader(colors),
 
+          Divider(color: colors.divider, thickness: 2.r),
           // Jam masuk & keluar
           _buildTimeInfo(colors),
 
@@ -64,7 +68,9 @@ class _AttendanceCardState extends State<AttendanceCard> {
           if (_isExpanded) _buildLainnyaButton(colors),
 
           // Toggle button
+          Divider(color: colors.divider, thickness: 2.r),
           _buildToggleButton(colors),
+          SizedBox(height: 8.h),
         ],
       ),
     );
@@ -72,7 +78,7 @@ class _AttendanceCardState extends State<AttendanceCard> {
 
   Widget _buildHeader(dynamic colors) {
     return Padding(
-      padding: EdgeInsets.fromLTRB(16.w, 12.h, 16.w, 8.h),
+      padding: EdgeInsets.fromLTRB(16.w, 12.h, 16.w, 1.h),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -84,7 +90,7 @@ class _AttendanceCardState extends State<AttendanceCard> {
                 Text(
                   widget.date,
                   style: GoogleFonts.inter(
-                    fontSize: 12.sp,
+                    fontSize: 11.sp,
                     fontWeight: FontWeight.w400,
                     color: colors.textSecondary,
                   ),
@@ -93,7 +99,7 @@ class _AttendanceCardState extends State<AttendanceCard> {
                 Text(
                   widget.shiftInfo,
                   style: GoogleFonts.inter(
-                    fontSize: 14.sp,
+                    fontSize: 12.sp,
                     fontWeight: FontWeight.w500,
                     color: colors.textPrimary,
                   ),
@@ -161,15 +167,16 @@ class _AttendanceCardState extends State<AttendanceCard> {
             height: 32.w,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              border: Border.all(color: ColorPalette.orange400, width: 1.5),
+              color: ColorPalette.slate200,
+              // border: Border.all(color: ColorPalette.orange400, width: 1.5),
             ),
             child: Center(
               child: Text(
-                'DT',
+                StringUtils.getInitials(widget.name),
                 style: GoogleFonts.inter(
                   fontSize: 10.sp,
                   fontWeight: FontWeight.w600,
-                  color: ColorPalette.orange500,
+                  color: ColorPalette.slate500,
                 ),
               ),
             ),
@@ -223,43 +230,53 @@ class _AttendanceCardState extends State<AttendanceCard> {
   }
 
   Widget _buildRekamWaktuButton(dynamic colors) {
+    final buttonHeight = 36.h; // Tinggi tetap untuk kedua button
+
     return Padding(
       padding: EdgeInsets.fromLTRB(16.w, 8.h, 16.w, 8.h),
       child: Row(
         children: [
           Expanded(
-            child: ElevatedButton(
-              onPressed: widget.onRekamWaktuTap ?? () {},
-              style: ElevatedButton.styleFrom(
-                backgroundColor: colors.primaryBlue,
-                foregroundColor: Colors.white,
-                padding: EdgeInsets.symmetric(vertical: 12.h),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8.r),
+            child: SizedBox(
+              height: buttonHeight,
+              child: ElevatedButton(
+                onPressed: widget.onRekamWaktuTap ?? () {},
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: colors.primaryBlue,
+                  foregroundColor: Colors.white,
+                  padding: EdgeInsets.zero,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8.r),
+                  ),
+                  elevation: 0,
                 ),
-                elevation: 0,
-              ),
-              child: Text(
-                'Rekam Waktu',
-                style: GoogleFonts.inter(
-                  fontSize: 14.sp,
-                  fontWeight: FontWeight.w600,
+                child: Text(
+                  'Rekam Waktu',
+                  style: GoogleFonts.inter(
+                    fontSize: 14.sp,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ),
             ),
           ),
           SizedBox(width: 8.w),
-          Container(
-            decoration: BoxDecoration(
-              border: Border.all(color: colors.divider),
-              borderRadius: BorderRadius.circular(8.r),
-            ),
-            child: IconButton(
-              onPressed: widget.onBarcodeTap ?? () {},
-              icon: Icon(
-                Icons.qr_code_scanner,
-                color: colors.textSecondary,
-                size: 24.sp,
+          SizedBox(
+            width: buttonHeight, // Sama dengan tinggi = persegi
+            height: buttonHeight,
+            child: Container(
+              decoration: BoxDecoration(
+                border: Border.all(color: colors.divider),
+                borderRadius: BorderRadius.circular(8.r),
+              ),
+              child: IconButton(
+                onPressed: widget.onBarcodeTap ?? () {},
+                padding: EdgeInsets.zero,
+                icon: Icon(
+                  Icons.qr_code_scanner,
+                  color: colors.textSecondary,
+                  size: 22.sp,
+                ),
               ),
             ),
           ),
@@ -269,19 +286,18 @@ class _AttendanceCardState extends State<AttendanceCard> {
   }
 
   Widget _buildLainnyaButton(dynamic colors) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 16.w),
-      child: SizedBox(
+    return GestureDetector(
+      onTap: widget.onLainnyaTap ?? () {},
+      child: Container(
         width: double.infinity,
-        child: TextButton(
-          onPressed: widget.onLainnyaTap ?? () {},
-          child: Text(
-            'Lainnya',
-            style: GoogleFonts.inter(
-              fontSize: 14.sp,
-              fontWeight: FontWeight.w500,
-              color: colors.textSecondary,
-            ),
+        padding: EdgeInsets.symmetric(vertical: 8.h),
+        alignment: Alignment.center,
+        child: Text(
+          'Lainnya',
+          style: GoogleFonts.inter(
+            fontSize: 13.sp,
+            fontWeight: FontWeight.w500,
+            color: colors.textSecondary,
           ),
         ),
       ),
@@ -296,14 +312,14 @@ class _AttendanceCardState extends State<AttendanceCard> {
         });
       },
       child: Padding(
-        padding: EdgeInsets.symmetric(vertical: 12.h),
+        padding: EdgeInsets.symmetric(vertical: 6.h),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
               _isExpanded ? 'Sembunyikan Detail' : 'Lihat Detail',
               style: GoogleFonts.inter(
-                fontSize: 14.sp,
+                fontSize: 13.sp,
                 fontWeight: FontWeight.w500,
                 color: colors.primaryBlue,
               ),

@@ -182,7 +182,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Widget _buildMenuItem(dynamic colors, _MenuItem item) {
     return Container(
-      color: item.showBackground ? colors.surface : colors.background,
+      color: colors.background,
       child: ListTile(
         leading: Icon(item.icon, color: colors.textSecondary),
         title: Text(
@@ -323,12 +323,6 @@ class _MenuItem {
   final IconData icon;
   final String title;
   final VoidCallback onTap;
-  final bool showBackground;
 
-  _MenuItem({
-    required this.icon,
-    required this.title,
-    required this.onTap,
-    this.showBackground = false,
-  });
+  _MenuItem({required this.icon, required this.title, required this.onTap});
 }

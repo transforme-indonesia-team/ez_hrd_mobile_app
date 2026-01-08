@@ -1,8 +1,8 @@
 class StringUtils {
   StringUtils._();
 
-  static String getInitials(String name, {int maxLength = 2}) {
-    if (name.isEmpty) return '';
+  static String getInitials(String? name, {int maxLength = 2}) {
+    if (name == null || name.isEmpty) return '';
 
     final words = name.trim().split(' ');
     final initials = words

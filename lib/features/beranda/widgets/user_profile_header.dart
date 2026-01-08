@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hrd_app/core/theme/app_colors.dart';
 import 'package:hrd_app/core/theme/color_palette.dart';
+import 'package:hrd_app/core/utils/string_utils.dart';
 
 /// User profile header dengan avatar, nama, jabatan, dan notifikasi
 class UserProfileHeader extends StatelessWidget {
@@ -22,7 +23,7 @@ class UserProfileHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
-    final initials = avatarInitials ?? _getInitials(name);
+    final initials = avatarInitials ?? StringUtils.getInitials(name);
 
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
@@ -33,18 +34,15 @@ class UserProfileHeader extends StatelessWidget {
           Container(
             width: 48.w,
             height: 48.w,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              border: Border.all(color: ColorPalette.orange400, width: 2),
-            ),
+            decoration: BoxDecoration(shape: BoxShape.circle),
             child: CircleAvatar(
-              backgroundColor: colors.surface,
+              backgroundColor: ColorPalette.slate200,
               child: Text(
                 initials,
                 style: GoogleFonts.inter(
                   fontSize: 16.sp,
                   fontWeight: FontWeight.w600,
-                  color: ColorPalette.orange500,
+                  color: ColorPalette.slate500,
                 ),
               ),
             ),
@@ -80,20 +78,12 @@ class UserProfileHeader extends StatelessWidget {
             onPressed: onNotificationTap ?? () {},
             icon: Icon(
               Icons.notifications_outlined,
-              color: colors.textSecondary,
+              color: ColorPalette.slate300,
               size: 24.sp,
             ),
           ),
         ],
       ),
     );
-  }
-
-  String _getInitials(String name) {
-    final parts = name.trim().split(' ');
-    if (parts.length >= 2) {
-      return '${parts[0][0]}${parts[1][0]}'.toUpperCase();
-    }
-    return parts[0].substring(0, 2).toUpperCase();
   }
 }

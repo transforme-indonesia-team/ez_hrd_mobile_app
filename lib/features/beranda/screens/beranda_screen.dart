@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hrd_app/core/theme/app_colors.dart';
+import 'package:hrd_app/core/utils/format_date.dart';
 import 'package:hrd_app/features/beranda/widgets/beranda_app_bar.dart';
 import 'package:hrd_app/features/beranda/widgets/user_profile_header.dart';
 import 'package:hrd_app/features/beranda/widgets/attendance_card.dart';
@@ -7,13 +8,17 @@ import 'package:hrd_app/features/beranda/widgets/favorite_menu_section.dart';
 import 'package:hrd_app/features/beranda/widgets/company_info_section.dart';
 import 'package:hrd_app/features/fitur/models/fitur_item_model.dart';
 
-/// Screen utama Beranda
 class BerandaScreen extends StatelessWidget {
   const BerandaScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
+    final date = DateTime.now();
+
+    // TODO: Replace with actual user data from API/state
+    const String userName = 'SARUL PADILLAH';
+    const String userPosition = 'CASHIER';
 
     return Scaffold(
       backgroundColor: colors.surface,
@@ -21,16 +26,10 @@ class BerandaScreen extends StatelessWidget {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            // User Profile Header dengan notifikasi
-            const UserProfileHeader(
-              name: 'DANY TRANSFORME',
-              position: 'CASHIER',
-              avatarInitials: 'DT',
-            ),
-
-            // Attendance Card
+            UserProfileHeader(name: userName, position: userPosition),
             AttendanceCard(
-              date: 'Hari ini (Rab, 07 Jan 2026)',
+              name: userName,
+              date: 'Hari ini ${FormatDate.todayWithDayName(date)}',
               shiftInfo: 'Shift: Shift Office Hour [09:00 - 17:00]',
               onRekamWaktuTap: () {
                 ScaffoldMessenger.of(context).showSnackBar(
@@ -49,7 +48,6 @@ class BerandaScreen extends StatelessWidget {
                 );
               },
             ),
-
             // Menu Favorit Section
             FavoriteMenuSection(
               onItemTap: (FiturItemModel item) {

@@ -34,22 +34,25 @@ class SurveiKaryawanTabs extends StatelessWidget {
               color: colors.textPrimary,
             ),
           ),
-          SizedBox(height: 12.h),
-          // Tabs
+          SizedBox(height: 16.h),
+          // Tabs - menggunakan Row dengan Expanded untuk menyebar rata
           Row(
             children: [
-              _buildTab(
-                context: context,
-                label: 'Polling',
-                isSelected: selectedIndex == 0,
-                onTap: () => onTabChanged(0),
+              Expanded(
+                child: _buildTab(
+                  context: context,
+                  label: 'Polling',
+                  isSelected: selectedIndex == 0,
+                  onTap: () => onTabChanged(0),
+                ),
               ),
-              SizedBox(width: 24.w),
-              _buildTab(
-                context: context,
-                label: 'Survei',
-                isSelected: selectedIndex == 1,
-                onTap: () => onTabChanged(1),
+              Expanded(
+                child: _buildTab(
+                  context: context,
+                  label: 'Survei',
+                  isSelected: selectedIndex == 1,
+                  onTap: () => onTabChanged(1),
+                ),
               ),
             ],
           ),
@@ -68,24 +71,34 @@ class SurveiKaryawanTabs extends StatelessWidget {
 
     return GestureDetector(
       onTap: onTap,
-      child: Container(
-        padding: EdgeInsets.only(bottom: 8.h),
-        decoration: BoxDecoration(
-          border: Border(
-            bottom: BorderSide(
-              color: isSelected ? ColorPalette.orange500 : Colors.transparent,
-              width: 2,
+      behavior: HitTestBehavior.opaque,
+      child: Column(
+        children: [
+          // Tab text
+          Padding(
+            padding: EdgeInsets.symmetric(vertical: 8.h),
+            child: Text(
+              label,
+              textAlign: TextAlign.center,
+              style: GoogleFonts.inter(
+                fontSize: 14.sp,
+                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+                color: isSelected
+                    ? ColorPalette.orange500
+                    : colors.textSecondary,
+              ),
             ),
           ),
-        ),
-        child: Text(
-          label,
-          style: GoogleFonts.inter(
-            fontSize: 14.sp,
-            fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
-            color: isSelected ? ColorPalette.orange500 : colors.textSecondary,
+          SizedBox(height: 8.h),
+          // Underline indicator - full width
+          Container(
+            height: 2.h,
+            decoration: BoxDecoration(
+              color: isSelected ? ColorPalette.orange500 : Colors.transparent,
+              borderRadius: BorderRadius.circular(1.r),
+            ),
           ),
-        ),
+        ],
       ),
     );
   }

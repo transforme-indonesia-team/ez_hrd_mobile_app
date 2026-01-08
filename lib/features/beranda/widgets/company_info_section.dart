@@ -60,7 +60,7 @@ class CompanyInfoSection extends StatelessWidget {
             textAlign: TextAlign.center,
             style: GoogleFonts.inter(
               fontSize: 16.sp,
-              fontWeight: FontWeight.w500,
+              fontWeight: FontWeight.w600,
               color: colors.textSecondary,
             ),
           ),
