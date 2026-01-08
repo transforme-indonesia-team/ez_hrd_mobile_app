@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hrd_app/core/theme/app_colors.dart';
-import 'package:hrd_app/core/theme/color_palette.dart';
 
 /// Section Tugasmu hari ini
 class TugasmuSection extends StatelessWidget {
@@ -46,7 +45,7 @@ class TugasmuSection extends StatelessWidget {
                   style: GoogleFonts.inter(
                     fontSize: 14.sp,
                     fontWeight: FontWeight.w500,
-                    color: ColorPalette.orange500,
+                    color: colors.primaryBlue,
                   ),
                 ),
               ),
@@ -68,54 +67,14 @@ class TugasmuSection extends StatelessWidget {
   Widget _buildSuccessState(dynamic colors) {
     return Center(
       child: Padding(
-        padding: EdgeInsets.symmetric(vertical: 24.h),
+        padding: EdgeInsets.symmetric(vertical: 10.h),
         child: Column(
           children: [
-            // Illustration - using a simple icon representation
-            Container(
-              width: 150.w,
-              height: 120.h,
-              decoration: BoxDecoration(
-                color: ColorPalette.orange50,
-                borderRadius: BorderRadius.circular(12.r),
-              ),
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  Icon(
-                    Icons.person,
-                    size: 60.sp,
-                    color: ColorPalette.orange300,
-                  ),
-                  Positioned(
-                    left: 20.w,
-                    top: 20.h,
-                    child: Icon(
-                      Icons.check_circle,
-                      size: 20.sp,
-                      color: ColorPalette.green500,
-                    ),
-                  ),
-                  Positioned(
-                    left: 25.w,
-                    top: 45.h,
-                    child: Icon(
-                      Icons.check_circle,
-                      size: 16.sp,
-                      color: ColorPalette.green500,
-                    ),
-                  ),
-                  Positioned(
-                    left: 20.w,
-                    top: 70.h,
-                    child: Icon(
-                      Icons.check_circle,
-                      size: 18.sp,
-                      color: ColorPalette.green500,
-                    ),
-                  ),
-                ],
-              ),
+            // Illustration - using todo.png asset
+            Image.asset(
+              'assets/images/todo.png',
+              height: 220.h,
+              fit: BoxFit.contain,
             ),
             SizedBox(height: 16.h),
             // Success text

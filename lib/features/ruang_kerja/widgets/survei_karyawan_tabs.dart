@@ -21,7 +21,7 @@ class SurveiKaryawanTabs extends StatelessWidget {
 
     return Container(
       color: colors.background,
-      padding: EdgeInsets.fromLTRB(16.w, 16.h, 16.w, 0),
+      padding: EdgeInsets.fromLTRB(16.w, 10.h, 16.w, 0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -29,8 +29,8 @@ class SurveiKaryawanTabs extends StatelessWidget {
           Text(
             'Survei Karyawan',
             style: GoogleFonts.inter(
-              fontSize: 14.sp,
-              fontWeight: FontWeight.w500,
+              fontSize: 15.sp,
+              fontWeight: FontWeight.w600,
               color: colors.textPrimary,
             ),
           ),
@@ -83,9 +83,7 @@ class SurveiKaryawanTabs extends StatelessWidget {
               style: GoogleFonts.inter(
                 fontSize: 14.sp,
                 fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
-                color: isSelected
-                    ? ColorPalette.orange500
-                    : colors.textSecondary,
+                color: isSelected ? colors.primaryBlue : colors.textSecondary,
               ),
             ),
           ),
@@ -94,7 +92,7 @@ class SurveiKaryawanTabs extends StatelessWidget {
           Container(
             height: 2.h,
             decoration: BoxDecoration(
-              color: isSelected ? ColorPalette.orange500 : Colors.transparent,
+              color: isSelected ? colors.primaryBlue : Colors.transparent,
               borderRadius: BorderRadius.circular(1.r),
             ),
           ),
