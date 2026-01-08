@@ -77,8 +77,8 @@ class UserProfileHeader extends StatelessWidget {
           IconButton(
             onPressed: onNotificationTap ?? () {},
             icon: Icon(
-              Icons.notifications_outlined,
-              color: ColorPalette.slate300,
+              Icons.notifications,
+              color: ColorPalette.slate500,
               size: 24.sp,
             ),
           ),
