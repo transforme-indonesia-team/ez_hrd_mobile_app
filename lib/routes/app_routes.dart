@@ -8,6 +8,7 @@ import 'package:hrd_app/features/profile/screens/profile_detail_screen.dart';
 class AppRoutes {
   AppRoutes._();
 
+  static const String home = '/';
   static const String login = '/login';
   static const String forgotPassword = '/forgot-password';
   static const String emailSent = '/email-sent';
@@ -18,6 +19,13 @@ class AppRoutes {
 
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
     switch (settings.name) {
+      case home:
+        // Fallback root route to dashboard
+        return MaterialPageRoute(
+          builder: (context) => const DashboardScreen(),
+          settings: settings,
+        );
+
       case login:
         return MaterialPageRoute(
           builder: (context) => const LoginScreen(),

@@ -34,7 +34,7 @@ class _InformasiDasarScreenState extends State<InformasiDasarScreen> {
           'nama_pengguna': '90035857',
 
           // Data Personal
-          'nama_lengkap': 'DANY TRANSFORME',
+          'nama_lengkap': 'SARUL WIDODO',
           'nama_lokal': 'Local First Name Local Middle Name Local Last Name',
           'nama_panggilan': '-',
           'tempat_lahir': 'JAKARTA',
