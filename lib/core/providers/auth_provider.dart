@@ -59,7 +59,7 @@ class AuthProvider extends ChangeNotifier {
 
       final dummyResponse = {
         'id': 1,
-        'name': 'SARUL PADILLAH',
+        'name': 'SARUL WIDODO',
         'email': 'sarul@example.com',
         'token': 'dummy_token_dev_123',
         'role': 'CASHIER',

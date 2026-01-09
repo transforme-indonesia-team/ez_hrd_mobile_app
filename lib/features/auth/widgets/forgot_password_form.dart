@@ -120,7 +120,7 @@ class _ForgotPasswordFormState extends State<ForgotPasswordForm> {
             child: ClipRRect(
               borderRadius: BorderRadius.circular(12),
               child: Image.asset(
-                'assets/images/logo.jpeg',
+                'assets/images/logo.png',
                 height: 90,
                 width: 90,
                 fit: BoxFit.contain,

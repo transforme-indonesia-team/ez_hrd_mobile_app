@@ -9,6 +9,7 @@ import 'package:hrd_app/features/profile/widgets/profile_header.dart';
 import 'package:hrd_app/features/profile/widgets/profile_info_section.dart';
 import 'package:hrd_app/features/profile/widgets/profile_menu_item.dart';
 import 'package:hrd_app/features/profile/widgets/profile_empty_state.dart';
+import 'package:hrd_app/features/profile/pribadi/pribadi_screen.dart';
 
 class ProfileDetailScreen extends StatefulWidget {
   const ProfileDetailScreen({super.key});
@@ -36,24 +37,34 @@ class _ProfileDetailScreenState extends State<ProfileDetailScreen> {
   }
 
   void _initMenuItems() {
+    final pribadiSubItems = [
+      'Informasi Dasar',
+      'Alamat',
+      'Kontak',
+      'Kontak darurat',
+      'Keluarga & Tanggungan',
+      'Pendidikan',
+      'Rekam Medis',
+      'Pengalaman',
+      'Daftar Bank',
+      'Data Asuransi',
+      'Catatan Pelatihan',
+    ];
+
     _menuItems = [
       ProfileMenuItemModel(
         icon: Icons.person_outline,
         title: 'Pribadi',
-        subItems: [
-          'Informasi Dasar',
-          'Alamat',
-          'Kontak',
-          'Kontak darurat',
-          'Keluarga & Tanggungan',
-          'Pendidikan',
-          'Rekam Medis',
-          'Pengalaman',
-          'Daftar Bank',
-          'Data Asuransi',
-          'Catatan Pelatihan',
-        ],
-        onTap: () => _onMenuTap('Pribadi'),
+        subItems: pribadiSubItems,
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) =>
+                  PribadiScreen(profile: _profile, menuItems: pribadiSubItems),
+            ),
+          );
+        },
       ),
       ProfileMenuItemModel(
         icon: Icons.work_outline,

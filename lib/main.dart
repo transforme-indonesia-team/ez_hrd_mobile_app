@@ -7,7 +7,6 @@ import 'package:hrd_app/core/providers/auth_provider.dart';
 import 'package:hrd_app/routes/app_routes.dart';
 import 'core/theme/app_theme.dart';
 import 'package:hrd_app/core/utils/crypto_utils.dart';
-import 'package:hrd_app/features/dashboard/screens/dashboard_screen.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
 void main() async {
@@ -48,16 +47,20 @@ class MyApp extends StatelessWidget {
       minTextAdapt: true,
       splitScreenMode: true,
       builder: (context, child) {
-        return Consumer<ThemeProvider>(
-          builder: (context, themeProvider, child) {
+        return Consumer2<ThemeProvider, AuthProvider>(
+          builder: (context, themeProvider, authProvider, child) {
             return MaterialApp(
               title: 'EZ HRD APP',
               debugShowCheckedModeBanner: false,
               theme: AppTheme.lightTheme,
               darkTheme: AppTheme.darkTheme,
               themeMode: themeProvider.themeMode,
-              // home: const DashboardScreen(),
-              initialRoute: AppRoutes.initialRoute,
+              // Logic Auto-Login:
+              // Jika sudah login (isAuthenticated = true) -> ke Dashboard
+              // Jika belum -> ke Login (initialRoute)
+              initialRoute: authProvider.isAuthenticated
+                  ? AppRoutes.dashboard
+                  : AppRoutes.initialRoute,
               onGenerateRoute: AppRoutes.onGenerateRoute,
             );
           },
