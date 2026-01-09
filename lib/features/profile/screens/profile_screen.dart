@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:hrd_app/core/utils/string_utils.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
+import 'package:hrd_app/core/providers/auth_provider.dart';
 import 'package:hrd_app/core/providers/theme_provider.dart';
 import 'package:hrd_app/core/theme/app_colors.dart';
 import 'package:hrd_app/routes/app_routes.dart';
 import 'package:hrd_app/features/profile/screens/profile_detail_screen.dart';
+import 'package:hrd_app/shared/widgets/menu_item.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -17,12 +18,6 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   String _appVersion = '';
-
-  // Dummy user data
-  final Map<String, String> _user = {
-    'name': 'Sarul Padillah',
-    'role': 'CASHIER',
-  };
 
   @override
   void initState() {
@@ -43,6 +38,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     final colors = context.colors;
     final themeProvider = Provider.of<ThemeProvider>(context);
+
+    // Get user data from AuthProvider
+    final authProvider = context.watch<AuthProvider>();
+    final user = authProvider.user;
+    final userName = user?.name ?? 'User';
+    final userRole = user?.role ?? 'Employee';
 
     return Scaffold(
       backgroundColor: colors.background,
@@ -70,12 +71,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
         child: Column(
           children: [
             // User Header
-            _buildUserHeader(colors),
+            _buildUserHeader(colors, userName, userRole),
             const SizedBox(height: 16),
 
             // Menu Items
             _buildMenuSection(colors, [
-              _MenuItem(
+              MenuItemModel(
                 icon: Icons.person_outline,
                 title: 'Profil Saya',
                 onTap: () {
@@ -87,14 +88,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   );
                 },
               ),
-              _MenuItem(
+              MenuItemModel(
                 icon: Icons.settings_outlined,
                 title: 'Pengaturan Personal',
                 onTap: () {
                   // TODO: Navigate to settings
                 },
               ),
-              _MenuItem(
+              MenuItemModel(
                 icon: Icons.local_parking_outlined,
                 title: 'EZ Parking',
                 onTap: () {
@@ -109,14 +110,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
             const SizedBox(height: 16),
 
             // Logout
-            _buildLogoutSection(colors),
+            _buildLogoutSection(colors, authProvider),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildUserHeader(dynamic colors) {
+  Widget _buildUserHeader(dynamic colors, String userName, String userRole) {
     return Container(
       padding: const EdgeInsets.all(16),
       child: Row(
@@ -132,7 +133,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
             child: Center(
               child: Text(
-                StringUtils.getInitials(_user['name'] ?? ""),
+                _getInitials(userName),
                 style: GoogleFonts.inter(
                   fontSize: 20,
                   fontWeight: FontWeight.w600,
@@ -147,7 +148,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Hai, ${_user['name']}',
+                'Hai, $userName',
                 style: GoogleFonts.inter(
                   fontSize: 18,
                   fontWeight: FontWeight.w600,
@@ -156,7 +157,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
               const SizedBox(height: 4),
               Text(
-                _user['role']!,
+                userRole,
                 style: GoogleFonts.inter(
                   fontSize: 14,
                   color: colors.textSecondary,
@@ -169,28 +170,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _buildMenuSection(dynamic colors, List<_MenuItem> items) {
+  String _getInitials(String name) {
+    final parts = name.trim().split(' ');
+    if (parts.length >= 2) {
+      return '${parts[0][0]}${parts[1][0]}'.toUpperCase();
+    }
+    return name.isNotEmpty ? name[0].toUpperCase() : '';
+  }
+
+  Widget _buildMenuSection(dynamic colors, List<MenuItemModel> items) {
     return Container(
       color: colors.background,
       child: Column(
         children: items.map((item) {
-          return _buildMenuItem(colors, item);
+          return MenuItem(item: item);
         }).toList(),
-      ),
-    );
-  }
-
-  Widget _buildMenuItem(dynamic colors, _MenuItem item) {
-    return Container(
-      color: colors.background,
-      child: ListTile(
-        leading: Icon(item.icon, color: colors.textSecondary),
-        title: Text(
-          item.title,
-          style: GoogleFonts.inter(fontSize: 16, color: colors.textPrimary),
-        ),
-        trailing: Icon(Icons.chevron_right, color: colors.inactiveGray),
-        onTap: item.onTap,
       ),
     );
   }
@@ -265,7 +259,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _buildLogoutSection(dynamic colors) {
+  Widget _buildLogoutSection(dynamic colors, AuthProvider authProvider) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Row(
@@ -276,22 +270,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
               // Show confirmation dialog
               showDialog(
                 context: context,
-                builder: (context) => AlertDialog(
+                builder: (dialogContext) => AlertDialog(
                   title: const Text('Keluar'),
                   content: const Text('Apakah Anda yakin ingin keluar?'),
                   actions: [
                     TextButton(
-                      onPressed: () => Navigator.pop(context),
+                      onPressed: () => Navigator.pop(dialogContext),
                       child: const Text('Batal'),
                     ),
                     TextButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                        Navigator.pushNamedAndRemoveUntil(
-                          context,
-                          AppRoutes.login,
-                          (route) => false,
-                        );
+                      onPressed: () async {
+                        Navigator.pop(dialogContext);
+                        // Logout dari AuthProvider
+                        await authProvider.logout();
+                        if (mounted) {
+                          AppRoutes.navigateAndRemoveAll(
+                            context,
+                            AppRoutes.login,
+                          );
+                        }
                       },
                       child: Text(
                         'Keluar',
@@ -317,12 +314,4 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ),
     );
   }
-}
-
-class _MenuItem {
-  final IconData icon;
-  final String title;
-  final VoidCallback onTap;
-
-  _MenuItem({required this.icon, required this.title, required this.onTap});
 }

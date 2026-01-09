@@ -1,27 +1,40 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:hrd_app/features/dashboard/screens/dashboard_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:hrd_app/core/providers/theme_provider.dart';
+import 'package:hrd_app/core/providers/auth_provider.dart';
 import 'package:hrd_app/routes/app_routes.dart';
 import 'core/theme/app_theme.dart';
 import 'package:hrd_app/core/utils/crypto_utils.dart';
+import 'package:hrd_app/features/dashboard/screens/dashboard_screen.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: ".env");
+  await initializeDateFormatting('id_ID', null);
 
   try {
     CryptoUtils().initialize();
     // ignore: empty_catches
   } catch (e) {}
 
+  // Initialize providers
   final themeProvider = ThemeProvider();
   await themeProvider.initialize();
 
+  final authProvider = AuthProvider();
+  await authProvider.initialize();
+
   runApp(
-    ChangeNotifierProvider.value(value: themeProvider, child: const MyApp()),
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider.value(value: themeProvider),
+        ChangeNotifierProvider.value(value: authProvider),
+      ],
+      child: const MyApp(),
+    ),
   );
 }
 

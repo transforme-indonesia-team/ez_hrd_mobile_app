@@ -73,13 +73,13 @@ class AppColors {
 extension AppColorsExtension on BuildContext {
   bool get _isDark => Theme.of(this).brightness == Brightness.dark;
 
-  _ThemeColors get colors => _ThemeColors(_isDark);
+  ThemeColors get colors => ThemeColors(_isDark);
 }
 
-class _ThemeColors {
+class ThemeColors {
   final bool isDark;
 
-  _ThemeColors(this.isDark);
+  ThemeColors(this.isDark);
 
   Color get primaryBlue =>
       isDark ? AppColors.primaryBlueDark : AppColors.primaryBlueLight;

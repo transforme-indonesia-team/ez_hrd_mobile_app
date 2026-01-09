@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:hrd_app/core/providers/auth_provider.dart';
 import 'package:hrd_app/core/theme/app_colors.dart';
 import 'package:hrd_app/core/utils/format_date.dart';
 import 'package:hrd_app/features/beranda/widgets/beranda_app_bar.dart';
@@ -19,9 +21,11 @@ class BerandaScreen extends StatelessWidget {
     final colors = context.colors;
     final date = DateTime.now();
 
-    // TODO: Replace with actual user data from API/state
-    const String userName = 'SARUL PADILLAH';
-    const String userPosition = 'CASHIER';
+    // Get user data from AuthProvider
+    final authProvider = context.watch<AuthProvider>();
+    final user = authProvider.user;
+    final userName = user?.name ?? 'User';
+    final userPosition = user?.role ?? 'Employee';
 
     return Scaffold(
       backgroundColor: colors.surface,

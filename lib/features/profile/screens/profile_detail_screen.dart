@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+import 'package:hrd_app/core/providers/auth_provider.dart';
 import 'package:hrd_app/core/theme/app_colors.dart';
 import 'package:hrd_app/features/profile/models/profile_detail_model.dart';
 import 'package:hrd_app/features/profile/widgets/profile_header.dart';
@@ -16,20 +18,21 @@ class ProfileDetailScreen extends StatefulWidget {
 }
 
 class _ProfileDetailScreenState extends State<ProfileDetailScreen> {
-  final ProfileDetailModel _profile = const ProfileDetailModel(
-    employeeId: '90035857',
-    name: 'SARUL PADILLAH',
-    role: 'CASHIER',
-    company: 'EZ Parking',
-    location: 'LOKASI BARU PARKIR',
-  );
-
+  late ProfileDetailModel _profile;
   late final List<ProfileMenuItemModel> _menuItems;
 
   @override
   void initState() {
     super.initState();
     _initMenuItems();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Get user data from AuthProvider and create profile
+    final user = context.read<AuthProvider>().user;
+    _profile = ProfileDetailModel.fromUser(user);
   }
 
   void _initMenuItems() {

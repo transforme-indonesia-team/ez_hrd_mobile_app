@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hrd_app/data/models/user_model.dart';
 
 /// Model untuk data profil karyawan
 class ProfileDetailModel {
@@ -19,6 +20,25 @@ class ProfileDetailModel {
     this.location,
     this.socialMediaLinks = const [],
   });
+
+  /// Create from UserModel
+  factory ProfileDetailModel.fromUser(UserModel? user) {
+    if (user == null) {
+      return const ProfileDetailModel(
+        employeeId: '-',
+        name: 'User',
+        role: 'Employee',
+      );
+    }
+    return ProfileDetailModel(
+      employeeId: user.employeeId ?? '-',
+      name: user.name,
+      role: user.role ?? 'Employee',
+      avatarUrl: user.avatarUrl,
+      company: user.company,
+      location: user.location,
+    );
+  }
 
   /// Get initials dari nama untuk avatar
   String get initials {

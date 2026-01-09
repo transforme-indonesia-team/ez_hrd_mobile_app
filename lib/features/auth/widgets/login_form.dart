@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+import 'package:hrd_app/core/providers/auth_provider.dart';
 import 'package:hrd_app/core/theme/app_colors.dart';
 import 'package:hrd_app/core/utils/validators.dart';
-import 'package:hrd_app/data/services/auth_service.dart';
 import 'package:hrd_app/routes/app_routes.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
@@ -54,53 +55,42 @@ class _LoginFormState extends State<LoginForm> {
   }
 
   void _handleLogin() async {
-    final dummyUser = <Map<String, dynamic>>[
-      {
-        'id': '1',
-        'name': 'John Doe',
-        'email': 'john.doe@example.com',
-        'role': 'admin',
-      },
-    ];
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
 
-    Navigator.pushNamedAndRemoveUntil(
-      context,
-      AppRoutes.dashboard,
-      (route) => false,
-      arguments: {'user': dummyUser},
-    );
+    setState(() {
+      _isLoading = true;
+    });
 
-    if (_formKey.currentState!.validate()) {
-      setState(() {
-        _isLoading = true;
-      });
+    try {
+      final authProvider = Provider.of<AuthProvider>(context, listen: false);
+      await authProvider.login(
+        username: _usernameController.text,
+        password: _passwordController.text,
+        rememberMe: _rememberMe,
+      );
 
-      try {
-        final user = await AuthService().login(
-          username: _usernameController.text,
-          password: _passwordController.text,
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+
+        // Navigate ke dashboard setelah login sukses
+        AppRoutes.navigateAndRemoveAll(context, AppRoutes.dashboard);
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(e.toString().replaceAll('Exception: ', '')),
+            backgroundColor: Colors.red,
+          ),
         );
-
-        if (mounted) {
-          setState(() {
-            _isLoading = false;
-          });
-
-          debugPrint('Login sukses! Token: ${user['token']}');
-        }
-      } catch (e) {
-        if (mounted) {
-          setState(() {
-            _isLoading = false;
-          });
-
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(e.toString().replaceAll('Exception: ', '')),
-              backgroundColor: Colors.red,
-            ),
-          );
-        }
       }
     }
   }
