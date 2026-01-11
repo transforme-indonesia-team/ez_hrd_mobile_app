@@ -50,6 +50,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
       appBar: AppBar(
         backgroundColor: colors.background,
         elevation: 0,
+        automaticallyImplyLeading: false,
+        leading: const SizedBox.shrink(),
+        leadingWidth: 0,
         title: Text(
           'Profil',
           style: GoogleFonts.inter(

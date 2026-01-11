@@ -18,6 +18,9 @@ class BerandaAppBar extends StatelessWidget implements PreferredSizeWidget {
       backgroundColor: colors.background,
       surfaceTintColor: Colors.transparent,
       elevation: 0,
+      automaticallyImplyLeading: false,
+      leading: const SizedBox.shrink(),
+      leadingWidth: 0,
       titleSpacing: 16.w,
       title: Text(
         'EZ Parking',
