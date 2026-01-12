@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:hrd_app/core/utils/snackbar_utils.dart';
+import 'package:hrd_app/features/profile/ketenagakerjaan/ketenagakerjaan_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:hrd_app/core/providers/auth_provider.dart';
 import 'package:hrd_app/core/theme/app_colors.dart';
@@ -51,6 +53,13 @@ class _ProfileDetailScreenState extends State<ProfileDetailScreen> {
       'Catatan Pelatihan',
     ];
 
+    final ketenagakerjaanSubItems = [
+      'Info Ketenagakerjaan',
+      'Disiplin',
+      'Penghargaan',
+      'Kontrol Dokumen',
+    ];
+
     _menuItems = [
       ProfileMenuItemModel(
         icon: Icons.person_outline,
@@ -75,13 +84,23 @@ class _ProfileDetailScreenState extends State<ProfileDetailScreen> {
           'Penghargaan',
           'Kontrol Dokumen',
         ],
-        onTap: () => _onMenuTap('Data Ketenagakerjaan'),
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => KetenagakerjaanScreen(
+                profile: _profile,
+                menuItems: ketenagakerjaanSubItems,
+              ),
+            ),
+          );
+        },
       ),
       ProfileMenuItemModel(
         icon: Icons.calendar_today_outlined,
         title: 'Daftar Kehadiran',
         subItems: ['Kehadiran Karyawan'],
-        onTap: () => _onMenuTap('Daftar Kehadiran'),
+        onTap: () => context.showMenuNotAvailable('Daftar Kehadiran'),
       ),
       ProfileMenuItemModel(
         icon: Icons.description_outlined,
@@ -93,33 +112,19 @@ class _ProfileDetailScreenState extends State<ProfileDetailScreen> {
           'Permintaan Khusus Kehadiran',
           'Permohonan Karyawan',
         ],
-        onTap: () => _onMenuTap('Permohonan Karyawan'),
+        onTap: () => context.showMenuNotAvailable('Permohonan Karyawan'),
       ),
       ProfileMenuItemModel(
         icon: Icons.beach_access_outlined,
         title: 'Jatah Cuti',
         subItems: ['Cuti Kehadiran Karyawan'],
-        onTap: () => _onMenuTap('Jatah Cuti'),
+        onTap: () => context.showMenuNotAvailable('Jatah Cuti'),
       ),
     ];
   }
 
-  void _onMenuTap(String menuName) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Menu "$menuName" belum tersedia'),
-        duration: const Duration(seconds: 1),
-      ),
-    );
-  }
-
   void _onQRTap() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('QR Code belum tersedia'),
-        duration: Duration(seconds: 1),
-      ),
-    );
+    context.showFeatureNotAvailable('QR Code');
   }
 
   void _onMoreMenuTap() {
@@ -153,12 +158,7 @@ class _ProfileDetailScreenState extends State<ProfileDetailScreen> {
   }
 
   void _onEditSocialMedia() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Edit media sosial belum tersedia'),
-        duration: Duration(seconds: 1),
-      ),
-    );
+    context.showFeatureNotAvailable('Edit media sosial');
   }
 
   @override

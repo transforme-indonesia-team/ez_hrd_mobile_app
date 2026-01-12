@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:hrd_app/features/profile/screens/pengaturan_personal_screen.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
 import 'package:hrd_app/core/providers/auth_provider.dart';
@@ -95,7 +96,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 icon: Icons.settings_outlined,
                 title: 'Pengaturan Personal',
                 onTap: () {
-                  // TODO: Navigate to settings
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const PengaturanPersonalScreen(),
+                    ),
+                  );
                 },
               ),
               MenuItemModel(
