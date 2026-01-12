@@ -1,65 +1,73 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:hrd_app/core/providers/auth_provider.dart';
 import 'package:hrd_app/core/theme/app_colors.dart';
-import 'package:shimmer/shimmer.dart';
+import 'package:hrd_app/data/models/user_model.dart';
+import 'package:provider/provider.dart';
 
-class InformasiDasarScreen extends StatefulWidget {
+class InformasiDasarScreen extends StatelessWidget {
   const InformasiDasarScreen({super.key});
 
-  @override
-  State<InformasiDasarScreen> createState() => _InformasiDasarScreenState();
-}
+  String _calculateAge(String? dateOfBirth) {
+    if (dateOfBirth == null || dateOfBirth.isEmpty) return '-';
 
-class _InformasiDasarScreenState extends State<InformasiDasarScreen> {
-  bool _isLoading = true;
-  Map<String, dynamic>? _data;
+    try {
+      final dob = DateTime.parse(dateOfBirth);
+      final now = DateTime.now();
 
-  @override
-  void initState() {
-    super.initState();
-    _fetchData();
+      int years = now.year - dob.year;
+      int months = now.month - dob.month;
+
+      if (months < 0 || (months == 0 && now.day < dob.day)) {
+        years--;
+        months += 12;
+      }
+      if (now.day < dob.day) {
+        months--;
+      }
+
+      if (years > 0 && months > 0) {
+        return '$years tahun $months bulan';
+      } else if (years > 0) {
+        return '$years tahun';
+      } else {
+        return '$months bulan';
+      }
+    } catch (e) {
+      return '-';
+    }
   }
 
-  Future<void> _fetchData() async {
-    // Simulasi Fetch API
-    await Future.delayed(const Duration(seconds: 2));
+  String _formatDate(String? dateOfBirth) {
+    if (dateOfBirth == null || dateOfBirth.isEmpty) return '-';
 
-    if (mounted) {
-      setState(() {
-        _isLoading = false;
-        // Dummy data sesuai screenshot
-        _data = {
-          // Data Ketenagakerjaan
-          'nama_pengguna': '90035857',
-
-          // Data Personal
-          'nama_lengkap': 'SARUL WIDODO',
-          'nama_lokal': 'Local First Name Local Middle Name Local Last Name',
-          'nama_panggilan': '-',
-          'tempat_lahir': 'JAKARTA',
-          'tanggal_lahir': '3 Juni 2007',
-          'usia': '18 tahun 7 bulan',
-          'agama': 'Islam',
-          'status_perkawinan': '-',
-          'jenis_kelamin': 'Pria',
-          'kewarganegaraan': 'Indonesia',
-          'dialek': '-',
-          'ras': '-',
-
-          // Dokumen Negara
-          'nomor_id': '3654123456781236',
-          'tanggal_berakhir_id': '-',
-          'nama_terdaftar_pajak': '-',
-          'nomor_berkas_pajak': '-',
-        };
-      });
+    try {
+      final dob = DateTime.parse(dateOfBirth);
+      const months = [
+        'Januari',
+        'Februari',
+        'Maret',
+        'April',
+        'Mei',
+        'Juni',
+        'Juli',
+        'Agustus',
+        'September',
+        'Oktober',
+        'November',
+        'Desember',
+      ];
+      return '${dob.day} ${months[dob.month - 1]} ${dob.year}';
+    } catch (e) {
+      return dateOfBirth;
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
+    final user = context.watch<AuthProvider>().user;
 
     return Scaffold(
       backgroundColor: colors.background,
@@ -81,15 +89,14 @@ class _InformasiDasarScreenState extends State<InformasiDasarScreen> {
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(16.w),
-        child: _isLoading ? _buildSkeletonLoading() : _buildContent(colors),
+        child: _buildContent(colors, user),
       ),
     );
   }
 
-  Widget _buildContent(dynamic colors) {
+  Widget _buildContent(dynamic colors, UserModel? user) {
     return Column(
       children: [
-        // SECTION 1: Data Ketenagakerjaan
         _buildSectionCard(
           colors,
           title: 'Data Ketenagakerjaan',
@@ -98,66 +105,50 @@ class _InformasiDasarScreenState extends State<InformasiDasarScreen> {
             _buildInfoRow(
               colors,
               'Nama Pengguna',
-              _data?['nama_pengguna'],
+              user?.username ?? user?.employeeCode,
               note: 'Nama Pengguna akan digunakan untuk login',
             ),
           ],
         ),
         SizedBox(height: 16.h),
-
-        // SECTION 2: Data Personal
         _buildSectionCard(
           colors,
           title: 'Data Personal',
           subtitle: 'Detail data pribadi Anda',
           childrenSpacing: 16.h,
           children: [
-            _buildInfoRow(colors, 'Nama Lengkap', _data?['nama_lengkap']),
-            _buildInfoRow(colors, 'Nama Lokal', _data?['nama_lokal']),
-            _buildInfoRow(colors, 'Nama panggilan', _data?['nama_panggilan']),
+            _buildInfoRow(colors, 'Nama Lengkap', user?.name),
             Divider(color: colors.divider, thickness: 1.h, height: 0),
-            _buildInfoRow(colors, 'Tempat Lahir', _data?['tempat_lahir']),
-            _buildInfoRow(colors, 'Tanggal Lahir', _data?['tanggal_lahir']),
-            _buildInfoRow(colors, 'Usia', _data?['usia']),
-            _buildInfoRow(colors, 'Agama', _data?['agama']),
+            _buildInfoRow(colors, 'Tempat Lahir', user?.placeOfBirth),
             _buildInfoRow(
               colors,
-              'Status Perkawinan',
-              _data?['status_perkawinan'],
+              'Tanggal Lahir',
+              _formatDate(user?.dateOfBirth),
             ),
-            _buildInfoRow(colors, 'Jenis Kelamin', _data?['jenis_kelamin']),
+            _buildInfoRow(colors, 'Usia', _calculateAge(user?.dateOfBirth)),
+            _buildInfoRow(colors, 'Agama', user?.religion),
+            _buildInfoRow(colors, 'Status Perkawinan', user?.maritalStatus),
+            _buildInfoRow(
+              colors,
+              'Jenis Kelamin',
+              user?.gender == 'MALE' ? 'Pria' : 'Wanita',
+            ),
             Divider(color: colors.divider, thickness: 1.h, height: 0),
-            _buildInfoRow(colors, 'Kewarganegaraan', _data?['kewarganegaraan']),
-            _buildInfoRow(colors, 'Dialek', _data?['dialek']),
-            _buildInfoRow(colors, 'Ras', _data?['ras']),
+            _buildInfoRow(colors, 'Kewarganegaraan', 'Indonesia'),
           ],
         ),
         SizedBox(height: 16.h),
-
-        // SECTION 3: Dokumen Negara
         _buildSectionCard(
           colors,
           title: 'Dokumen Negara',
           subtitle: 'Dokumen yang terkait dengan negara',
           childrenSpacing: 16.h,
           children: [
-            _buildInfoRow(colors, 'Nomor ID', _data?['nomor_id']),
-            _buildInfoRow(
-              colors,
-              'Tanggal Berakhir ID',
-              _data?['tanggal_berakhir_id'],
-            ),
+            _buildInfoRow(colors, 'Nomor ID', user?.nik),
+            _buildInfoRow(colors, 'Tanggal Berakhir ID', '-'),
             Divider(color: colors.divider, thickness: 1.h, height: 0),
-            _buildInfoRow(
-              colors,
-              'Nama Terdaftar Pajak',
-              _data?['nama_terdaftar_pajak'],
-            ),
-            _buildInfoRow(
-              colors,
-              'Nomor Berkas Pajak',
-              _data?['nomor_berkas_pajak'],
-            ),
+            _buildInfoRow(colors, 'Nama Terdaftar Pajak', '-'),
+            _buildInfoRow(colors, 'Nomor Berkas Pajak', '-'),
           ],
         ),
         SizedBox(height: 20.h),
@@ -248,91 +239,7 @@ class _InformasiDasarScreenState extends State<InformasiDasarScreen> {
             ),
           ),
         ],
-        // SizedBox(height: 8.h),
       ],
-    );
-  }
-
-  // --- SKELETON WIDGETS ---
-
-  Widget _buildSkeletonLoading() {
-    return Column(
-      children: [
-        _buildSkeletonCard(3),
-        SizedBox(height: 16.h),
-        _buildSkeletonCard(6),
-      ],
-    );
-  }
-
-  Widget _buildSkeletonCard(int itemCount) {
-    return Container(
-      width: double.infinity,
-      padding: EdgeInsets.all(16.w),
-      decoration: BoxDecoration(
-        color: context.colors.surface,
-        borderRadius: BorderRadius.circular(8.r),
-        border: Border.all(color: context.colors.divider),
-      ),
-      child: Shimmer.fromColors(
-        baseColor: context.colors.divider,
-        highlightColor: context.colors.surface,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Title Skeleton
-            Container(
-              width: 150.w,
-              height: 20.h,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(4.r),
-              ),
-            ),
-            SizedBox(height: 8.h),
-            // Subtitle Skeleton
-            Container(
-              width: 250.w,
-              height: 14.h,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(4.r),
-              ),
-            ),
-            SizedBox(height: 24.h),
-            // Items
-            ...List.generate(itemCount, (index) => _buildSkeletonItem()),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSkeletonItem() {
-    return Padding(
-      padding: EdgeInsets.only(bottom: 16.h),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            width: 100.w,
-            height: 14.h,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(4.r),
-            ),
-          ), // Label
-          SizedBox(height: 6.h),
-          Container(
-            width: double.infinity,
-            height: 16.h,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(4.r),
-            ),
-          ), // Value
-        ],
-      ),
     );
   }
 }

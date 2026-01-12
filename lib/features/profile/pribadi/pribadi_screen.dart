@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:hrd_app/core/config/env_config.dart';
 import 'package:hrd_app/core/theme/app_colors.dart';
+import 'package:hrd_app/core/utils/string_utils.dart';
 import 'package:hrd_app/features/profile/models/profile_detail_model.dart';
 import 'package:hrd_app/features/profile/pribadi/alamat_screen.dart';
 import 'package:hrd_app/features/profile/pribadi/daftar_bank_screen.dart';
@@ -32,24 +34,25 @@ class PribadiScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: colors.background,
       appBar: AppBar(
-        backgroundColor: colors.background,
-        elevation: 0,
+        // backgroundColor: colors.background,
+        elevation: 5,
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: colors.textPrimary),
           onPressed: () => Navigator.pop(context),
         ),
-        // Menampilkan nama user dari data profile yang dikirim
         title: Row(
           children: [
             CircleAvatar(
               radius: 16,
               backgroundColor: colors.divider,
               backgroundImage: profile.avatarUrl != null
-                  ? NetworkImage(profile.avatarUrl!)
+                  ? NetworkImage(
+                      '${EnvConfig.imageBaseUrl}${profile.avatarUrl!}',
+                    )
                   : null,
               child: profile.avatarUrl == null
                   ? Text(
-                      profile.initials,
+                      StringUtils.getInitials(profile.name),
                       style: GoogleFonts.inter(
                         fontSize: 12.sp,
                         color: colors.textSecondary,
@@ -85,7 +88,6 @@ class PribadiScreen extends StatelessWidget {
         itemBuilder: (context, index) {
           final itemTitle = menuItems[index];
 
-          // Mapping simple icon berdasarkan keyword judul menu
           IconData icon = Icons.circle_outlined;
           if (itemTitle.contains('Informasi')) {
             icon = Icons.person_outline;

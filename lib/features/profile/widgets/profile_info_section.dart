@@ -7,14 +7,14 @@ import 'package:hrd_app/features/profile/models/profile_detail_model.dart';
 
 class ProfileInfoSection extends StatelessWidget {
   final String? company;
-  final String? location;
+  final String? organizationName;
   final List<SocialMediaLink> socialMediaLinks;
   final VoidCallback? onEditSocialMedia;
 
   const ProfileInfoSection({
     super.key,
     this.company,
-    this.location,
+    this.organizationName,
     this.socialMediaLinks = const [],
     this.onEditSocialMedia,
   });
@@ -41,13 +41,13 @@ class ProfileInfoSection extends StatelessWidget {
           _buildCompanyInfo(colors),
 
           SizedBox(height: 12.h),
-          Divider(color: colors.divider, height: 1),
-          SizedBox(height: 12.h),
+          // Divider(color: colors.divider, height: 1),
+          // SizedBox(height: 12.h),
 
           // Media Sosial Section
-          _buildSectionTitle('MEDIA SOSIAL', colors),
-          SizedBox(height: 12.h),
-          _buildSocialMediaIcons(colors),
+          // _buildSectionTitle('MEDIA SOSIAL', colors),
+          // SizedBox(height: 12.h),
+          // _buildSocialMediaIcons(colors),
         ],
       ),
     );
@@ -85,7 +85,7 @@ class ProfileInfoSection extends StatelessWidget {
               ),
               SizedBox(height: 2.h),
               Text(
-                location ?? '-',
+                organizationName ?? '-',
                 style: GoogleFonts.inter(
                   fontSize: 12.sp,
                   fontWeight: FontWeight.w600,
@@ -99,44 +99,44 @@ class ProfileInfoSection extends StatelessWidget {
     );
   }
 
-  Widget _buildSocialMediaIcons(dynamic colors) {
-    return Row(
-      children: [
-        // Facebook
-        _buildSocialIcon(Icons.facebook_outlined, colors),
-        SizedBox(width: 10.w),
-        // X (Twitter)
-        _buildSocialIcon(Icons.close, colors),
-        SizedBox(width: 10.w),
-        // Instagram
-        _buildSocialIcon(Icons.camera_alt_outlined, colors),
-        SizedBox(width: 10.w),
-        // WhatsApp
-        _buildSocialIcon(Icons.message_outlined, colors),
-        SizedBox(width: 10.w),
-        // LinkedIn
-        Icon(Icons.work_outline, size: 20.sp, color: colors.textSecondary),
+  // Widget _buildSocialMediaIcons(dynamic colors) {
+  //   return Row(
+  //     children: [
+  //       // Facebook
+  //       _buildSocialIcon(Icons.facebook_outlined, colors),
+  //       SizedBox(width: 10.w),
+  //       // X (Twitter)
+  //       _buildSocialIcon(Icons.close, colors),
+  //       SizedBox(width: 10.w),
+  //       // Instagram
+  //       _buildSocialIcon(Icons.camera_alt_outlined, colors),
+  //       SizedBox(width: 10.w),
+  //       // WhatsApp
+  //       _buildSocialIcon(Icons.message_outlined, colors),
+  //       SizedBox(width: 10.w),
+  //       // LinkedIn
+  //       Icon(Icons.work_outline, size: 20.sp, color: colors.textSecondary),
 
-        const Spacer(),
+  //       const Spacer(),
 
-        // Edit button
-        InkWell(
-          onTap: onEditSocialMedia,
-          borderRadius: BorderRadius.circular(4.r),
-          child: Padding(
-            padding: EdgeInsets.all(4.w),
-            child: Icon(
-              Icons.edit_outlined,
-              size: 16.sp,
-              color: ColorPalette.gray400,
-            ),
-          ),
-        ),
-      ],
-    );
-  }
+  //       // Edit button
+  //       InkWell(
+  //         onTap: onEditSocialMedia,
+  //         borderRadius: BorderRadius.circular(4.r),
+  //         child: Padding(
+  //           padding: EdgeInsets.all(4.w),
+  //           child: Icon(
+  //             Icons.edit_outlined,
+  //             size: 16.sp,
+  //             color: ColorPalette.gray400,
+  //           ),
+  //         ),
+  //       ),
+  //     ],
+  //   );
+  // }
 
-  Widget _buildSocialIcon(IconData icon, dynamic colors) {
-    return Icon(icon, size: 20.sp, color: colors.textSecondary);
-  }
+  // Widget _buildSocialIcon(IconData icon, dynamic colors) {
+  //   return Icon(icon, size: 20.sp, color: colors.textSecondary);
+  // }
 }

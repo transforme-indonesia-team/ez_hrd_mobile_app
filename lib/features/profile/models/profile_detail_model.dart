@@ -3,21 +3,21 @@ import 'package:hrd_app/data/models/user_model.dart';
 
 /// Model untuk data profil karyawan
 class ProfileDetailModel {
-  final String employeeId;
+  final String? username;
   final String name;
   final String role;
   final String? avatarUrl;
   final String? company;
-  final String? location;
+  final String? organizationName;
   final List<SocialMediaLink> socialMediaLinks;
 
   const ProfileDetailModel({
-    required this.employeeId,
+    this.username,
     required this.name,
     required this.role,
     this.avatarUrl,
     this.company,
-    this.location,
+    this.organizationName,
     this.socialMediaLinks = const [],
   });
 
@@ -25,28 +25,19 @@ class ProfileDetailModel {
   factory ProfileDetailModel.fromUser(UserModel? user) {
     if (user == null) {
       return const ProfileDetailModel(
-        employeeId: '-',
+        username: '-',
         name: 'User',
         role: 'Employee',
       );
     }
     return ProfileDetailModel(
-      employeeId: user.employeeId ?? '-',
+      username: user.username ?? '-',
       name: user.name,
       role: user.role ?? 'Employee',
       avatarUrl: user.avatarUrl,
       company: user.company,
-      location: user.location,
+      organizationName: user.position,
     );
-  }
-
-  /// Get initials dari nama untuk avatar
-  String get initials {
-    final parts = name.split(' ');
-    if (parts.length >= 2) {
-      return '${parts[0][0]}${parts[1][0]}'.toUpperCase();
-    }
-    return name.isNotEmpty ? name[0].toUpperCase() : '';
   }
 }
 

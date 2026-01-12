@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:hrd_app/core/config/env_config.dart';
 import 'package:hrd_app/core/theme/app_colors.dart';
-import 'package:hrd_app/core/theme/color_palette.dart';
+import 'package:hrd_app/core/utils/string_utils.dart';
+// import 'package:hrd_app/core/theme/color_palette.dart';
 import 'package:hrd_app/features/profile/models/profile_detail_model.dart';
 
-/// Header widget untuk profile detail
-/// Menampilkan avatar, nama, role, employee ID, dan action buttons
 class ProfileHeader extends StatelessWidget {
   final ProfileDetailModel profile;
   final VoidCallback? onQRTap;
@@ -33,11 +33,8 @@ class ProfileHeader extends StatelessWidget {
       ),
       child: Row(
         children: [
-          // Avatar
           _buildAvatar(colors),
           SizedBox(width: 16.w),
-
-          // Name, Role, Employee ID
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -61,7 +58,7 @@ class ProfileHeader extends StatelessWidget {
                 ),
                 SizedBox(height: 2.h),
                 Text(
-                  profile.employeeId,
+                  profile.username!,
                   style: GoogleFonts.inter(
                     fontSize: 12.sp,
                     color: colors.textSecondary,
@@ -70,9 +67,7 @@ class ProfileHeader extends StatelessWidget {
               ],
             ),
           ),
-
-          // Action buttons
-          _buildActionButtons(colors),
+          // _buildActionButtons(colors),
         ],
       ),
     );
@@ -90,7 +85,7 @@ class ProfileHeader extends StatelessWidget {
       child: profile.avatarUrl != null
           ? ClipOval(
               child: Image.network(
-                profile.avatarUrl!,
+                '${EnvConfig.imageBaseUrl}${profile.avatarUrl!}',
                 fit: BoxFit.cover,
                 errorBuilder: (_, __, ___) => _buildInitials(colors),
               ),
@@ -102,7 +97,7 @@ class ProfileHeader extends StatelessWidget {
   Widget _buildInitials(dynamic colors) {
     return Center(
       child: Text(
-        profile.initials,
+        StringUtils.getInitials(profile.name),
         style: GoogleFonts.inter(
           fontSize: 20.sp,
           fontWeight: FontWeight.w600,
@@ -112,42 +107,42 @@ class ProfileHeader extends StatelessWidget {
     );
   }
 
-  Widget _buildActionButtons(dynamic colors) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        // _buildActionButton(
-        //   icon: Icons.qr_code_2_outlined,
-        //   colors: colors,
-        //   onTap: onQRTap,
-        // ),
-        SizedBox(width: 8.w),
-        // More menu button
-        _buildActionButton(
-          icon: Icons.more_vert,
-          colors: colors,
-          onTap: onMenuTap,
-        ),
-      ],
-    );
-  }
+  // Widget _buildActionButtons(dynamic colors) {
+  //   return Row(
+  //     mainAxisSize: MainAxisSize.min,
+  //     children: [
+  //       // _buildActionButton(
+  //       //   icon: Icons.qr_code_2_outlined,
+  //       //   colors: colors,
+  //       //   onTap: onQRTap,
+  //       // ),
+  //       SizedBox(width: 8.w),
+  //       // More menu button
+  //       _buildActionButton(
+  //         icon: Icons.more_vert,
+  //         colors: colors,
+  //         onTap: onMenuTap,
+  //       ),
+  //     ],
+  //   );
+  // }
 
-  Widget _buildActionButton({
-    required IconData icon,
-    required dynamic colors,
-    VoidCallback? onTap,
-  }) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(8.r),
-      child: Container(
-        padding: EdgeInsets.all(4.w),
-        decoration: BoxDecoration(
-          border: Border.all(color: ColorPalette.slate500),
-          borderRadius: BorderRadius.circular(4.r),
-        ),
-        child: Icon(icon, size: 20.sp, color: colors.primaryBlue),
-      ),
-    );
-  }
+  // Widget _buildActionButton({
+  //   required IconData icon,
+  //   required dynamic colors,
+  //   VoidCallback? onTap,
+  // }) {
+  //   return InkWell(
+  //     onTap: onTap,
+  //     borderRadius: BorderRadius.circular(8.r),
+  //     child: Container(
+  //       padding: EdgeInsets.all(4.w),
+  //       decoration: BoxDecoration(
+  //         border: Border.all(color: ColorPalette.slate500),
+  //         borderRadius: BorderRadius.circular(4.r),
+  //       ),
+  //       child: Icon(icon, size: 20.sp, color: colors.primaryBlue),
+  //     ),
+  //   );
+  // }
 }

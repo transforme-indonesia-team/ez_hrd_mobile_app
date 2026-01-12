@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hrd_app/core/theme/app_colors.dart';
 import 'package:hrd_app/core/utils/snackbar_utils.dart';
+import 'package:hrd_app/core/utils/string_utils.dart';
 import 'package:hrd_app/features/profile/ketenagakerjaan/disiplin_screen.dart';
 import 'package:hrd_app/features/profile/ketenagakerjaan/info_ketenagakerjaan_screen.dart';
 import 'package:hrd_app/features/profile/models/profile_detail_model.dart';
@@ -51,7 +52,7 @@ class KetenagakerjaanScreen extends StatelessWidget {
                   : null,
               child: profile.avatarUrl == null
                   ? Text(
-                      profile.initials,
+                      StringUtils.getInitials(profile.name),
                       style: GoogleFonts.inter(
                         fontSize: 12.sp,
                         color: colors.textSecondary,

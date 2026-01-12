@@ -194,7 +194,7 @@ class _ProfileDetailScreenState extends State<ProfileDetailScreen> {
 
             ProfileInfoSection(
               company: _profile.company,
-              location: _profile.location,
+              organizationName: _profile.organizationName,
               socialMediaLinks: _profile.socialMediaLinks,
               onEditSocialMedia: _onEditSocialMedia,
             ),

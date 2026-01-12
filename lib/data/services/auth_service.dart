@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+// import 'package:flutter/cupertino.dart';
 import 'package:hrd_app/core/config/env_config.dart';
 import 'package:hrd_app/core/utils/crypto_utils.dart';
 
@@ -31,7 +32,7 @@ class AuthService {
       final encryptedPayload = _crypto.encryptPayload(payload);
 
       final response = await _dio.post(
-        '/api/user/login',
+        '/apps/user/login',
         data: {'payload': encryptedPayload},
       );
 
@@ -46,6 +47,17 @@ class AuthService {
 
         if (decryptedData == null) {
           throw Exception('Gagal mendekripsi response');
+        }
+
+        final original = decryptedData['original'] as Map<String, dynamic>?;
+        // debugPrint('DecryptedData: ${original.toString()}');
+
+        if (original == null) {
+          throw Exception('Response tidak valid');
+        }
+
+        if (original['status'] != true) {
+          throw Exception(original['message'] ?? 'Login gagal');
         }
 
         return decryptedData;

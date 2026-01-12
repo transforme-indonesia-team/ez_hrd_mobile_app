@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:hrd_app/core/config/env_config.dart';
 import 'package:hrd_app/features/profile/screens/pengaturan_personal_screen.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
@@ -43,6 +44,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     // Get user data from AuthProvider
     final authProvider = context.watch<AuthProvider>();
     final user = authProvider.user;
+    debugPrint('DataUserr: ${user?.toJson()}');
     final userName = user?.name ?? 'User';
     final userRole = user?.role ?? 'Employee';
 
@@ -75,7 +77,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         child: Column(
           children: [
             // User Header
-            _buildUserHeader(colors, userName, userRole),
+            _buildUserHeader(colors, userName, userRole, user?.avatarUrl),
             const SizedBox(height: 16),
 
             // Menu Items
@@ -126,7 +128,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _buildUserHeader(dynamic colors, String userName, String userRole) {
+  Widget _buildUserHeader(
+    dynamic colors,
+    String userName,
+    String userRole,
+    String? avatarUrl,
+  ) {
     return Container(
       padding: const EdgeInsets.all(16),
       child: Row(
@@ -140,15 +147,37 @@ class _ProfileScreenState extends State<ProfileScreen> {
               shape: BoxShape.circle,
               border: Border.all(color: colors.divider, width: 2),
             ),
-            child: Center(
-              child: Text(
-                _getInitials(userName),
-                style: GoogleFonts.inter(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w600,
-                  color: colors.textSecondary,
-                ),
-              ),
+            child: ClipOval(
+              child: avatarUrl != null && avatarUrl.isNotEmpty
+                  ? Image.network(
+                      '${EnvConfig.imageBaseUrl}$avatarUrl',
+                      fit: BoxFit.cover,
+                      width: 56,
+                      height: 56,
+                      errorBuilder: (context, error, stackTrace) {
+                        // Fallback ke initials kalau image gagal
+                        return Center(
+                          child: Text(
+                            _getInitials(userName),
+                            style: GoogleFonts.inter(
+                              fontSize: 20,
+                              fontWeight: FontWeight.w600,
+                              color: colors.textSecondary,
+                            ),
+                          ),
+                        );
+                      },
+                    )
+                  : Center(
+                      child: Text(
+                        _getInitials(userName),
+                        style: GoogleFonts.inter(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w600,
+                          color: colors.textSecondary,
+                        ),
+                      ),
+                    ),
             ),
           ),
           const SizedBox(width: 16),

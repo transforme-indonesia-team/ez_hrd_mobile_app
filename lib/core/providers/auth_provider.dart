@@ -3,12 +3,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:hrd_app/data/models/user_model.dart';
 import 'package:hrd_app/data/services/auth_service.dart';
 
-/// Provider untuk mengelola state autentikasi user secara global.
-/// 
-/// Menyimpan data user yang login dan menyediakan method untuk:
-/// - Login/Logout
-/// - Cek status autentikasi
-/// - Persist user data dengan SharedPreferences (remember me)
 class AuthProvider extends ChangeNotifier {
   static const String _userKey = 'saved_user';
   static const String _rememberMeKey = 'remember_me';
@@ -23,7 +17,6 @@ class AuthProvider extends ChangeNotifier {
   bool get isAuthenticated => _user != null;
   bool get isInitialized => _isInitialized;
 
-  /// Initialize provider - load saved user if remember me was enabled
   Future<void> initialize() async {
     if (_isInitialized) return;
 
@@ -45,7 +38,6 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Login dengan username dan password
   Future<void> login({
     required String username,
     required String password,
@@ -55,41 +47,14 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      await Future.delayed(const Duration(seconds: 1));
-
-      final dummyResponse = {
-        'id': 1,
-        'name': 'SARUL WIDODO',
-        'email': 'sarul@example.com',
-        'token': 'dummy_token_dev_123',
-        'role': 'CASHIER',
-        'company': 'EZ Parking',
-        'location': 'LOKASI BARU PARKIR',
-        'employee_id': '90035857',
-        'avatar_url': null,
-      };
-
-      _user = UserModel.fromJson(dummyResponse);
-
-      if (rememberMe) {
-        await _saveUser();
-      }
-
-      _isLoading = false;
-      notifyListeners();
-
-      return;
-
       final authService = AuthService();
       final response = await authService.login(
         username: username,
         password: password,
       );
 
-      // Parse response ke UserModel
       _user = UserModel.fromJson(response);
 
-      // Simpan user jika remember me aktif
       if (rememberMe) {
         await _saveUser();
       }
@@ -103,7 +68,6 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
-  /// Set user langsung (untuk OAuth atau token-based auth)
   void setUser(UserModel user, {bool rememberMe = false}) {
     _user = user;
     if (rememberMe) {
