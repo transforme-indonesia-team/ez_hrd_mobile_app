@@ -1,77 +1,49 @@
-import 'package:dio/dio.dart';
-// import 'package:flutter/cupertino.dart';
-import 'package:hrd_app/core/config/env_config.dart';
-import 'package:hrd_app/core/utils/crypto_utils.dart';
+import 'package:hrd_app/data/services/base_api_service.dart';
 
 class AuthService {
   static final AuthService _instance = AuthService._internal();
   factory AuthService() => _instance;
   AuthService._internal();
 
-  final Dio _dio = Dio(
-    BaseOptions(
-      baseUrl: EnvConfig.baseUrl,
-      connectTimeout: const Duration(seconds: 10),
-      receiveTimeout: const Duration(seconds: 10),
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-      },
-    ),
-  );
-
-  final _crypto = CryptoUtils();
+  final _api = BaseApiService();
 
   Future<Map<String, dynamic>> login({
     required String username,
     required String password,
   }) async {
-    try {
-      final payload = {'username': username, 'password': password};
+    return _api.post('/apps/user/login', {
+      'username': username,
+      'password': password,
+    }, errorMessage: 'Login gagal');
+  }
 
-      final encryptedPayload = _crypto.encryptPayload(payload);
+  Future<Map<String, dynamic>> forgotPassword({
+    required String usernameOrEmail,
+  }) async {
+    return _api.post('/apps/user/forget-password', {
+      'username_or_email': usernameOrEmail,
+    }, errorMessage: 'Gagal mengirim permintaan');
+  }
 
-      final response = await _dio.post(
-        '/apps/user/login',
-        data: {'payload': encryptedPayload},
-      );
+  Future<Map<String, dynamic>> verifyOtp({
+    required String usernameOrEmail,
+    required String otp,
+  }) async {
+    return _api.post('/apps/user/verify-otp', {
+      'username_or_email': usernameOrEmail,
+      'otp': otp,
+    }, errorMessage: 'OTP tidak valid');
+  }
 
-      if (response.statusCode == 200) {
-        final encryptedResponse = response.data['response'] as String?;
-
-        if (encryptedResponse == null) {
-          throw Exception('Response tidak memiliki data terenkripsi');
-        }
-
-        final decryptedData = _crypto.decryptPayload(encryptedResponse);
-
-        if (decryptedData == null) {
-          throw Exception('Gagal mendekripsi response');
-        }
-
-        final original = decryptedData['original'] as Map<String, dynamic>?;
-        // debugPrint('DecryptedData: ${original.toString()}');
-
-        if (original == null) {
-          throw Exception('Response tidak valid');
-        }
-
-        if (original['status'] != true) {
-          throw Exception(original['message'] ?? 'Login gagal');
-        }
-
-        return decryptedData;
-      } else {
-        throw Exception('Login gagal: ${response.statusMessage}');
-      }
-    } on DioException catch (e) {
-      if (e.response != null) {
-        throw Exception(e.response?.data['message'] ?? 'Login gagal');
-      } else {
-        throw Exception('Tidak dapat terhubung ke server');
-      }
-    } catch (e) {
-      rethrow;
-    }
+  Future<Map<String, dynamic>> resetPassword({
+    required String tokenReset,
+    required String newPassword,
+    required String newPasswordConfirmation,
+  }) async {
+    return _api.post('/apps/user/reset-password', {
+      'token_reset': tokenReset,
+      'new_password': newPassword,
+      'new_password_confirmation': newPasswordConfirmation,
+    }, errorMessage: 'Gagal reset password');
   }
 }

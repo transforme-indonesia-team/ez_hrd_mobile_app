@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hrd_app/core/theme/app_colors.dart';
 import 'package:hrd_app/core/utils/validators.dart';
+import 'package:hrd_app/data/services/auth_service.dart';
 import 'package:hrd_app/routes/app_routes.dart';
 
 class ForgotPasswordForm extends StatefulWidget {
@@ -31,38 +32,41 @@ class _ForgotPasswordFormState extends State<ForgotPasswordForm> {
   }
 
   void _handleSubmit() async {
-    if (_formKey.currentState!.validate()) {
-      setState(() {
-        _isLoading = true;
-      });
+    if (!_formKey.currentState!.validate()) return;
 
-      try {
-        await Future.delayed(const Duration(seconds: 2));
+    setState(() {
+      _isLoading = true;
+    });
 
-        if (mounted) {
-          setState(() {
-            _isLoading = false;
-          });
+    try {
+      final authService = AuthService();
+      await authService.forgotPassword(
+        usernameOrEmail: _usernameOrEmailController.text,
+      );
 
-          Navigator.pushReplacementNamed(
-            context,
-            AppRoutes.emailSent,
-            arguments: {'email': _usernameOrEmailController.text},
-          );
-        }
-      } catch (e) {
-        if (mounted) {
-          setState(() {
-            _isLoading = false;
-          });
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
 
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(e.toString().replaceAll('Exception: ', '')),
-              backgroundColor: Colors.red,
-            ),
-          );
-        }
+        Navigator.pushReplacementNamed(
+          context,
+          AppRoutes.otpVerification,
+          arguments: {'username_or_email': _usernameOrEmailController.text},
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(e.toString().replaceAll('Exception: ', '')),
+            backgroundColor: Colors.red,
+          ),
+        );
       }
     }
   }
@@ -173,7 +177,9 @@ class _ForgotPasswordFormState extends State<ForgotPasswordForm> {
               controller: _usernameOrEmailController,
               keyboardType: TextInputType.emailAddress,
               autovalidateMode: AutovalidateMode.onUserInteraction,
-              maxLength: 20,
+              maxLength: 50,
+              textInputAction: TextInputAction.done,
+              onFieldSubmitted: (_) => _handleSubmit(),
               style: GoogleFonts.inter(fontSize: 14, color: colors.textPrimary),
               decoration: _buildInputDecoration(
                 hintText: 'Masukkan Nama Pengguna atau Email',
@@ -245,7 +251,7 @@ class _ForgotPasswordFormState extends State<ForgotPasswordForm> {
                             ),
                           )
                         : Text(
-                            'Kirim',
+                            'Kirim OTP',
                             style: GoogleFonts.inter(
                               fontSize: 16,
                               fontWeight: FontWeight.w600,

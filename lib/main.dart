@@ -19,7 +19,6 @@ void main() async {
     // ignore: empty_catches
   } catch (e) {}
 
-  // Initialize providers
   final themeProvider = ThemeProvider();
   await themeProvider.initialize();
 
@@ -55,9 +54,6 @@ class MyApp extends StatelessWidget {
               theme: AppTheme.lightTheme,
               darkTheme: AppTheme.darkTheme,
               themeMode: themeProvider.themeMode,
-              // Logic Auto-Login:
-              // Jika sudah login (isAuthenticated = true) -> ke Dashboard
-              // Jika belum -> ke Login (initialRoute)
               initialRoute: authProvider.isAuthenticated
                   ? AppRoutes.dashboard
                   : AppRoutes.initialRoute,

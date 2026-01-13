@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:hrd_app/features/auth/screens/login_screen.dart';
 import 'package:hrd_app/features/auth/screens/forgot_password_screen.dart';
-import 'package:hrd_app/features/auth/screens/email_sent_screen.dart';
+import 'package:hrd_app/features/auth/screens/otp_verification_screen.dart';
+import 'package:hrd_app/features/auth/screens/reset_password_screen.dart';
 import 'package:hrd_app/features/dashboard/screens/dashboard_screen.dart';
 import 'package:hrd_app/features/profile/screens/profile_detail_screen.dart';
 
@@ -11,7 +12,8 @@ class AppRoutes {
   static const String home = '/';
   static const String login = '/login';
   static const String forgotPassword = '/forgot-password';
-  static const String emailSent = '/email-sent';
+  static const String otpVerification = '/otp-verification';
+  static const String resetPassword = '/reset-password';
   static const String dashboard = '/dashboard';
   static const String profileDetail = '/profile-detail';
 
@@ -20,7 +22,6 @@ class AppRoutes {
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
     switch (settings.name) {
       case home:
-        // Fallback root route to dashboard
         return MaterialPageRoute(
           builder: (context) => const DashboardScreen(),
           settings: settings,
@@ -38,11 +39,20 @@ class AppRoutes {
           settings: settings,
         );
 
-      case emailSent:
+      case otpVerification:
         final args = settings.arguments as Map<String, dynamic>?;
-        final email = args?['email'] as String? ?? '';
+        final usernameOrEmail = args?['username_or_email'] as String? ?? '';
         return MaterialPageRoute(
-          builder: (context) => EmailSentScreen(email: email),
+          builder: (context) =>
+              OtpVerificationScreen(usernameOrEmail: usernameOrEmail),
+          settings: settings,
+        );
+
+      case resetPassword:
+        final args = settings.arguments as Map<String, dynamic>?;
+        final tokenReset = args?['token_reset'] as String? ?? '';
+        return MaterialPageRoute(
+          builder: (context) => ResetPasswordScreen(tokenReset: tokenReset),
           settings: settings,
         );
 
