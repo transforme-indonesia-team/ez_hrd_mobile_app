@@ -25,6 +25,7 @@ class BerandaScreen extends StatelessWidget {
     final authProvider = context.watch<AuthProvider>();
     final user = authProvider.user;
     final userName = user?.name ?? 'User';
+    final userAvatar = user?.avatarUrl;
     final userPosition = user?.role ?? 'Employee';
 
     return Scaffold(
@@ -35,6 +36,7 @@ class BerandaScreen extends StatelessWidget {
           children: [
             UserProfileHeader(
               name: userName,
+              avatarUrl: userAvatar,
               position: userPosition,
               onNotificationTap: () {
                 Navigator.push(
