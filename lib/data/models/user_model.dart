@@ -22,6 +22,14 @@ class UserModel {
   final String? gender;
   final String? maritalStatus;
   final String? religion;
+  final String? nationality;
+  final String? employeeAddress;
+  final String? domicileAddress;
+  final String? provinceName;
+  final String? cityName;
+  final String? subdistrictName;
+  final String? postalName;
+  final String? postalCode;
 
   const UserModel({
     required this.id,
@@ -44,6 +52,14 @@ class UserModel {
     this.gender,
     this.maritalStatus,
     this.religion,
+    this.nationality,
+    this.employeeAddress,
+    this.domicileAddress,
+    this.provinceName,
+    this.cityName,
+    this.subdistrictName,
+    this.postalName,
+    this.postalCode,
   });
 
   factory UserModel.fromApiResponse(Map<String, dynamic> json) {
@@ -85,6 +101,14 @@ class UserModel {
       gender: employee['gender'],
       maritalStatus: employee['marital_status'],
       religion: employee['employee_religion_name'],
+      nationality: employee['employee_nationality_name'],
+      employeeAddress: employee['employee_address'],
+      domicileAddress: employee['employee_domicile_address'],
+      provinceName: employee['province_name'],
+      cityName: employee['city_name'],
+      subdistrictName: employee['subdistrict_name'],
+      postalName: employee['postal_name'],
+      postalCode: employee['postal_code']?.toString(),
     );
   }
 
@@ -117,6 +141,14 @@ class UserModel {
       gender: json['gender'],
       maritalStatus: json['marital_status'],
       religion: json['religion'],
+      nationality: json['nationality'],
+      employeeAddress: json['employee_address'],
+      domicileAddress: json['domicile_address'],
+      provinceName: json['province_name'],
+      cityName: json['city_name'],
+      subdistrictName: json['subdistrict_name'],
+      postalName: json['postal_name'],
+      postalCode: json['postal_code']?.toString(),
     );
   }
 
@@ -142,6 +174,14 @@ class UserModel {
       'gender': gender,
       'marital_status': maritalStatus,
       'religion': religion,
+      'nationality': nationality,
+      'employee_address': employeeAddress,
+      'domicile_address': domicileAddress,
+      'province_name': provinceName,
+      'city_name': cityName,
+      'subdistrict_name': subdistrictName,
+      'postal_name': postalName,
+      'postal_code': postalCode,
     };
   }
 
@@ -175,6 +215,14 @@ class UserModel {
     String? gender,
     String? maritalStatus,
     String? religion,
+    String? nationality,
+    String? employeeAddress,
+    String? domicileAddress,
+    String? provinceName,
+    String? cityName,
+    String? subdistrictName,
+    String? postalName,
+    String? postalCode,
   }) {
     return UserModel(
       id: id ?? this.id,
@@ -197,6 +245,14 @@ class UserModel {
       gender: gender ?? this.gender,
       maritalStatus: maritalStatus ?? this.maritalStatus,
       religion: religion ?? this.religion,
+      nationality: nationality ?? this.nationality,
+      employeeAddress: employeeAddress ?? this.employeeAddress,
+      domicileAddress: domicileAddress ?? this.domicileAddress,
+      provinceName: provinceName ?? this.provinceName,
+      cityName: cityName ?? this.cityName,
+      subdistrictName: subdistrictName ?? this.subdistrictName,
+      postalName: postalName ?? this.postalName,
+      postalCode: postalCode ?? this.postalCode,
     );
   }
 }

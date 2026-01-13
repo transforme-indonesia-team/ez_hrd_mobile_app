@@ -1,43 +1,69 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:hrd_app/core/providers/auth_provider.dart';
 import 'package:hrd_app/core/theme/app_colors.dart';
-import 'package:shimmer/shimmer.dart';
+import 'package:hrd_app/data/models/user_model.dart';
+import 'package:provider/provider.dart';
 
-class AlamatScreen extends StatefulWidget {
+class AlamatScreen extends StatelessWidget {
   const AlamatScreen({super.key});
 
-  @override
-  State<AlamatScreen> createState() => _AlamatScreenState();
-}
+  /// Mengubah text UPPERCASE menjadi Title Case
+  /// Contoh: "KAB. BOALEMO" → "Kab. Boalemo"
+  String _toTitleCase(String? text) {
+    if (text == null || text.isEmpty) return '';
 
-class _AlamatScreenState extends State<AlamatScreen> {
-  bool _isLoading = true;
-  Map<String, dynamic>? _data;
-
-  @override
-  void initState() {
-    super.initState();
-    _fetchData();
+    return text
+        .split(' ')
+        .map((word) {
+          if (word.isEmpty) return word;
+          // Handle kata dengan titik seperti "KAB." → "Kab."
+          return word[0].toUpperCase() + word.substring(1).toLowerCase();
+        })
+        .join(' ');
   }
 
-  Future<void> _fetchData() async {
-    await Future.delayed(const Duration(seconds: 2));
+  /// Format alamat lengkap dari data user
+  /// Format: {alamat}, Kecamatan {kecamatan}, {kota}, {provinsi} {kodepos}
+  String _formatFullAddress({
+    String? address,
+    String? subdistrict,
+    String? city,
+    String? province,
+    String? postalCode,
+  }) {
+    final parts = <String>[];
 
-    if (mounted) {
-      setState(() {
-        _isLoading = false;
-        _data = {
-          'alamat_ktp':
-              'Jl. Cideng Barat No.87C, RT.4/RW.1, Cideng, Kecamatan Gambir, Kota Jakarta Pusat, Daerah Khusus Ibukota Jakarta 10150',
-        };
-      });
+    if (address != null && address.isNotEmpty) {
+      parts.add(_toTitleCase(address));
     }
+
+    if (subdistrict != null && subdistrict.isNotEmpty) {
+      parts.add('Kecamatan ${_toTitleCase(subdistrict)}');
+    }
+
+    if (city != null && city.isNotEmpty) {
+      parts.add(_toTitleCase(city));
+    }
+
+    if (province != null && province.isNotEmpty) {
+      if (postalCode != null && postalCode.isNotEmpty) {
+        parts.add('${_toTitleCase(province)} $postalCode');
+      } else {
+        parts.add(_toTitleCase(province));
+      }
+    } else if (postalCode != null && postalCode.isNotEmpty) {
+      parts.add(postalCode);
+    }
+
+    return parts.isNotEmpty ? parts.join(', ') : '-';
   }
 
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
+    final user = context.watch<AuthProvider>().user;
 
     return Scaffold(
       backgroundColor: colors.background,
@@ -59,20 +85,39 @@ class _AlamatScreenState extends State<AlamatScreen> {
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(16.w),
-        child: _isLoading
-            ? _buildSkeletonLoading(colors)
-            : _buildContent(colors),
+        child: _buildContent(colors, user),
       ),
     );
   }
 
-  Widget _buildContent(dynamic colors) {
+  Widget _buildContent(dynamic colors, UserModel? user) {
+    // Format alamat KTP
+    final alamatKtp = _formatFullAddress(
+      address: user?.employeeAddress,
+      subdistrict: user?.subdistrictName,
+      city: user?.cityName,
+      province: user?.provinceName,
+      postalCode: user?.postalCode,
+    );
+
+    // Format alamat Domisili - langsung ambil value saja
+    final alamatDomisili =
+        user?.domicileAddress != null && user!.domicileAddress!.isNotEmpty
+        ? _toTitleCase(user.domicileAddress)
+        : '-';
+
     return Column(
       children: [
         _buildAddressCard(
           colors,
           title: 'Alamat Kartu Identitas',
-          address: _data?['alamat_ktp'] ?? '-',
+          address: alamatKtp,
+        ),
+        SizedBox(height: 16.h),
+        _buildAddressCard(
+          colors,
+          title: 'Alamat Domisili',
+          address: alamatDomisili,
         ),
       ],
     );
@@ -126,74 +171,6 @@ class _AlamatScreenState extends State<AlamatScreen> {
             ],
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildSkeletonLoading(dynamic colors) {
-    return Container(
-      width: double.infinity,
-      padding: EdgeInsets.all(16.w),
-      decoration: BoxDecoration(
-        color: colors.surface,
-        borderRadius: BorderRadius.circular(8.r),
-        border: Border.all(color: colors.divider),
-      ),
-      child: Shimmer.fromColors(
-        baseColor: colors.divider,
-        highlightColor: colors.surface,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              width: 150.w,
-              height: 16.h,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(4.r),
-              ),
-            ),
-            SizedBox(height: 16.h),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  width: 20.w,
-                  height: 20.h,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(4.r),
-                  ),
-                ),
-                SizedBox(width: 8.w),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        width: double.infinity,
-                        height: 14.h,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(4.r),
-                        ),
-                      ),
-                      SizedBox(height: 6.h),
-                      Container(
-                        width: 200.w,
-                        height: 14.h,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(4.r),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
       ),
     );
   }

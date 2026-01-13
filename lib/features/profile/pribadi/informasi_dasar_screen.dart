@@ -134,7 +134,7 @@ class InformasiDasarScreen extends StatelessWidget {
               user?.gender == 'MALE' ? 'Pria' : 'Wanita',
             ),
             Divider(color: colors.divider, thickness: 1.h, height: 0),
-            _buildInfoRow(colors, 'Kewarganegaraan', 'Indonesia'),
+            _buildInfoRow(colors, 'Kewarganegaraan', user?.nationality),
           ],
         ),
         SizedBox(height: 16.h),
@@ -144,7 +144,7 @@ class InformasiDasarScreen extends StatelessWidget {
           subtitle: 'Dokumen yang terkait dengan negara',
           childrenSpacing: 16.h,
           children: [
-            _buildInfoRow(colors, 'Nomor ID', user?.nik),
+            _buildInfoRow(colors, 'Nomor ID', '-'),
             _buildInfoRow(colors, 'Tanggal Berakhir ID', '-'),
             Divider(color: colors.divider, thickness: 1.h, height: 0),
             _buildInfoRow(colors, 'Nama Terdaftar Pajak', '-'),

@@ -1,44 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:hrd_app/core/providers/auth_provider.dart';
 import 'package:hrd_app/core/theme/app_colors.dart';
-import 'package:shimmer/shimmer.dart';
+import 'package:hrd_app/data/models/user_model.dart';
+import 'package:provider/provider.dart';
 
-class KontakScreen extends StatefulWidget {
+class KontakScreen extends StatelessWidget {
   const KontakScreen({super.key});
-
-  @override
-  State<KontakScreen> createState() => _KontakScreenState();
-}
-
-class _KontakScreenState extends State<KontakScreen> {
-  bool _isLoading = true;
-  Map<String, dynamic>? _data;
-
-  @override
-  void initState() {
-    super.initState();
-    _fetchData();
-  }
-
-  Future<void> _fetchData() async {
-    await Future.delayed(const Duration(seconds: 2));
-
-    if (mounted) {
-      setState(() {
-        _isLoading = false;
-        _data = {
-          'telepon': '083123456789',
-          'ext': '-',
-          'email': 'test@demo.com',
-        };
-      });
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
+    final user = context.watch<AuthProvider>().user;
 
     return Scaffold(
       backgroundColor: colors.background,
@@ -60,14 +34,12 @@ class _KontakScreenState extends State<KontakScreen> {
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(16.w),
-        child: _isLoading
-            ? _buildSkeletonLoading(colors)
-            : _buildContent(colors),
+        child: _buildContent(colors, user),
       ),
     );
   }
 
-  Widget _buildContent(dynamic colors) {
+  Widget _buildContent(dynamic colors, UserModel? user) {
     return Container(
       width: double.infinity,
       padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
@@ -80,9 +52,8 @@ class _KontakScreenState extends State<KontakScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         spacing: 16.h,
         children: [
-          _buildInfoRow(colors, 'Telepon / Ponsel', _data?['telepon']),
-          _buildInfoRow(colors, 'Ext', _data?['ext']),
-          _buildInfoRow(colors, 'Email', _data?['email'], isRequired: true),
+          _buildInfoRow(colors, 'Telepon / Ponsel', user?.phone),
+          _buildInfoRow(colors, 'Email', user?.email, isRequired: true),
         ],
       ),
     );
@@ -126,52 +97,6 @@ class _KontakScreenState extends State<KontakScreen> {
             fontSize: 14.sp,
             color: colors.textPrimary,
             fontWeight: FontWeight.w400,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildSkeletonLoading(dynamic colors) {
-    return Container(
-      width: double.infinity,
-      padding: EdgeInsets.all(16.w),
-      decoration: BoxDecoration(
-        color: colors.surface,
-        borderRadius: BorderRadius.circular(8.r),
-        border: Border.all(color: colors.divider),
-      ),
-      child: Shimmer.fromColors(
-        baseColor: colors.divider,
-        highlightColor: colors.surface,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          spacing: 20.h,
-          children: List.generate(3, (index) => _buildSkeletonItem()),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSkeletonItem() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Container(
-          width: 100.w,
-          height: 14.h,
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(4.r),
-          ),
-        ),
-        SizedBox(height: 6.h),
-        Container(
-          width: 180.w,
-          height: 14.h,
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(4.r),
           ),
         ),
       ],
