@@ -253,12 +253,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                   ),
                 ),
-                Switch(
-                  value: themeProvider.isDarkMode,
-                  onChanged: (value) {
-                    themeProvider.toggleTheme();
-                  },
-                  activeThumbColor: colors.primaryBlue,
+                Transform.scale(
+                  scale: 0.8,
+                  child: Switch(
+                    value: themeProvider.isDarkMode,
+                    onChanged: (value) {
+                      themeProvider.toggleTheme();
+                    },
+                    activeThumbColor: colors.primaryBlue,
+                  ),
                 ),
               ],
             ),
