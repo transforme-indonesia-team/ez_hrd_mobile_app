@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hrd_app/core/utils/snackbar_utils.dart';
-import 'package:hrd_app/features/profile/ketenagakerjaan/ketenagakerjaan_screen.dart';
+import 'package:hrd_app/features/profile/detail/ketenagakerjaan/ketenagakerjaan_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:hrd_app/core/providers/auth_provider.dart';
 import 'package:hrd_app/core/theme/app_colors.dart';
@@ -11,7 +11,7 @@ import 'package:hrd_app/features/profile/widgets/profile_header.dart';
 import 'package:hrd_app/features/profile/widgets/profile_info_section.dart';
 import 'package:hrd_app/features/profile/widgets/profile_menu_item.dart';
 import 'package:hrd_app/features/profile/widgets/profile_empty_state.dart';
-import 'package:hrd_app/features/profile/pribadi/pribadi_screen.dart';
+import 'package:hrd_app/features/profile/detail/pribadi/pribadi_screen.dart';
 
 class ProfileDetailScreen extends StatefulWidget {
   const ProfileDetailScreen({super.key});

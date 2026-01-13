@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:hrd_app/core/theme/app_colors.dart';
 import 'package:hrd_app/core/theme/color_palette.dart';
 import 'package:hrd_app/core/utils/snackbar_utils.dart';
+import 'package:hrd_app/features/profile/pengaturan/ganti_password_screen.dart';
 
 class PengaturanPersonalScreen extends StatelessWidget {
   const PengaturanPersonalScreen({super.key});
@@ -167,7 +168,24 @@ class PengaturanPersonalScreen extends StatelessWidget {
     final colors = context.colors;
 
     return InkWell(
-      onTap: () => context.showMenuNotAvailable(item.label),
+      onTap: () {
+        if (item.route != null) {
+          switch (item.route) {
+            case 'ganti_password':
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const GantiPasswordScreen(),
+                ),
+              );
+              break;
+            default:
+              context.showMenuNotAvailable(item.label);
+          }
+        } else {
+          context.showMenuNotAvailable(item.label);
+        }
+      },
       borderRadius: BorderRadius.circular(8.r),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
@@ -208,6 +226,7 @@ class PengaturanPersonalScreen extends StatelessWidget {
       label: 'Ganti Kata Sandi',
       iconColor: ColorPalette.blue600,
       backgroundColor: ColorPalette.blue100,
+      route: 'ganti_password',
     ),
     _MenuItem(
       icon: Icons.devices,
@@ -250,11 +269,13 @@ class _MenuItem {
   final String label;
   final Color iconColor;
   final Color backgroundColor;
+  final String? route;
 
   const _MenuItem({
     required this.icon,
     required this.label,
     required this.iconColor,
     required this.backgroundColor,
+    this.route,
   });
 }

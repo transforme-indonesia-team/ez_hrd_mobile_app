@@ -5,17 +5,17 @@ import 'package:hrd_app/core/config/env_config.dart';
 import 'package:hrd_app/core/theme/app_colors.dart';
 import 'package:hrd_app/core/utils/string_utils.dart';
 import 'package:hrd_app/features/profile/models/profile_detail_model.dart';
-import 'package:hrd_app/features/profile/pribadi/alamat_screen.dart';
-import 'package:hrd_app/features/profile/pribadi/daftar_bank_screen.dart';
-import 'package:hrd_app/features/profile/pribadi/data_asuransi_screen.dart';
-import 'package:hrd_app/features/profile/pribadi/informasi_dasar_screen.dart';
-import 'package:hrd_app/features/profile/pribadi/keluarga_screen.dart';
-import 'package:hrd_app/features/profile/pribadi/kontak_darurat_screen.dart';
-import 'package:hrd_app/features/profile/pribadi/kontak_screen.dart';
-import 'package:hrd_app/features/profile/pribadi/pelatihan_screen.dart';
-import 'package:hrd_app/features/profile/pribadi/pendidikan_screen.dart';
-import 'package:hrd_app/features/profile/pribadi/pengalaman_kerja_screen.dart';
-import 'package:hrd_app/features/profile/pribadi/rekam_medis_screen.dart';
+import 'package:hrd_app/features/profile/detail/pribadi/alamat_screen.dart';
+import 'package:hrd_app/features/profile/detail/pribadi/daftar_bank_screen.dart';
+import 'package:hrd_app/features/profile/detail/pribadi/data_asuransi_screen.dart';
+import 'package:hrd_app/features/profile/detail/pribadi/informasi_dasar_screen.dart';
+import 'package:hrd_app/features/profile/detail/pribadi/keluarga_screen.dart';
+import 'package:hrd_app/features/profile/detail/pribadi/kontak_darurat_screen.dart';
+import 'package:hrd_app/features/profile/detail/pribadi/kontak_screen.dart';
+import 'package:hrd_app/features/profile/detail/pribadi/pelatihan_screen.dart';
+import 'package:hrd_app/features/profile/detail/pribadi/pendidikan_screen.dart';
+import 'package:hrd_app/features/profile/detail/pribadi/pengalaman_kerja_screen.dart';
+import 'package:hrd_app/features/profile/detail/pribadi/rekam_medis_screen.dart';
 
 class PribadiScreen extends StatelessWidget {
   final ProfileDetailModel profile;

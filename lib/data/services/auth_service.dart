@@ -46,4 +46,16 @@ class AuthService {
       'new_password_confirmation': newPasswordConfirmation,
     }, errorMessage: 'Gagal reset password');
   }
+
+  Future<Map<String, dynamic>> changePassword({
+    required String oldPassword,
+    required String newPassword,
+    required String newPasswordConfirmation,
+  }) async {
+    return _api.post('/apps/user/change-password', {
+      'old_password': oldPassword,
+      'new_password': newPassword,
+      'new_password_confirmation': newPasswordConfirmation,
+    }, errorMessage: 'Gagal mengubah kata sandi');
+  }
 }

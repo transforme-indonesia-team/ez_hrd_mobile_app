@@ -32,6 +32,7 @@ class BaseApiService {
     String? errorMessage,
   }) async {
     try {
+      debugPrint('DEBUG-API-Request: ${payload.toString()}');
       final encryptedPayload = _crypto.encryptPayload(payload);
 
       final response = await _dio.post(
@@ -138,14 +139,14 @@ class BaseApiService {
     final original = decryptedData['original'] as Map<String, dynamic>?;
 
     if (kDebugMode) {
-      debugPrint('API Response: ${original.toString()}');
+      debugPrint('DEBUG-API-Response: ${original.toString()}');
     }
 
     if (original == null) {
       throw Exception('Response tidak valid');
     }
 
-    if (original['status'] != true) {
+    if (original['status'] != true || original['code'] != 200) {
       throw Exception(original['message'] ?? errorMessage ?? 'Request gagal');
     }
 
