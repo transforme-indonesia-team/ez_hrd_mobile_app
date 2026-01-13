@@ -5,7 +5,6 @@ import 'package:hrd_app/data/services/auth_service.dart';
 
 class AuthProvider extends ChangeNotifier {
   static const String _userKey = 'saved_user';
-  static const String _rememberMeKey = 'remember_me';
 
   UserModel? _user;
   bool _isLoading = false;
@@ -17,17 +16,25 @@ class AuthProvider extends ChangeNotifier {
   bool get isAuthenticated => _user != null;
   bool get isInitialized => _isInitialized;
 
+  /// Initialize - Load saved user dan cek token expiry
   Future<void> initialize() async {
     if (_isInitialized) return;
 
     try {
       final prefs = await SharedPreferences.getInstance();
-      final rememberMe = prefs.getBool(_rememberMeKey) ?? false;
+      final userJson = prefs.getString(_userKey);
 
-      if (rememberMe) {
-        final userJson = prefs.getString(_userKey);
-        if (userJson != null && userJson.isNotEmpty) {
-          _user = UserModel.fromJsonString(userJson);
+      if (userJson != null && userJson.isNotEmpty) {
+        final savedUser = UserModel.fromJsonString(userJson);
+
+        // Cek apakah token masih valid
+        if (_isTokenValid(savedUser.expiresAt)) {
+          _user = savedUser;
+          debugPrint('Auto-login: Token masih valid');
+        } else {
+          // Token expired, hapus saved user
+          await prefs.remove(_userKey);
+          debugPrint('Auto-logout: Token sudah expired');
         }
       }
     } catch (e) {
@@ -38,10 +45,28 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Cek apakah token masih valid berdasarkan expires_at
+  bool _isTokenValid(String? expiresAt) {
+    if (expiresAt == null || expiresAt.isEmpty) {
+      return false;
+    }
+
+    try {
+      final expiryDate = DateTime.parse(expiresAt);
+      final now = DateTime.now();
+
+      // Token valid jika expiry date masih di masa depan
+      return expiryDate.isAfter(now);
+    } catch (e) {
+      debugPrint('Error parsing expires_at: $e');
+      return false;
+    }
+  }
+
+  /// Login - Selalu simpan sesi setelah login sukses
   Future<void> login({
     required String username,
     required String password,
-    bool rememberMe = false,
   }) async {
     _isLoading = true;
     notifyListeners();
@@ -55,9 +80,8 @@ class AuthProvider extends ChangeNotifier {
 
       _user = UserModel.fromJson(response);
 
-      if (rememberMe) {
-        await _saveUser();
-      }
+      // Selalu simpan user setelah login sukses
+      await _saveUser();
 
       _isLoading = false;
       notifyListeners();
@@ -68,11 +92,10 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
-  void setUser(UserModel user, {bool rememberMe = false}) {
+  /// Set user (untuk penggunaan eksternal jika diperlukan)
+  void setUser(UserModel user) {
     _user = user;
-    if (rememberMe) {
-      _saveUser();
-    }
+    _saveUser();
     notifyListeners();
   }
 
@@ -83,7 +106,6 @@ class AuthProvider extends ChangeNotifier {
     try {
       final prefs = await SharedPreferences.getInstance();
       await prefs.remove(_userKey);
-      await prefs.setBool(_rememberMeKey, false);
     } catch (e) {
       debugPrint('Error clearing saved user: $e');
     }
@@ -98,7 +120,7 @@ class AuthProvider extends ChangeNotifier {
     try {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString(_userKey, _user!.toJsonString());
-      await prefs.setBool(_rememberMeKey, true);
+      debugPrint('User saved to SharedPreferences');
     } catch (e) {
       debugPrint('Error saving user: $e');
     }
@@ -109,5 +131,18 @@ class AuthProvider extends ChangeNotifier {
     _user = updatedUser;
     _saveUser();
     notifyListeners();
+  }
+
+  /// Cek dan handle jika token expired saat runtime
+  /// Panggil ini di tempat strategis (misalnya sebelum API call)
+  bool checkAndHandleTokenExpiry() {
+    if (_user == null) return false;
+
+    if (!_isTokenValid(_user!.expiresAt)) {
+      logout();
+      return true; // Token expired, sudah logout
+    }
+
+    return false; // Token masih valid
   }
 }

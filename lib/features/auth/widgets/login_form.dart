@@ -21,7 +21,6 @@ class _LoginFormState extends State<LoginForm> {
   final _passwordFocusNode = FocusNode();
   bool _obscurePassword = true;
   bool _isLoading = false;
-  bool _rememberMe = false;
 
   String _appVersion = '';
 
@@ -68,7 +67,6 @@ class _LoginFormState extends State<LoginForm> {
       await authProvider.login(
         username: _usernameController.text,
         password: _passwordController.text,
-        rememberMe: _rememberMe,
       );
 
       if (mounted) {
@@ -278,45 +276,8 @@ class _LoginFormState extends State<LoginForm> {
           ),
           const SizedBox(height: 28),
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  SizedBox(
-                    height: 24,
-                    width: 24,
-                    child: Checkbox(
-                      value: _rememberMe,
-                      activeColor: colors.primaryBlue,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                      side: BorderSide(color: colors.inputBorder, width: 1.5),
-                      onChanged: (value) {
-                        setState(() {
-                          _rememberMe = value ?? false;
-                        });
-                      },
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        _rememberMe = !_rememberMe;
-                      });
-                    },
-                    child: Text(
-                      'Biarkan saya tetap masuk',
-                      style: GoogleFonts.inter(
-                        fontSize: 14,
-                        color: colors.textSecondary,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
               TextButton(
                 onPressed: () {
                   Navigator.pushNamed(context, AppRoutes.forgotPassword);
