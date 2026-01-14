@@ -11,7 +11,7 @@ class AuthService {
     required String username,
     required String password,
   }) async {
-    return _api.post('/apps/user/login', {
+    return _api.post('/user/login', {
       'username': username,
       'password': password,
     }, errorMessage: 'Login gagal');
@@ -20,7 +20,7 @@ class AuthService {
   Future<Map<String, dynamic>> forgotPassword({
     required String usernameOrEmail,
   }) async {
-    return _api.post('/apps/user/forget-password', {
+    return _api.post('/user/forget-password', {
       'username_or_email': usernameOrEmail,
     }, errorMessage: 'Gagal mengirim permintaan');
   }
@@ -29,7 +29,7 @@ class AuthService {
     required String usernameOrEmail,
     required String otp,
   }) async {
-    return _api.post('/apps/user/verify-otp', {
+    return _api.post('/user/verify-otp', {
       'username_or_email': usernameOrEmail,
       'otp': otp,
     }, errorMessage: 'OTP tidak valid');
@@ -40,7 +40,7 @@ class AuthService {
     required String newPassword,
     required String newPasswordConfirmation,
   }) async {
-    return _api.post('/apps/user/reset-password', {
+    return _api.post('/user/reset-password', {
       'token_reset': tokenReset,
       'new_password': newPassword,
       'new_password_confirmation': newPasswordConfirmation,
@@ -52,7 +52,7 @@ class AuthService {
     required String newPassword,
     required String newPasswordConfirmation,
   }) async {
-    return _api.post('/apps/user/change-password', {
+    return _api.post('/user/change-password', {
       'current_password': currentPassword,
       'new_password': newPassword,
       'new_password_confirmation': newPasswordConfirmation,
