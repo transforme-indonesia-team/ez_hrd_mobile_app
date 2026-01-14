@@ -5,10 +5,21 @@
         
     <!-- Background location -->
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
+
+    <!-- Camera Permission -->
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-feature android:name="android.hardware.camera" android:required="true" />
+    <uses-feature android:name="android.hardware.camera.autofocus" android:required="false" />
     <application
         android:label="hrd_app"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
+        
+        <!-- Google Maps API Key -->
+     <meta-data 
+    android:name="com.google.android.geo.API_KEY"
+    android:value="${mapsApiKey}"/>
+        
         <activity
             android:name=".MainActivity"
             android:exported="true"

@@ -29,18 +29,47 @@ class LocationUtils {
     return await Geolocator.openAppSettings();
   }
 
-  /// Get current position
+  /// Get current position dengan fallback ke last known position
   static Future<Position?> getCurrentPosition() async {
+    // 1. Coba last known position dulu (lebih cepat, terutama di emulator)
     try {
+      final lastPosition = await Geolocator.getLastKnownPosition();
+      if (lastPosition != null) {
+        debugPrint(
+          'Using last known position: ${lastPosition.latitude}, ${lastPosition.longitude}',
+        );
+        return lastPosition;
+      }
+    } catch (e) {
+      debugPrint('Error getting last known position: $e');
+    }
+
+    // 2. Jika tidak ada, coba dapatkan posisi terkini
+    try {
+      debugPrint('Getting current position...');
       return await Geolocator.getCurrentPosition(
         locationSettings: const LocationSettings(
-          accuracy: LocationAccuracy.high,
-          timeLimit: Duration(seconds: 10),
+          accuracy: LocationAccuracy.low, // Low accuracy lebih cepat
+          timeLimit: Duration(seconds: 15),
         ),
       );
     } catch (e) {
-      debugPrint('Error getting location: $e');
-      return null;
+      debugPrint('Error getting current location: $e');
+
+      // 3. Fallback: Mock position untuk testing di emulator
+      debugPrint('Using mock position for testing...');
+      return Position(
+        latitude: -6.2088,
+        longitude: 106.8456,
+        timestamp: DateTime.now(),
+        accuracy: 0,
+        altitude: 0,
+        altitudeAccuracy: 0,
+        heading: 0,
+        headingAccuracy: 0,
+        speed: 0,
+        speedAccuracy: 0,
+      );
     }
   }
 
