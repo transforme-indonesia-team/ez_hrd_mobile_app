@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:pinput/pinput.dart';
 import 'package:hrd_app/core/theme/app_colors.dart';
 import 'package:hrd_app/core/providers/auth_provider.dart';
+import 'package:hrd_app/core/utils/snackbar_utils.dart';
 import 'package:hrd_app/routes/app_routes.dart';
 import 'package:provider/provider.dart';
 
@@ -115,23 +116,13 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
         final records = original?['records'] as Map<String, dynamic>?;
         final newExpiredAt = records?['expired_at'] as String?;
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('OTP telah dikirim ulang'),
-            backgroundColor: Colors.green,
-          ),
-        );
+        context.showSuccessSnackbar('OTP telah dikirim ulang');
 
         _startCountdownFromExpiredAt(newExpiredAt);
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(e.toString().replaceAll('Exception: ', '')),
-            backgroundColor: Colors.red,
-          ),
-        );
+        context.showErrorSnackbar(e.toString().replaceAll('Exception: ', ''));
       }
     } finally {
       if (mounted) {
@@ -174,12 +165,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
         _pinController.clear();
         _focusNode.requestFocus();
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(e.toString().replaceAll('Exception: ', '')),
-            backgroundColor: Colors.red,
-          ),
-        );
+        context.showErrorSnackbar(e.toString().replaceAll('Exception: ', ''));
       }
     }
   }

@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:hrd_app/core/theme/app_colors.dart';
 import 'package:hrd_app/core/utils/validators.dart';
 import 'package:hrd_app/core/providers/auth_provider.dart';
+import 'package:hrd_app/core/utils/snackbar_utils.dart';
 import 'package:hrd_app/routes/app_routes.dart';
 import 'package:provider/provider.dart';
 
@@ -69,12 +70,7 @@ class _ForgotPasswordFormState extends State<ForgotPasswordForm> {
           _isLoading = false;
         });
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(e.toString().replaceAll('Exception: ', '')),
-            backgroundColor: Colors.red,
-          ),
-        );
+        context.showErrorSnackbar(e.toString().replaceAll('Exception: ', ''));
       }
     }
   }

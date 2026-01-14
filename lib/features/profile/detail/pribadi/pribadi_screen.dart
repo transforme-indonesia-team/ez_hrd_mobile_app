@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:hrd_app/core/config/env_config.dart';
 import 'package:hrd_app/core/theme/app_colors.dart';
 import 'package:hrd_app/core/utils/string_utils.dart';
+import 'package:hrd_app/core/utils/snackbar_utils.dart';
 import 'package:hrd_app/features/profile/models/profile_detail_model.dart';
 import 'package:hrd_app/features/profile/detail/pribadi/alamat_screen.dart';
 import 'package:hrd_app/features/profile/detail/pribadi/daftar_bank_screen.dart';
@@ -158,9 +159,7 @@ class PribadiScreen extends StatelessWidget {
                   MaterialPageRoute(builder: (context) => screen!),
                 );
               } else {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Detail $itemTitle belum tersedia')),
-                );
+                context.showInfoSnackbar('Detail $itemTitle belum tersedia');
               }
             },
             contentPadding: EdgeInsets.symmetric(

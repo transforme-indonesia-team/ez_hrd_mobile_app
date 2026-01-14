@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:hrd_app/core/providers/auth_provider.dart';
 import 'package:hrd_app/core/theme/app_colors.dart';
 import 'package:hrd_app/core/utils/validators.dart';
+import 'package:hrd_app/core/utils/snackbar_utils.dart';
 import 'package:hrd_app/routes/app_routes.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
@@ -83,12 +84,7 @@ class _LoginFormState extends State<LoginForm> {
           _isLoading = false;
         });
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(e.toString().replaceAll('Exception: ', '')),
-            backgroundColor: Colors.red,
-          ),
-        );
+        context.showErrorSnackbar(e.toString().replaceAll('Exception: ', ''));
       }
     }
   }

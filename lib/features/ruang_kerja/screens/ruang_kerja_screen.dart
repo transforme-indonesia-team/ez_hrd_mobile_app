@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hrd_app/core/theme/app_colors.dart';
+import 'package:hrd_app/core/utils/snackbar_utils.dart';
 import 'package:hrd_app/features/ruang_kerja/widgets/survei_karyawan_tabs.dart';
 import 'package:hrd_app/features/ruang_kerja/widgets/survei_empty_state.dart';
 import 'package:hrd_app/features/ruang_kerja/widgets/rekan_setim_section.dart';
@@ -52,20 +53,10 @@ class _RuangKerjaScreenState extends State<RuangKerjaScreen> {
             RekanSetimSection(
               members: _teamMembers,
               onLainnyaTap: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Fitur Lainnya belum tersedia'),
-                    duration: Duration(seconds: 1),
-                  ),
-                );
+                context.showInfoSnackbar('Fitur Lainnya belum tersedia');
               },
               onMemberTap: (member) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('Memberikan tugas ke ${member.name}'),
-                    duration: const Duration(seconds: 1),
-                  ),
-                );
+                context.showInfoSnackbar('Memberikan tugas ke ${member.name}');
               },
             ),
 
@@ -74,12 +65,7 @@ class _RuangKerjaScreenState extends State<RuangKerjaScreen> {
             // Tugasmu Section
             TugasmuSection(
               onLainnyaTap: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Fitur Lainnya belum tersedia'),
-                    duration: Duration(seconds: 1),
-                  ),
-                );
+                context.showInfoSnackbar('Fitur Lainnya belum tersedia');
               },
             ),
 

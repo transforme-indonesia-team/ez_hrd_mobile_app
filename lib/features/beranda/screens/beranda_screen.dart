@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:hrd_app/core/providers/auth_provider.dart';
 import 'package:hrd_app/core/theme/app_colors.dart';
 import 'package:hrd_app/core/utils/format_date.dart';
+import 'package:hrd_app/core/utils/snackbar_utils.dart';
 import 'package:hrd_app/features/beranda/widgets/beranda_app_bar.dart';
 import 'package:hrd_app/features/beranda/widgets/user_profile_header.dart';
 import 'package:hrd_app/features/beranda/widgets/attendance_card.dart';
@@ -52,12 +53,7 @@ class BerandaScreen extends StatelessWidget {
               date: 'Hari ini ${FormatDate.todayWithDayName(date)}',
               shiftInfo: 'Shift: Shift Office Hour [09:00 - 17:00]',
               onRekamWaktuTap: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Fitur Rekam Waktu belum tersedia'),
-                    duration: Duration(seconds: 1),
-                  ),
-                );
+                context.showInfoSnackbar('Fitur Rekam Waktu belum tersedia');
               },
               onLainnyaTap: () {
                 RiwayatKehadiranBottomSheet.show(context);
@@ -72,11 +68,8 @@ class BerandaScreen extends StatelessWidget {
             // Menu Favorit Section
             FavoriteMenuSection(
               onItemTap: (FiturItemModel item) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('Fitur "${item.title}" belum tersedia'),
-                    duration: const Duration(seconds: 1),
-                  ),
+                context.showInfoSnackbar(
+                  'Fitur "${item.title}" belum tersedia',
                 );
               },
             ),

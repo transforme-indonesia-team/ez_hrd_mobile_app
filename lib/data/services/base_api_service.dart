@@ -42,8 +42,8 @@ class BaseApiService {
     _dio.interceptors.add(
       InterceptorsWrapper(
         onError: (DioException error, ErrorInterceptorHandler handler) {
-          // Check for 401 Unauthorized
-          if (error.response?.statusCode == 401) {
+          // Check for 401 Unauthorized - only trigger logout if user has token
+          if (error.response?.statusCode == 401 && _hasAuthToken()) {
             debugPrint('API: 401 Unauthorized - triggering logout');
             _onUnauthorized?.call();
           }
@@ -51,6 +51,11 @@ class BaseApiService {
         },
       ),
     );
+  }
+
+  /// Check if auth token exists (user is logged in)
+  bool _hasAuthToken() {
+    return _dio.options.headers['Authorization'] != null;
   }
 
   Future<Map<String, dynamic>> post(
@@ -173,11 +178,11 @@ class BaseApiService {
       throw Exception('Response tidak valid');
     }
 
-    // Check for 401 in decrypted response code
-    if (original['code'] == 401) {
+    // Check for 401 in decrypted response code - only trigger logout if user has token
+    if (original['code'] == 401 && _hasAuthToken()) {
       debugPrint('API: Decrypted 401 Unauthorized - triggering logout');
       _onUnauthorized?.call();
-      throw Exception('Sesi Anda telah berakhir. Silakan login kembali.');
+      throw Exception(original['message'] ?? 'Sesi Anda telah berakhir');
     }
 
     if (original['status'] != true || original['code'] != 200) {
@@ -198,8 +203,8 @@ class BaseApiService {
     }
 
     if (e.response != null) {
-      // Check for 401 in error response
-      if (e.response?.statusCode == 401) {
+      // Check for 401 in error response - only show session expired if user has token
+      if (e.response?.statusCode == 401 && _hasAuthToken()) {
         return Exception('Sesi Anda telah berakhir. Silakan login kembali.');
       }
       final message = e.response?.data['message'];

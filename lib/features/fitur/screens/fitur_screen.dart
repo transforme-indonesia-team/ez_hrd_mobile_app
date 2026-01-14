@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hrd_app/core/theme/app_colors.dart';
+import 'package:hrd_app/core/utils/snackbar_utils.dart';
 import 'package:hrd_app/features/fitur/data/fitur_data.dart';
 import 'package:hrd_app/features/fitur/models/fitur_item_model.dart';
 import 'package:hrd_app/features/fitur/widgets/fitur_search_bar.dart';
@@ -38,12 +39,7 @@ class _FiturScreenState extends State<FiturScreen> {
 
   void _onItemTap(FiturItemModel item) {
     // TODO: Navigate to feature detail
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Fitur "${item.title}" belum tersedia'),
-        duration: const Duration(seconds: 1),
-      ),
-    );
+    context.showInfoSnackbar('Fitur "${item.title}" belum tersedia');
   }
 
   @override
