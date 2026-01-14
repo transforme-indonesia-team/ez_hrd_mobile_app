@@ -154,4 +154,51 @@ class AuthProvider extends ChangeNotifier {
 
     return false; // Token masih valid
   }
+
+  // ============================================
+  // AUTH FLOW METHODS (Forgot Password, OTP, etc)
+  // ============================================
+
+  final AuthService _authService = AuthService();
+
+  /// Request forgot password - mengirim OTP ke email
+  Future<Map<String, dynamic>> forgotPassword({
+    required String usernameOrEmail,
+  }) async {
+    return _authService.forgotPassword(usernameOrEmail: usernameOrEmail);
+  }
+
+  /// Verify OTP - returns response with token_reset
+  Future<Map<String, dynamic>> verifyOtp({
+    required String usernameOrEmail,
+    required String otp,
+  }) async {
+    return _authService.verifyOtp(usernameOrEmail: usernameOrEmail, otp: otp);
+  }
+
+  /// Reset password dengan token
+  Future<Map<String, dynamic>> resetPassword({
+    required String tokenReset,
+    required String newPassword,
+    required String newPasswordConfirmation,
+  }) async {
+    return _authService.resetPassword(
+      tokenReset: tokenReset,
+      newPassword: newPassword,
+      newPasswordConfirmation: newPasswordConfirmation,
+    );
+  }
+
+  /// Change password (untuk user yang sudah login)
+  Future<Map<String, dynamic>> changePassword({
+    required String currentPassword,
+    required String newPassword,
+    required String newPasswordConfirmation,
+  }) async {
+    return _authService.changePassword(
+      currentPassword: currentPassword,
+      newPassword: newPassword,
+      newPasswordConfirmation: newPasswordConfirmation,
+    );
+  }
 }

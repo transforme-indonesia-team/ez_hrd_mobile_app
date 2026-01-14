@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hrd_app/core/theme/app_colors.dart';
-import 'package:hrd_app/data/services/auth_service.dart';
 import 'package:provider/provider.dart';
 import 'package:hrd_app/core/providers/auth_provider.dart';
 import 'package:hrd_app/routes/app_routes.dart';
@@ -80,8 +79,7 @@ class _GantiPasswordScreenState extends State<GantiPasswordScreen> {
     setState(() => _isLoading = true);
 
     try {
-      final authService = AuthService();
-      await authService.changePassword(
+      await context.read<AuthProvider>().changePassword(
         currentPassword: _currentPasswordController.text,
         newPassword: _newPasswordController.text,
         newPasswordConfirmation: _confirmPasswordController.text,

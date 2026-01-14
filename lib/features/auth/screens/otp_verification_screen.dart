@@ -4,8 +4,9 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pinput/pinput.dart';
 import 'package:hrd_app/core/theme/app_colors.dart';
-import 'package:hrd_app/data/services/auth_service.dart';
+import 'package:hrd_app/core/providers/auth_provider.dart';
 import 'package:hrd_app/routes/app_routes.dart';
+import 'package:provider/provider.dart';
 
 class OtpVerificationScreen extends StatefulWidget {
   final String usernameOrEmail;
@@ -105,8 +106,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
     });
 
     try {
-      final authService = AuthService();
-      final response = await authService.forgotPassword(
+      final response = await context.read<AuthProvider>().forgotPassword(
         usernameOrEmail: widget.usernameOrEmail,
       );
 
@@ -150,8 +150,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
     });
 
     try {
-      final authService = AuthService();
-      final response = await authService.verifyOtp(
+      final response = await context.read<AuthProvider>().verifyOtp(
         usernameOrEmail: widget.usernameOrEmail,
         otp: _pinController.text,
       );

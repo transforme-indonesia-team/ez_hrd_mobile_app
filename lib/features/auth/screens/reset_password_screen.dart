@@ -3,8 +3,9 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hrd_app/core/theme/app_colors.dart';
 import 'package:hrd_app/core/utils/validators.dart';
-import 'package:hrd_app/data/services/auth_service.dart';
+import 'package:hrd_app/core/providers/auth_provider.dart';
 import 'package:hrd_app/routes/app_routes.dart';
+import 'package:provider/provider.dart';
 
 class ResetPasswordScreen extends StatefulWidget {
   final String tokenReset;
@@ -54,8 +55,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
     });
 
     try {
-      final authService = AuthService();
-      await authService.resetPassword(
+      await context.read<AuthProvider>().resetPassword(
         tokenReset: widget.tokenReset,
         newPassword: _passwordController.text,
         newPasswordConfirmation: _confirmPasswordController.text,

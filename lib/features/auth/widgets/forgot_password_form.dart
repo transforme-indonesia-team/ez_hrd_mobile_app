@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hrd_app/core/theme/app_colors.dart';
 import 'package:hrd_app/core/utils/validators.dart';
-import 'package:hrd_app/data/services/auth_service.dart';
+import 'package:hrd_app/core/providers/auth_provider.dart';
 import 'package:hrd_app/routes/app_routes.dart';
+import 'package:provider/provider.dart';
 
 class ForgotPasswordForm extends StatefulWidget {
   const ForgotPasswordForm({super.key});
@@ -39,8 +40,7 @@ class _ForgotPasswordFormState extends State<ForgotPasswordForm> {
     });
 
     try {
-      final authService = AuthService();
-      final response = await authService.forgotPassword(
+      final response = await context.read<AuthProvider>().forgotPassword(
         usernameOrEmail: _usernameOrEmailController.text,
       );
 
