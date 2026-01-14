@@ -8,6 +8,13 @@ import 'package:hrd_app/routes/app_routes.dart';
 import 'core/theme/app_theme.dart';
 import 'package:hrd_app/core/utils/crypto_utils.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:hrd_app/data/services/base_api_service.dart';
+
+/// Global navigator key for navigation from non-widget contexts
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
+/// Global AuthProvider reference for 401 handling
+AuthProvider? _authProviderRef;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -24,6 +31,12 @@ void main() async {
 
   final authProvider = AuthProvider();
   await authProvider.initialize();
+  _authProviderRef = authProvider;
+
+  // Setup 401 Unauthorized callback
+  BaseApiService().setUnauthorizedCallback(() {
+    _handleUnauthorized();
+  });
 
   runApp(
     MultiProvider(
@@ -33,6 +46,20 @@ void main() async {
       ],
       child: const MyApp(),
     ),
+  );
+}
+
+/// Handle 401 Unauthorized - logout and redirect to login
+void _handleUnauthorized() async {
+  debugPrint('Handling 401 Unauthorized - logging out user');
+
+  // Logout user
+  await _authProviderRef?.logout();
+
+  // Navigate to login screen
+  navigatorKey.currentState?.pushNamedAndRemoveUntil(
+    AppRoutes.login,
+    (route) => false,
   );
 }
 
@@ -49,6 +76,7 @@ class MyApp extends StatelessWidget {
         return Consumer2<ThemeProvider, AuthProvider>(
           builder: (context, themeProvider, authProvider, child) {
             return MaterialApp(
+              navigatorKey: navigatorKey,
               title: 'EZ HRD APP',
               debugShowCheckedModeBanner: false,
               theme: AppTheme.lightTheme,
