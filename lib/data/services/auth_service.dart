@@ -48,12 +48,12 @@ class AuthService {
   }
 
   Future<Map<String, dynamic>> changePassword({
-    required String oldPassword,
+    required String currentPassword,
     required String newPassword,
     required String newPasswordConfirmation,
   }) async {
     return _api.post('/apps/user/change-password', {
-      'old_password': oldPassword,
+      'current_password': currentPassword,
       'new_password': newPassword,
       'new_password_confirmation': newPasswordConfirmation,
     }, errorMessage: 'Gagal mengubah kata sandi');

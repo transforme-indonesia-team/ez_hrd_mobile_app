@@ -42,9 +42,12 @@ class AppRoutes {
       case otpVerification:
         final args = settings.arguments as Map<String, dynamic>?;
         final usernameOrEmail = args?['username_or_email'] as String? ?? '';
+        final expiredAt = args?['expired_at'] as String?;
         return MaterialPageRoute(
-          builder: (context) =>
-              OtpVerificationScreen(usernameOrEmail: usernameOrEmail),
+          builder: (context) => OtpVerificationScreen(
+            usernameOrEmail: usernameOrEmail,
+            expiredAt: expiredAt,
+          ),
           settings: settings,
         );
 

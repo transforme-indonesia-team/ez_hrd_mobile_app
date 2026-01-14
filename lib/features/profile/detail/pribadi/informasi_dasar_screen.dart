@@ -144,11 +144,17 @@ class InformasiDasarScreen extends StatelessWidget {
           subtitle: 'Dokumen yang terkait dengan negara',
           childrenSpacing: 16.h,
           children: [
-            _buildInfoRow(colors, 'Nomor ID', '-'),
-            _buildInfoRow(colors, 'Tanggal Berakhir ID', '-'),
-            Divider(color: colors.divider, thickness: 1.h, height: 0),
-            _buildInfoRow(colors, 'Nama Terdaftar Pajak', '-'),
-            _buildInfoRow(colors, 'Nomor Berkas Pajak', '-'),
+            _buildInfoRow(colors, 'Nomor NPWP', user?.npwp),
+            _buildInfoRow(
+              colors,
+              'Tanggal Pendaftaran NPWP',
+              _formatDate(user?.npwpRegistrationData),
+            ),
+            _buildInfoRow(
+              colors,
+              'Nama Terdaftar Pajak',
+              user?.taxRegisteredName,
+            ),
           ],
         ),
         SizedBox(height: 20.h),

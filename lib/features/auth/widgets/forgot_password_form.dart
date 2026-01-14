@@ -40,7 +40,7 @@ class _ForgotPasswordFormState extends State<ForgotPasswordForm> {
 
     try {
       final authService = AuthService();
-      await authService.forgotPassword(
+      final response = await authService.forgotPassword(
         usernameOrEmail: _usernameOrEmailController.text,
       );
 
@@ -49,10 +49,18 @@ class _ForgotPasswordFormState extends State<ForgotPasswordForm> {
           _isLoading = false;
         });
 
+        // Get expired_at from response
+        final original = response['original'] as Map<String, dynamic>?;
+        final records = original?['records'] as Map<String, dynamic>?;
+        final expiredAt = records?['expired_at'] as String?;
+
         Navigator.pushReplacementNamed(
           context,
           AppRoutes.otpVerification,
-          arguments: {'username_or_email': _usernameOrEmailController.text},
+          arguments: {
+            'username_or_email': _usernameOrEmailController.text,
+            'expired_at': expiredAt,
+          },
         );
       }
     } catch (e) {

@@ -3,6 +3,9 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hrd_app/core/theme/app_colors.dart';
 import 'package:hrd_app/data/services/auth_service.dart';
+import 'package:provider/provider.dart';
+import 'package:hrd_app/core/providers/auth_provider.dart';
+import 'package:hrd_app/routes/app_routes.dart';
 
 class GantiPasswordScreen extends StatefulWidget {
   const GantiPasswordScreen({super.key});
@@ -13,7 +16,7 @@ class GantiPasswordScreen extends StatefulWidget {
 
 class _GantiPasswordScreenState extends State<GantiPasswordScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _oldPasswordController = TextEditingController();
+  final _currentPasswordController = TextEditingController();
   final _newPasswordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
 
@@ -34,7 +37,7 @@ class _GantiPasswordScreenState extends State<GantiPasswordScreen> {
 
   @override
   void dispose() {
-    _oldPasswordController.dispose();
+    _currentPasswordController.dispose();
     _newPasswordController.dispose();
     _confirmPasswordController.dispose();
     _newPasswordFocusNode.dispose();
@@ -66,7 +69,7 @@ class _GantiPasswordScreenState extends State<GantiPasswordScreen> {
   }
 
   bool get _isFormValid =>
-      _oldPasswordController.text.isNotEmpty &&
+      _currentPasswordController.text.isNotEmpty &&
       _newPasswordController.text.length >= 8 &&
       _confirmPasswordController.text == _newPasswordController.text;
 
@@ -79,7 +82,7 @@ class _GantiPasswordScreenState extends State<GantiPasswordScreen> {
     try {
       final authService = AuthService();
       await authService.changePassword(
-        oldPassword: _oldPasswordController.text,
+        currentPassword: _currentPasswordController.text,
         newPassword: _newPasswordController.text,
         newPasswordConfirmation: _confirmPasswordController.text,
       );
@@ -91,7 +94,7 @@ class _GantiPasswordScreenState extends State<GantiPasswordScreen> {
               children: [
                 Icon(Icons.check_circle, color: Colors.white, size: 20.sp),
                 SizedBox(width: 8.w),
-                const Text('Kata sandi berhasil diubah!'),
+                const Text('Sukses! Silakan login kembali.'),
               ],
             ),
             backgroundColor: Colors.green,
@@ -101,7 +104,17 @@ class _GantiPasswordScreenState extends State<GantiPasswordScreen> {
             ),
           ),
         );
-        Navigator.pop(context);
+
+        // Logout and navigate to login
+        await context.read<AuthProvider>().logout();
+
+        if (mounted) {
+          Navigator.pushNamedAndRemoveUntil(
+            context,
+            AppRoutes.login,
+            (route) => false,
+          );
+        }
       }
     } catch (e) {
       if (mounted) {
@@ -152,7 +165,7 @@ class _GantiPasswordScreenState extends State<GantiPasswordScreen> {
               _buildInfoCard(colors),
               SizedBox(height: 24.h),
               _buildPasswordField(
-                controller: _oldPasswordController,
+                controller: _currentPasswordController,
                 label: 'Kata Sandi Lama',
                 hint: 'Masukkan kata sandi lama',
                 obscure: _obscureOldPassword,

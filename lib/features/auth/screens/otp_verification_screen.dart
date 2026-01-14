@@ -1,61 +1,82 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:pinput/pinput.dart';
 import 'package:hrd_app/core/theme/app_colors.dart';
 import 'package:hrd_app/data/services/auth_service.dart';
 import 'package:hrd_app/routes/app_routes.dart';
 
 class OtpVerificationScreen extends StatefulWidget {
   final String usernameOrEmail;
+  final String? expiredAt;
 
-  const OtpVerificationScreen({super.key, required this.usernameOrEmail});
+  const OtpVerificationScreen({
+    super.key,
+    required this.usernameOrEmail,
+    this.expiredAt,
+  });
 
   @override
   State<OtpVerificationScreen> createState() => _OtpVerificationScreenState();
 }
 
 class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
-  final List<TextEditingController> _otpControllers = List.generate(
-    6,
-    (index) => TextEditingController(),
-  );
-  final List<FocusNode> _focusNodes = List.generate(6, (index) => FocusNode());
+  final _pinController = TextEditingController();
+  final _focusNode = FocusNode();
 
-  static const int _cooldownDuration = 60;
-  int _remainingSeconds = _cooldownDuration;
+  int _remainingSeconds = 0;
   Timer? _timer;
   bool _canResend = false;
   bool _isLoading = false;
   bool _isResending = false;
 
-  String get _otpValue => _otpControllers.map((c) => c.text).join();
-  bool get _isOtpComplete => _otpValue.length == 6;
+  bool get _isOtpComplete => _pinController.text.length == 6;
 
   @override
   void initState() {
     super.initState();
-    _startCountdown();
+    _startCountdownFromExpiredAt(widget.expiredAt);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _focusNode.requestFocus();
+    });
   }
 
   @override
   void dispose() {
     _timer?.cancel();
-    for (var controller in _otpControllers) {
-      controller.dispose();
-    }
-    for (var node in _focusNodes) {
-      node.dispose();
-    }
+    _pinController.dispose();
+    _focusNode.dispose();
     super.dispose();
   }
 
-  void _startCountdown() {
-    _remainingSeconds = _cooldownDuration;
+  void _startCountdownFromExpiredAt(String? expiredAt) {
+    _timer?.cancel();
     _canResend = false;
 
-    _timer?.cancel();
+    if (expiredAt != null) {
+      try {
+        final expiry = DateTime.parse(expiredAt);
+        final now = DateTime.now();
+        final difference = expiry.difference(now).inSeconds;
+
+        if (difference > 0) {
+          _remainingSeconds = difference;
+        } else {
+          _canResend = true;
+          _remainingSeconds = 0;
+          setState(() {});
+          return;
+        }
+      } catch (e) {
+        _remainingSeconds = 180;
+      }
+    } else {
+      _remainingSeconds = 180;
+    }
+
+    setState(() {});
+
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (_remainingSeconds > 0) {
         setState(() {
@@ -76,15 +97,6 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
     return '$minutes:$secs';
   }
 
-  void _onOtpChanged(int index, String value) {
-    if (value.isNotEmpty && index < 5) {
-      _focusNodes[index + 1].requestFocus();
-    } else if (value.isEmpty && index > 0) {
-      _focusNodes[index - 1].requestFocus();
-    }
-    setState(() {});
-  }
-
   Future<void> _handleResend() async {
     if (!_canResend || _isResending) return;
 
@@ -94,16 +106,23 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
 
     try {
       final authService = AuthService();
-      await authService.forgotPassword(usernameOrEmail: widget.usernameOrEmail);
+      final response = await authService.forgotPassword(
+        usernameOrEmail: widget.usernameOrEmail,
+      );
 
       if (mounted) {
+        final original = response['original'] as Map<String, dynamic>?;
+        final records = original?['records'] as Map<String, dynamic>?;
+        final newExpiredAt = records?['expired_at'] as String?;
+
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('OTP telah dikirim ulang'),
             backgroundColor: Colors.green,
           ),
         );
-        _startCountdown();
+
+        _startCountdownFromExpiredAt(newExpiredAt);
       }
     } catch (e) {
       if (mounted) {
@@ -134,7 +153,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
       final authService = AuthService();
       final response = await authService.verifyOtp(
         usernameOrEmail: widget.usernameOrEmail,
-        otp: _otpValue,
+        otp: _pinController.text,
       );
 
       if (mounted) {
@@ -153,6 +172,8 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
         setState(() {
           _isLoading = false;
         });
+        _pinController.clear();
+        _focusNode.requestFocus();
 
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -167,6 +188,37 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
+
+    final defaultPinTheme = PinTheme(
+      width: 48.w,
+      height: 56.h,
+      textStyle: GoogleFonts.inter(
+        fontSize: 22.sp,
+        fontWeight: FontWeight.w600,
+        color: colors.textPrimary,
+      ),
+      decoration: BoxDecoration(
+        color: colors.inputFill,
+        borderRadius: BorderRadius.circular(12.r),
+        border: Border.all(color: colors.inputBorder),
+      ),
+    );
+
+    final focusedPinTheme = defaultPinTheme.copyWith(
+      decoration: BoxDecoration(
+        color: colors.inputFill,
+        borderRadius: BorderRadius.circular(12.r),
+        border: Border.all(color: colors.primaryBlue, width: 2),
+      ),
+    );
+
+    final submittedPinTheme = defaultPinTheme.copyWith(
+      decoration: BoxDecoration(
+        color: colors.primaryBlue.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(12.r),
+        border: Border.all(color: colors.primaryBlue, width: 2),
+      ),
+    );
 
     return Scaffold(
       backgroundColor: colors.background,
@@ -211,64 +263,32 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                   ),
                 ),
                 SizedBox(height: 40.h),
-                // OTP Input Fields
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: List.generate(6, (index) {
-                    return SizedBox(
-                      width: 45.w,
-                      height: 55.h,
-                      child: TextFormField(
-                        controller: _otpControllers[index],
-                        focusNode: _focusNodes[index],
-                        keyboardType: TextInputType.number,
-                        textAlign: TextAlign.center,
-                        maxLength: 1,
-                        style: GoogleFonts.inter(
-                          fontSize: 20.sp,
-                          fontWeight: FontWeight.w600,
-                          color: colors.textPrimary,
+                // Pinput OTP Input
+                Center(
+                  child: Pinput(
+                    length: 6,
+                    controller: _pinController,
+                    focusNode: _focusNode,
+                    defaultPinTheme: defaultPinTheme,
+                    focusedPinTheme: focusedPinTheme,
+                    submittedPinTheme: submittedPinTheme,
+                    separatorBuilder: (index) => SizedBox(width: 8.w),
+                    onCompleted: (pin) => _handleVerify(),
+                    onChanged: (value) => setState(() {}),
+                    cursor: Column(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Container(
+                          margin: EdgeInsets.only(bottom: 12.h),
+                          width: 22.w,
+                          height: 2.h,
+                          color: colors.primaryBlue,
                         ),
-                        cursorColor: colors.primaryBlue,
-                        decoration: InputDecoration(
-                          counterText: '',
-                          filled: true,
-                          fillColor: colors.inputFill,
-                          contentPadding: EdgeInsets.symmetric(vertical: 14.h),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12.r),
-                            borderSide: BorderSide(
-                              color: _otpControllers[index].text.isNotEmpty
-                                  ? colors.primaryBlue
-                                  : colors.inputBorder,
-                            ),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12.r),
-                            borderSide: BorderSide(
-                              color: _otpControllers[index].text.isNotEmpty
-                                  ? colors.primaryBlue
-                                  : colors.inputBorder,
-                              width: _otpControllers[index].text.isNotEmpty
-                                  ? 2
-                                  : 1,
-                            ),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12.r),
-                            borderSide: BorderSide(
-                              color: colors.primaryBlue,
-                              width: 2,
-                            ),
-                          ),
-                        ),
-                        inputFormatters: [
-                          FilteringTextInputFormatter.digitsOnly,
-                        ],
-                        onChanged: (value) => _onOtpChanged(index, value),
-                      ),
-                    );
-                  }),
+                      ],
+                    ),
+                    showCursor: true,
+                    keyboardType: TextInputType.number,
+                  ),
                 ),
                 SizedBox(height: 32.h),
                 // Resend Timer

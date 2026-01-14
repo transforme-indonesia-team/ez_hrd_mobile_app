@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:hrd_app/data/models/user_model.dart';
 import 'package:hrd_app/data/services/auth_service.dart';
+import 'package:hrd_app/data/services/base_api_service.dart';
 
 class AuthProvider extends ChangeNotifier {
   static const String _userKey = 'saved_user';
@@ -30,6 +31,9 @@ class AuthProvider extends ChangeNotifier {
         // Cek apakah token masih valid
         if (_isTokenValid(savedUser.expiresAt)) {
           _user = savedUser;
+          if (_user?.token != null) {
+            BaseApiService().setAuthToken(_user!.token!);
+          }
           debugPrint('Auto-login: Token masih valid');
         } else {
           // Token expired, hapus saved user
@@ -80,6 +84,10 @@ class AuthProvider extends ChangeNotifier {
 
       _user = UserModel.fromJson(response);
 
+      if (_user?.token != null) {
+        BaseApiService().setAuthToken(_user!.token!);
+      }
+
       // Selalu simpan user setelah login sukses
       await _saveUser();
 
@@ -102,6 +110,7 @@ class AuthProvider extends ChangeNotifier {
   /// Logout - clear user data
   Future<void> logout() async {
     _user = null;
+    BaseApiService().clearAuthToken();
 
     try {
       final prefs = await SharedPreferences.getInstance();

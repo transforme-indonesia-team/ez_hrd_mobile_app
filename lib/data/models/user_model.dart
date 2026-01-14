@@ -31,6 +31,10 @@ class UserModel {
   final String? postalName;
   final String? postalCode;
 
+  final String? npwp;
+  final String? taxRegisteredName;
+  final String? npwpRegistrationData;
+
   const UserModel({
     required this.id,
     required this.name,
@@ -60,6 +64,9 @@ class UserModel {
     this.subdistrictName,
     this.postalName,
     this.postalCode,
+    this.npwp,
+    this.npwpRegistrationData,
+    this.taxRegisteredName,
   });
 
   factory UserModel.fromApiResponse(Map<String, dynamic> json) {
@@ -109,6 +116,9 @@ class UserModel {
       subdistrictName: employee['subdistrict_name'],
       postalName: employee['postal_name'],
       postalCode: employee['postal_code']?.toString(),
+      npwp: employee['npwp'],
+      taxRegisteredName: employee['tax_registered_name'],
+      npwpRegistrationData: employee['npwp_registration_date'],
     );
   }
 
