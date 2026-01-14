@@ -15,6 +15,7 @@ class AttendanceCard extends StatefulWidget {
   final VoidCallback? onLainnyaTap;
   final VoidCallback? onBarcodeTap;
   final VoidCallback? onShiftTap;
+  final bool isLoading;
   final String? name;
 
   const AttendanceCard({
@@ -27,6 +28,7 @@ class AttendanceCard extends StatefulWidget {
     this.onLainnyaTap,
     this.onBarcodeTap,
     this.onShiftTap,
+    this.isLoading = false,
     this.name,
   });
 
@@ -242,7 +244,7 @@ class _AttendanceCardState extends State<AttendanceCard> {
             child: SizedBox(
               height: buttonHeight,
               child: ElevatedButton(
-                onPressed: widget.onRekamWaktuTap ?? () {},
+                onPressed: widget.onRekamWaktuTap,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: colors.primaryBlue,
                   foregroundColor: Colors.white,
