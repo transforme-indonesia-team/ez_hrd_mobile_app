@@ -80,6 +80,26 @@ class BaseApiService {
     }
   }
 
+  Future<Map<String, dynamic>> postFormData(
+    String endpoint,
+    FormData formData, {
+    String? errorMessage,
+  }) async {
+    try {
+      final response = await _dio.post(
+        endpoint,
+        data: formData,
+        options: Options(contentType: 'multipart/form-data'),
+      );
+
+      return _decryptResponse(response, errorMessage: errorMessage);
+    } on DioException catch (e) {
+      throw _handleDioError(e, errorMessage);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   Future<Map<String, dynamic>> postRaw(
     String endpoint,
     Map<String, dynamic> data, {

@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:hrd_app/data/services/attendance_service.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import 'package:hrd_app/core/theme/app_colors.dart';
@@ -456,12 +457,11 @@ class _RekamWaktuConfirmScreenState extends State<RekamWaktuConfirmScreen> {
         return;
       }
 
-      // TODO: Implement actual API call with position and photo
-      debugPrint(
-        'Saving attendance at: ${position.latitude}, ${position.longitude}',
+      await AttendanceService().checkIn(
+        latitude: position.latitude,
+        longitude: position.longitude,
+        photo: widget.photo,
       );
-      await Future.delayed(const Duration(seconds: 2));
-
       if (mounted) {
         context.showSuccessSnackbar('Kehadiran berhasil disimpan!');
         Navigator.of(context).popUntil((route) => route.isFirst);
