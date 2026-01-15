@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:hrd_app/core/config/env_config.dart';
 import 'package:hrd_app/core/theme/app_colors.dart';
 import 'package:hrd_app/core/utils/snackbar_utils.dart';
 import 'package:hrd_app/core/utils/string_utils.dart';
 import 'package:hrd_app/features/profile/detail/ketenagakerjaan/disiplin_screen.dart';
 import 'package:hrd_app/features/profile/detail/ketenagakerjaan/info_ketenagakerjaan_screen.dart';
+import 'package:hrd_app/features/profile/detail/ketenagakerjaan/penghargaan_screen.dart';
 import 'package:hrd_app/features/profile/models/profile_detail_model.dart';
 
 class KetenagakerjaanScreen extends StatelessWidget {
@@ -25,8 +27,8 @@ class KetenagakerjaanScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: colors.background,
       appBar: AppBar(
-        backgroundColor: colors.background,
-        elevation: 0,
+        // backgroundColor: colors.background,
+        elevation: 5,
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: colors.textPrimary),
           onPressed: () => Navigator.pop(context),
@@ -37,7 +39,9 @@ class KetenagakerjaanScreen extends StatelessWidget {
               radius: 16,
               backgroundColor: colors.divider,
               backgroundImage: profile.avatarUrl != null
-                  ? NetworkImage(profile.avatarUrl!)
+                  ? NetworkImage(
+                      '${EnvConfig.imageBaseUrl}${profile.avatarUrl!}',
+                    )
                   : null,
               child: profile.avatarUrl == null
                   ? Text(
@@ -110,8 +114,7 @@ class KetenagakerjaanScreen extends StatelessWidget {
               } else if (itemTitle.contains('Disiplin')) {
                 screen = const DisiplinScreen();
               } else if (itemTitle.contains('Penghargaan')) {
-                context.showMenuNotAvailable('Penghargaan');
-                return;
+                screen = const PenghargaanScreen();
               } else if (itemTitle.contains('Kontrol Dokumen')) {
                 context.showMenuNotAvailable('Kontrol Dokumen');
                 return;

@@ -57,7 +57,7 @@ class _ProfileDetailScreenState extends State<ProfileDetailScreen> {
       'Info Ketenagakerjaan',
       'Disiplin',
       'Penghargaan',
-      'Kontrol Dokumen',
+      // 'Kontrol Dokumen',
     ];
 
     _menuItems = [
@@ -82,7 +82,7 @@ class _ProfileDetailScreenState extends State<ProfileDetailScreen> {
           'Info Ketenagakerjaan',
           'Disiplin',
           'Penghargaan',
-          'Kontrol Dokumen',
+          // 'Kontrol Dokumen',
         ],
         onTap: () {
           Navigator.push(

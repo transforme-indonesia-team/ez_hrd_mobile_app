@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hrd_app/core/theme/app_colors.dart';
+import 'package:hrd_app/data/services/employee_service.dart';
 import 'package:shimmer/shimmer.dart';
 
 class InfoKetenagakerjaanScreen extends StatefulWidget {
@@ -15,6 +16,7 @@ class InfoKetenagakerjaanScreen extends StatefulWidget {
 class _InfoKetenagakerjaanScreenState extends State<InfoKetenagakerjaanScreen> {
   bool _isLoading = true;
   Map<String, dynamic>? _data;
+  String? _errorMessage;
 
   @override
   void initState() {
@@ -23,23 +25,50 @@ class _InfoKetenagakerjaanScreenState extends State<InfoKetenagakerjaanScreen> {
   }
 
   Future<void> _fetchData() async {
-    // Simulasi Fetch API
-    await Future.delayed(const Duration(seconds: 2));
+    try {
+      final response = await EmployeeService().getRelation(
+        relation: 'EMPLOYMENT',
+      );
 
-    if (mounted) {
-      setState(() {
-        _isLoading = false;
-        _data = {
-          'nomor_karyawan': '90035857',
-          'status_karyawan': 'AKTIF',
-          'tingkat_jabatan': 'PETUGAS LAPANGAN',
-          'tanggal_bergabung': '25 Agustus 2022',
-          'tanggal_akhir_karyawan': '25 Agustus 2027',
-          'lokasi_kerja': 'LOKASI BARU PARKIR',
-          'atasan_langsung': 'LUHUT',
-          'manager_langsung': 'XI JINPING',
-        };
-      });
+      final records = response['original']['records'] as Map<String, dynamic>?;
+
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+          _data = records;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+          _errorMessage = e.toString();
+        });
+      }
+    }
+  }
+
+  String _formatDate(String? dateStr) {
+    if (dateStr == null || dateStr.isEmpty) return '-';
+    try {
+      final date = DateTime.parse(dateStr);
+      const months = [
+        'Januari',
+        'Februari',
+        'Maret',
+        'April',
+        'Mei',
+        'Juni',
+        'Juli',
+        'Agustus',
+        'September',
+        'Oktober',
+        'November',
+        'Desember',
+      ];
+      return '${date.day} ${months[date.month - 1]} ${date.year}';
+    } catch (_) {
+      return dateStr;
     }
   }
 
@@ -65,43 +94,63 @@ class _InfoKetenagakerjaanScreenState extends State<InfoKetenagakerjaanScreen> {
           ),
         ),
       ),
-      body: SingleChildScrollView(
-        padding: EdgeInsets.all(16.w),
-        child: _isLoading ? _buildSkeletonLoading() : _buildContent(colors),
-      ),
+      body: _buildBody(colors),
     );
   }
 
-  Widget _buildContent(dynamic colors) {
+  Widget _buildBody(ThemeColors colors) {
+    if (_isLoading) {
+      return SingleChildScrollView(
+        padding: EdgeInsets.all(16.w),
+        child: _buildSkeletonLoading(),
+      );
+    }
+
+    if (_errorMessage != null) {
+      return Center(
+        child: Text(
+          _errorMessage!,
+          style: GoogleFonts.inter(color: colors.textSecondary),
+        ),
+      );
+    }
+
+    return SingleChildScrollView(
+      padding: EdgeInsets.all(16.w),
+      child: _buildContent(colors),
+    );
+  }
+
+  Widget _buildContent(ThemeColors colors) {
+    final employeeCode = _data?['employee_code'] ?? '-';
+    final isActive = _data?['is_active_employee'] == true
+        ? 'AKTIF'
+        : 'TIDAK AKTIF';
+    final jobGrade = _data?['job_grade_name'] ?? '-';
+    final hireDate = _formatDate(_data?['hire_date']);
+    final terminateDate = _data?['terminate_date'] != null
+        ? _formatDate(_data?['terminate_date'])
+        : '-';
+    final worksiteName = _data?['worksite_name'] ?? '-';
+    final spvName = _data?['spv_name'] ?? '-';
+    final managerName = _data?['manager_location_name'] ?? '-';
+
     return Column(
       children: [
-        // SECTION 1: Data Ketenagakerjaan
         _buildSectionCard(
           colors,
           title: 'Data Ketenagakerjaan',
           subtitle: 'Informasi data Anda terkait dengan perusahaan',
           childrenSpacing: 16.h,
           children: [
-            _buildInfoRow(colors, 'No. Karyawan', _data?['nomor_karyawan']),
-            _buildInfoRow(colors, 'Status Karyawan', _data?['status_karyawan']),
-            _buildInfoRow(colors, 'Tingkat Jabatan', _data?['tingkat_jabatan']),
-            _buildInfoRow(
-              colors,
-              'Tanggal Bergabung',
-              _data?['tanggal_bergabung'],
-            ),
-            _buildInfoRow(
-              colors,
-              'Tanggal Akhir Karyawan',
-              _data?['tanggal_akhir_karyawan'],
-            ),
-            _buildInfoRow(colors, 'Lokasi Kerja', _data?['lokasi_kerja']),
-            _buildInfoRow(colors, 'Atasan Langsung', _data?['atasan_langsung']),
-            _buildInfoRow(
-              colors,
-              'Manager Langsung',
-              _data?['manager_langsung'],
-            ),
+            _buildInfoRow(colors, 'No. Karyawan', employeeCode),
+            _buildInfoRow(colors, 'Status Karyawan', isActive),
+            _buildInfoRow(colors, 'Tingkat Jabatan', jobGrade),
+            _buildInfoRow(colors, 'Tanggal Bergabung', hireDate),
+            _buildInfoRow(colors, 'Tanggal Akhir Karyawan', terminateDate),
+            _buildInfoRow(colors, 'Lokasi Kerja', worksiteName),
+            _buildInfoRow(colors, 'Atasan Langsung', spvName),
+            _buildInfoRow(colors, 'Manager Langsung', managerName),
           ],
         ),
         SizedBox(height: 20.h),
@@ -110,7 +159,7 @@ class _InfoKetenagakerjaanScreenState extends State<InfoKetenagakerjaanScreen> {
   }
 
   Widget _buildSectionCard(
-    dynamic colors, {
+    ThemeColors colors, {
     required String title,
     required String subtitle,
     required List<Widget> children,
@@ -156,7 +205,7 @@ class _InfoKetenagakerjaanScreenState extends State<InfoKetenagakerjaanScreen> {
   }
 
   Widget _buildInfoRow(
-    dynamic colors,
+    ThemeColors colors,
     String label,
     String? value, {
     String? note,
@@ -192,7 +241,6 @@ class _InfoKetenagakerjaanScreenState extends State<InfoKetenagakerjaanScreen> {
             ),
           ),
         ],
-        // SizedBox(height: 8.h),
       ],
     );
   }
@@ -200,13 +248,7 @@ class _InfoKetenagakerjaanScreenState extends State<InfoKetenagakerjaanScreen> {
   // --- SKELETON WIDGETS ---
 
   Widget _buildSkeletonLoading() {
-    return Column(
-      children: [
-        _buildSkeletonCard(3),
-        SizedBox(height: 16.h),
-        _buildSkeletonCard(6),
-      ],
-    );
+    return Column(children: [_buildSkeletonCard(8)]);
   }
 
   Widget _buildSkeletonCard(int itemCount) {

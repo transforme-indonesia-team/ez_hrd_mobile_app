@@ -6,16 +6,16 @@ import 'package:hrd_app/core/widgets/empty_state_widget.dart';
 import 'package:hrd_app/core/widgets/skeleton_widget.dart';
 import 'package:hrd_app/data/services/employee_service.dart';
 
-class KontakDaruratScreen extends StatefulWidget {
-  const KontakDaruratScreen({super.key});
+class PenghargaanScreen extends StatefulWidget {
+  const PenghargaanScreen({super.key});
 
   @override
-  State<KontakDaruratScreen> createState() => _KontakDaruratScreenState();
+  State<PenghargaanScreen> createState() => _PenghargaanScreenState();
 }
 
-class _KontakDaruratScreenState extends State<KontakDaruratScreen> {
+class _PenghargaanScreenState extends State<PenghargaanScreen> {
   bool _isLoading = true;
-  List<dynamic> _kontakDarurat = [];
+  List<dynamic> _awardList = [];
   String? _errorMessage;
 
   @override
@@ -26,18 +26,15 @@ class _KontakDaruratScreenState extends State<KontakDaruratScreen> {
 
   Future<void> _fetchData() async {
     try {
-      final response = await EmployeeService().getRelation(
-        relation: 'EMERGENCY',
-      );
+      final response = await EmployeeService().getRelation(relation: 'AWARD');
 
       final records = response['original']['records'] as Map<String, dynamic>?;
-      debugPrint("DEBUG-API-Response: $records");
-      final data = records?['employee_emergency'] as List? ?? [];
+      final data = records?['employee_award'] as List? ?? [];
 
       if (mounted) {
         setState(() {
           _isLoading = false;
-          _kontakDarurat = data;
+          _awardList = data;
         });
       }
     } catch (e) {
@@ -47,6 +44,30 @@ class _KontakDaruratScreenState extends State<KontakDaruratScreen> {
           _errorMessage = e.toString();
         });
       }
+    }
+  }
+
+  String _formatDate(String? dateStr) {
+    if (dateStr == null || dateStr.isEmpty) return '-';
+    try {
+      final date = DateTime.parse(dateStr);
+      const months = [
+        'Jan',
+        'Feb',
+        'Mar',
+        'Apr',
+        'Mei',
+        'Jun',
+        'Jul',
+        'Agu',
+        'Sep',
+        'Okt',
+        'Nov',
+        'Des',
+      ];
+      return '${date.day} ${months[date.month - 1]} ${date.year}';
+    } catch (_) {
+      return dateStr;
     }
   }
 
@@ -64,7 +85,7 @@ class _KontakDaruratScreenState extends State<KontakDaruratScreen> {
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
-          'Kontak Darurat',
+          'Penghargaan',
           style: GoogleFonts.inter(
             fontSize: 18.sp,
             fontWeight: FontWeight.w600,
@@ -93,10 +114,10 @@ class _KontakDaruratScreenState extends State<KontakDaruratScreen> {
       );
     }
 
-    if (_kontakDarurat.isEmpty) {
+    if (_awardList.isEmpty) {
       return const EmptyStateWidget(
-        message: 'Belum ada kontak darurat',
-        icon: Icons.contacts_outlined,
+        message: 'Belum ada penghargaan',
+        icon: Icons.emoji_events_outlined,
       );
     }
 
@@ -108,19 +129,22 @@ class _KontakDaruratScreenState extends State<KontakDaruratScreen> {
 
   Widget _buildContent(ThemeColors colors) {
     return Column(
-      children: _kontakDarurat.map((kontak) {
+      children: _awardList.map((award) {
         return Padding(
           padding: EdgeInsets.only(bottom: 16.h),
-          child: _buildKontakCard(colors, kontak),
+          child: _buildAwardCard(colors, award),
         );
       }).toList(),
     );
   }
 
-  Widget _buildKontakCard(ThemeColors colors, Map<String, dynamic> kontak) {
-    final contactName = kontak['contact_name'] ?? '-';
-    final contactPhone = kontak['contact_phone'] ?? '-';
-    final relationshipName = kontak['relationship_name'] ?? '-';
+  Widget _buildAwardCard(ThemeColors colors, Map<String, dynamic> award) {
+    final typeName = award['award_type_name'] ?? '-';
+    final referenceNumber = award['reference_number_award'] ?? '-';
+    final letterNumber = award['award_letter_number'] ?? '-';
+    final startDate = _formatDate(award['start_date_award']);
+    final endDate = _formatDate(award['end_date_award']);
+    final remark = award['remark_award'] ?? '-';
 
     return Container(
       width: double.infinity,
@@ -134,16 +158,17 @@ class _KontakDaruratScreenState extends State<KontakDaruratScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
                 padding: EdgeInsets.all(10.w),
                 decoration: BoxDecoration(
-                  color: colors.primaryBlue.withValues(alpha: 0.1),
+                  color: Colors.amber.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8.r),
                 ),
                 child: Icon(
-                  Icons.person_outline,
-                  color: colors.primaryBlue,
+                  Icons.emoji_events_outlined,
+                  color: Colors.amber[700],
                   size: 24.sp,
                 ),
               ),
@@ -153,19 +178,30 @@ class _KontakDaruratScreenState extends State<KontakDaruratScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      contactName,
+                      typeName,
                       style: GoogleFonts.inter(
-                        fontSize: 16.sp,
+                        fontSize: 14.sp,
                         fontWeight: FontWeight.w600,
                         color: colors.textPrimary,
                       ),
                     ),
-                    SizedBox(height: 2.h),
-                    Text(
-                      relationshipName,
-                      style: GoogleFonts.inter(
-                        fontSize: 12.sp,
-                        color: colors.textSecondary,
+                    SizedBox(height: 4.h),
+                    Container(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 8.w,
+                        vertical: 4.h,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.amber.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(4.r),
+                      ),
+                      child: Text(
+                        '$startDate - $endDate',
+                        style: GoogleFonts.inter(
+                          fontSize: 11.sp,
+                          color: Colors.amber[700],
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
                     ),
                   ],
@@ -176,25 +212,55 @@ class _KontakDaruratScreenState extends State<KontakDaruratScreen> {
           SizedBox(height: 16.h),
           Divider(color: colors.divider, height: 1),
           SizedBox(height: 16.h),
-          Row(
-            children: [
-              Icon(
-                Icons.phone_outlined,
-                size: 18.sp,
-                color: colors.textSecondary,
-              ),
-              SizedBox(width: 8.w),
-              Text(
-                contactPhone,
-                style: GoogleFonts.inter(
-                  fontSize: 14.sp,
-                  color: colors.textPrimary,
-                ),
-              ),
-            ],
+          _buildInfoRow(
+            colors,
+            Icons.tag_outlined,
+            'No. Referensi',
+            referenceNumber,
           ),
+          SizedBox(height: 12.h),
+          _buildInfoRow(
+            colors,
+            Icons.description_outlined,
+            'No. Surat',
+            letterNumber,
+          ),
+          SizedBox(height: 12.h),
+          _buildInfoRow(colors, Icons.note_outlined, 'Keterangan', remark),
         ],
       ),
+    );
+  }
+
+  Widget _buildInfoRow(
+    ThemeColors colors,
+    IconData icon,
+    String label,
+    String value,
+  ) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Icon(icon, size: 16.sp, color: colors.textSecondary),
+        SizedBox(width: 8.w),
+        Text(
+          '$label: ',
+          style: GoogleFonts.inter(
+            fontSize: 13.sp,
+            color: colors.textSecondary,
+          ),
+        ),
+        Expanded(
+          child: Text(
+            value,
+            style: GoogleFonts.inter(
+              fontSize: 13.sp,
+              fontWeight: FontWeight.w500,
+              color: colors.textPrimary,
+            ),
+          ),
+        ),
+      ],
     );
   }
 
@@ -225,9 +291,9 @@ class _KontakDaruratScreenState extends State<KontakDaruratScreen> {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    SkeletonBox(width: 120.w, height: 16.h),
+                    SkeletonBox(width: 150.w, height: 14.h),
                     SizedBox(height: 6.h),
-                    SkeletonBox(width: 80.w, height: 12.h),
+                    SkeletonBox(width: 120.w, height: 20.h, borderRadius: 4),
                   ],
                 ),
               ],
@@ -235,7 +301,11 @@ class _KontakDaruratScreenState extends State<KontakDaruratScreen> {
             SizedBox(height: 16.h),
             SkeletonBox(width: double.infinity, height: 1),
             SizedBox(height: 16.h),
-            SkeletonBox(width: 150.w, height: 14.h),
+            SkeletonBox(width: 220.w, height: 13.h),
+            SizedBox(height: 12.h),
+            SkeletonBox(width: 200.w, height: 13.h),
+            SizedBox(height: 12.h),
+            SkeletonBox(width: 180.w, height: 13.h),
           ],
         ),
       ),

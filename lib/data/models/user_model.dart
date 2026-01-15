@@ -159,6 +159,9 @@ class UserModel {
       subdistrictName: json['subdistrict_name'],
       postalName: json['postal_name'],
       postalCode: json['postal_code']?.toString(),
+      npwp: json['npwp'],
+      taxRegisteredName: json['tax_registered_name'],
+      npwpRegistrationData: json['npwp_registration_data'],
     );
   }
 
@@ -192,6 +195,9 @@ class UserModel {
       'subdistrict_name': subdistrictName,
       'postal_name': postalName,
       'postal_code': postalCode,
+      'npwp': npwp,
+      'tax_registered_name': taxRegisteredName,
+      'npwp_registration_data': npwpRegistrationData,
     };
   }
 
@@ -233,6 +239,9 @@ class UserModel {
     String? subdistrictName,
     String? postalName,
     String? postalCode,
+    String? npwp,
+    String? taxRegisteredName,
+    String? npwpRegistrationData,
   }) {
     return UserModel(
       id: id ?? this.id,
@@ -263,6 +272,9 @@ class UserModel {
       subdistrictName: subdistrictName ?? this.subdistrictName,
       postalName: postalName ?? this.postalName,
       postalCode: postalCode ?? this.postalCode,
+      npwp: npwp ?? this.npwp,
+      taxRegisteredName: taxRegisteredName ?? this.taxRegisteredName,
+      npwpRegistrationData: npwpRegistrationData ?? this.npwpRegistrationData,
     );
   }
 }
