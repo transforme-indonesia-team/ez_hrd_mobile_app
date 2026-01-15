@@ -457,7 +457,7 @@ class _RekamWaktuConfirmScreenState extends State<RekamWaktuConfirmScreen> {
         return;
       }
 
-      await AttendanceService().checkIn(
+      await AttendanceService().absent(
         latitude: position.latitude,
         longitude: position.longitude,
         photo: widget.photo,

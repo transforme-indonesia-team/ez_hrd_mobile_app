@@ -86,6 +86,10 @@ class BaseApiService {
     String? errorMessage,
   }) async {
     try {
+      // debugPrint('DEBUG-API-FormData: Sending to $endpoint');
+      // debugPrint('DEBUG-API-FormData: Fields count: ${formData.fields.length}');
+      // debugPrint('DEBUG-API-FormData: Files count: ${formData.files.length}');
+
       final response = await _dio.post(
         endpoint,
         data: formData,
