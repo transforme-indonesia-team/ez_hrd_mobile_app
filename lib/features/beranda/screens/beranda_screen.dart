@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:hrd_app/core/providers/auth_provider.dart';
 import 'package:hrd_app/core/theme/app_colors.dart';
 import 'package:hrd_app/core/utils/format_date.dart';
 import 'package:hrd_app/core/utils/snackbar_utils.dart';
 import 'package:hrd_app/core/utils/location_utils.dart';
+import 'package:hrd_app/core/widgets/location_permission_dialog.dart';
+import 'package:hrd_app/data/models/employee_shift_model.dart';
+import 'package:hrd_app/data/services/attendance_service.dart';
 
 import 'package:hrd_app/features/beranda/widgets/beranda_app_bar.dart';
 import 'package:hrd_app/features/beranda/widgets/user_profile_header.dart';
@@ -32,16 +34,97 @@ class _BerandaScreenState extends State<BerandaScreen>
   bool _waitingForLocationSettings = false;
   bool _waitingForAppSettings = false;
 
+  // Shift loading state
+  bool _isLoadingShift = true;
+  EmployeeShiftModel? _shiftData;
+  List<Map<String, dynamic>> _attendanceRecords = [];
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    _loadShiftInfo();
   }
 
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
+  }
+
+  Future<void> _loadShiftInfo() async {
+    try {
+      final today = DateTime.now();
+      final todayStr = DateFormat('yyyy-MM-dd').format(today);
+
+      // Get current week attendance (Monday to today+1)
+      final weekday = today.weekday; // 1 = Monday, 7 = Sunday
+      final startDate = DateTime(
+        today.year,
+        today.month,
+        today.day - (weekday - 1),
+      );
+      final endDate = DateTime(today.year, today.month, today.day + 1);
+
+      final response = await AttendanceService().getAbsentEmployee(
+        startDate: startDate,
+        endDate: endDate,
+      );
+
+      if (!mounted) return;
+
+      final original = response['original'] as Map<String, dynamic>?;
+
+      if (original != null &&
+          original['status'] == true &&
+          original['records'] != null) {
+        final recordsList = original['records'] as List;
+
+        // Create separate entries for check-in and check-out
+        final List<Map<String, dynamic>> validRecords = [];
+        for (final r in recordsList) {
+          final record = r as Map<String, dynamic>;
+          // Add check-in entry if exists
+          if (record['check_in'] != null && record['check_in'] != '-') {
+            validRecords.add({
+              ...record,
+              'type': 'check_in',
+              'time': record['check_in'],
+              'photo': record['attendance_photo_in'],
+            });
+          }
+          // Add check-out entry if exists
+          if (record['check_out'] != null && record['check_out'] != '-') {
+            validRecords.add({
+              ...record,
+              'type': 'check_out',
+              'time': record['check_out'],
+              'photo': record['attendance_photo_out'],
+            });
+          }
+        }
+
+        // Find today's record for shift display
+        final todayRecord = recordsList.firstWhere(
+          (record) => record['date_schedule'] == todayStr,
+          orElse: () => null,
+        );
+
+        setState(() {
+          _attendanceRecords = validRecords;
+          if (todayRecord != null) {
+            _shiftData = EmployeeShiftModel.fromJson(todayRecord);
+          }
+          _isLoadingShift = false;
+        });
+      } else {
+        setState(() => _isLoadingShift = false);
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() => _isLoadingShift = false);
+      }
+    }
   }
 
   @override
@@ -58,7 +141,6 @@ class _BerandaScreenState extends State<BerandaScreen>
   }
 
   Future<void> _onRekamWaktuTap() async {
-    // Check GPS & permission only (no need to capture location)
     final result = await _checkGPSAndPermission();
 
     if (result && mounted) {
@@ -74,235 +156,45 @@ class _BerandaScreenState extends State<BerandaScreen>
   Future<bool> _checkGPSAndPermission() async {
     // 1. Check GPS service
     bool serviceEnabled = await LocationUtils.isLocationServiceEnabled();
+    if (!mounted) return false;
+
     if (!serviceEnabled) {
-      _showGPSDialog();
+      LocationPermissionDialog.showGPSDialog(
+        context: context,
+        onOpenSettings: () {
+          _waitingForLocationSettings = true;
+          LocationUtils.openLocationSettings();
+        },
+      );
       return false;
     }
 
     // 2. Check permission
     var permission = await LocationUtils.checkPermission();
+    if (!mounted) return false;
+
     if (permission == LocationPermission.denied) {
       permission = await LocationUtils.requestPermission();
+      if (!mounted) return false;
+
       if (permission == LocationPermission.denied) {
-        if (mounted) {
-          context.showErrorSnackbar('Izin lokasi ditolak');
-        }
+        context.showErrorSnackbar('Izin lokasi ditolak');
         return false;
       }
     }
 
     if (permission == LocationPermission.deniedForever) {
-      _showPermissionDialog();
+      LocationPermissionDialog.showPermissionDialog(
+        context: context,
+        onOpenSettings: () {
+          _waitingForAppSettings = true;
+          LocationUtils.openAppSettings();
+        },
+      );
       return false;
     }
 
     return true;
-  }
-
-  void _showGPSDialog() {
-    final colors = context.colors;
-
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (dialogContext) => AlertDialog(
-        backgroundColor: colors.background,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16.r),
-        ),
-        contentPadding: EdgeInsets.all(24.w),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              padding: EdgeInsets.all(16.w),
-              decoration: BoxDecoration(
-                color: colors.primaryBlue.withValues(alpha: 0.1),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                Icons.location_off_rounded,
-                color: colors.primaryBlue,
-                size: 40.sp,
-              ),
-            ),
-            SizedBox(height: 16.h),
-            Text(
-              'Aktifkan Lokasi',
-              style: GoogleFonts.inter(
-                fontSize: 18.sp,
-                fontWeight: FontWeight.w600,
-                color: colors.textPrimary,
-              ),
-            ),
-            SizedBox(height: 8.h),
-            Text(
-              'Untuk mencatat kehadiran, Anda perlu mengaktifkan layanan lokasi.',
-              textAlign: TextAlign.center,
-              style: GoogleFonts.inter(
-                fontSize: 14.sp,
-                color: colors.textSecondary,
-                height: 1.5,
-              ),
-            ),
-            SizedBox(height: 24.h),
-            Row(
-              children: [
-                Expanded(
-                  child: OutlinedButton(
-                    onPressed: () => Navigator.pop(dialogContext),
-                    style: OutlinedButton.styleFrom(
-                      padding: EdgeInsets.symmetric(vertical: 12.h),
-                      side: BorderSide(color: colors.divider),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8.r),
-                      ),
-                    ),
-                    child: Text(
-                      'Nanti Saja',
-                      style: GoogleFonts.inter(
-                        fontSize: 14.sp,
-                        fontWeight: FontWeight.w500,
-                        color: colors.textSecondary,
-                      ),
-                    ),
-                  ),
-                ),
-                SizedBox(width: 12.w),
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.pop(dialogContext);
-                      _waitingForLocationSettings = true;
-                      LocationUtils.openLocationSettings();
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: colors.primaryBlue,
-                      padding: EdgeInsets.symmetric(vertical: 12.h),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8.r),
-                      ),
-                      elevation: 0,
-                    ),
-                    child: Text(
-                      'Aktifkan',
-                      style: GoogleFonts.inter(
-                        fontSize: 14.sp,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  void _showPermissionDialog() {
-    final colors = context.colors;
-
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (dialogContext) => AlertDialog(
-        backgroundColor: colors.background,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16.r),
-        ),
-        contentPadding: EdgeInsets.all(24.w),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              padding: EdgeInsets.all(16.w),
-              decoration: BoxDecoration(
-                color: colors.warning.withValues(alpha: 0.1),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                Icons.lock_outline_rounded,
-                color: colors.warning,
-                size: 40.sp,
-              ),
-            ),
-            SizedBox(height: 16.h),
-            Text(
-              'Izin Lokasi Diperlukan',
-              style: GoogleFonts.inter(
-                fontSize: 18.sp,
-                fontWeight: FontWeight.w600,
-                color: colors.textPrimary,
-              ),
-            ),
-            SizedBox(height: 8.h),
-            Text(
-              'Silakan aktifkan izin lokasi di pengaturan aplikasi.',
-              textAlign: TextAlign.center,
-              style: GoogleFonts.inter(
-                fontSize: 14.sp,
-                color: colors.textSecondary,
-                height: 1.5,
-              ),
-            ),
-            SizedBox(height: 24.h),
-            Row(
-              children: [
-                Expanded(
-                  child: OutlinedButton(
-                    onPressed: () => Navigator.pop(dialogContext),
-                    style: OutlinedButton.styleFrom(
-                      padding: EdgeInsets.symmetric(vertical: 12.h),
-                      side: BorderSide(color: colors.divider),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8.r),
-                      ),
-                    ),
-                    child: Text(
-                      'Nanti Saja',
-                      style: GoogleFonts.inter(
-                        fontSize: 14.sp,
-                        fontWeight: FontWeight.w500,
-                        color: colors.textSecondary,
-                      ),
-                    ),
-                  ),
-                ),
-                SizedBox(width: 12.w),
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.pop(dialogContext);
-                      _waitingForAppSettings = true;
-                      LocationUtils.openAppSettings();
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: colors.primaryBlue,
-                      padding: EdgeInsets.symmetric(vertical: 12.h),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8.r),
-                      ),
-                      elevation: 0,
-                    ),
-                    child: Text(
-                      'Buka Pengaturan',
-                      style: GoogleFonts.inter(
-                        fontSize: 14.sp,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
   }
 
   @override
@@ -337,11 +229,20 @@ class _BerandaScreenState extends State<BerandaScreen>
             ),
             AttendanceCard(
               name: userName,
+              avatarUrl: userAvatar,
               date: 'Hari ini ${FormatDate.todayWithDayName(date)}',
-              shiftInfo: 'Shift: Shift Office Hour [09:00 - 17:00]',
+              shiftInfo: _shiftData?.displayShiftInfo ?? 'Shift tidak tersedia',
+              isLoading: _isLoadingShift,
+              jamMasuk: _shiftData?.formattedCheckIn,
+              jamKeluar: _shiftData?.formattedCheckOut,
+              photoIn: _shiftData?.formattedPhotoIn,
+              photoOut: _shiftData?.formattedPhotoOut,
               onRekamWaktuTap: _onRekamWaktuTap,
               onLainnyaTap: () {
-                RiwayatKehadiranBottomSheet.show(context);
+                RiwayatKehadiranBottomSheet.show(
+                  context,
+                  records: _attendanceRecords,
+                );
               },
               onShiftTap: () {
                 Navigator.push(

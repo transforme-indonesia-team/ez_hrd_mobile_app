@@ -1,14 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:hrd_app/core/config/env_config.dart';
 import 'package:hrd_app/core/theme/app_colors.dart';
 import 'package:hrd_app/core/theme/color_palette.dart';
+import 'package:intl/intl.dart';
 
 /// Bottom sheet untuk menampilkan Riwayat Kehadiran
 class RiwayatKehadiranBottomSheet extends StatefulWidget {
   const RiwayatKehadiranBottomSheet({super.key});
 
-  static void show(BuildContext context) {
+  static void show(
+    BuildContext context, {
+    List<Map<String, dynamic>>? records,
+  }) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -19,7 +24,10 @@ class RiwayatKehadiranBottomSheet extends StatefulWidget {
         maxChildSize: 0.95,
         expand: false,
         builder: (context, scrollController) {
-          return _RiwayatKehadiranContent(scrollController: scrollController);
+          return _RiwayatKehadiranContent(
+            scrollController: scrollController,
+            records: records ?? [],
+          );
         },
       ),
     );
@@ -40,8 +48,12 @@ class _RiwayatKehadiranBottomSheetState
 
 class _RiwayatKehadiranContent extends StatefulWidget {
   final ScrollController scrollController;
+  final List<Map<String, dynamic>> records;
 
-  const _RiwayatKehadiranContent({required this.scrollController});
+  const _RiwayatKehadiranContent({
+    required this.scrollController,
+    required this.records,
+  });
 
   @override
   State<_RiwayatKehadiranContent> createState() =>
@@ -60,15 +72,17 @@ class _RiwayatKehadiranContentState extends State<_RiwayatKehadiranContent> {
         color: colors.background,
         borderRadius: BorderRadius.vertical(top: Radius.circular(16.r)),
       ),
-      child: CustomScrollView(
-        controller: widget.scrollController,
-        slivers: [
-          // Header (pinned)
-          SliverToBoxAdapter(child: _buildHeader(colors)),
+      child: Column(
+        children: [
+          // Header
+          _buildHeader(colors),
           // Content
-          SliverFillRemaining(
-            hasScrollBody: false,
-            child: _buildEmptyState(colors),
+          Expanded(
+            child: _selectedTab == 1
+                ? _buildEmptyState(colors) // Kehadiran Bersama = always empty
+                : widget.records.isEmpty
+                ? _buildEmptyState(colors)
+                : _buildAttendanceList(colors),
           ),
         ],
       ),
@@ -186,6 +200,137 @@ class _RiwayatKehadiranContentState extends State<_RiwayatKehadiranContent> {
             color: isSelected ? Colors.white : colors.textPrimary,
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildAttendanceList(dynamic colors) {
+    return ListView.builder(
+      controller: widget.scrollController,
+      padding: EdgeInsets.zero,
+      itemCount: widget.records.length,
+      itemBuilder: (context, index) {
+        final record = widget.records[index];
+        return _buildAttendanceItem(colors, record);
+      },
+    );
+  }
+
+  Widget _buildAttendanceItem(dynamic colors, Map<String, dynamic> record) {
+    final dateStr = record['date_schedule'] as String?;
+    final time = record['time'] as String?;
+    final photo = record['photo'] as String?;
+    final type = record['type'] as String?;
+    final isCheckIn = type == 'check_in';
+
+    // Format date
+    String formattedDate = dateStr ?? '';
+    if (dateStr != null) {
+      try {
+        final date = DateTime.parse(dateStr);
+        formattedDate = DateFormat('dd MMM yyyy', 'id').format(date);
+        if (time != null) {
+          formattedDate = '$formattedDate $time';
+        }
+      } catch (_) {}
+    }
+
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+      decoration: BoxDecoration(
+        border: Border(bottom: BorderSide(color: colors.divider, width: 1)),
+      ),
+      child: Row(
+        children: [
+          // Photo
+          Container(
+            width: 48.w,
+            height: 48.w,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: ColorPalette.slate200,
+            ),
+            child: photo != null && photo != '-'
+                ? ClipOval(
+                    child: Image.network(
+                      '${EnvConfig.imageBaseUrl}$photo',
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Icon(
+                          Icons.person,
+                          color: ColorPalette.slate400,
+                          size: 24.sp,
+                        );
+                      },
+                    ),
+                  )
+                : Icon(Icons.person, color: ColorPalette.slate400, size: 24.sp),
+          ),
+          SizedBox(width: 12.w),
+          // Info
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  formattedDate,
+                  style: GoogleFonts.inter(
+                    fontSize: 13.sp,
+                    fontWeight: FontWeight.w500,
+                    color: colors.textPrimary,
+                  ),
+                ),
+                SizedBox(height: 4.h),
+                Row(
+                  children: [
+                    Icon(
+                      Icons.check,
+                      size: 14.sp,
+                      color: ColorPalette.green500,
+                    ),
+                    SizedBox(width: 4.w),
+                    Text(
+                      'Telah diproses',
+                      style: GoogleFonts.inter(
+                        fontSize: 11.sp,
+                        fontWeight: FontWeight.w400,
+                        color: ColorPalette.green500,
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 4.h),
+                Row(
+                  children: [
+                    Icon(
+                      Icons.phone_android,
+                      size: 14.sp,
+                      color: ColorPalette.green500,
+                    ),
+                    SizedBox(width: 4.w),
+                    Icon(
+                      Icons.location_on,
+                      size: 14.sp,
+                      color: ColorPalette.green500,
+                    ),
+                    SizedBox(width: 4.w),
+                    Icon(
+                      Icons.camera_alt,
+                      size: 14.sp,
+                      color: ColorPalette.green500,
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          // Location icon
+          Icon(
+            Icons.location_on_outlined,
+            color: ColorPalette.orange400,
+            size: 24.sp,
+          ),
+        ],
       ),
     );
   }

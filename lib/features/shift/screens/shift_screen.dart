@@ -50,7 +50,7 @@ class _ShiftScreenState extends State<ShiftScreen> {
     if (date.weekday == DateTime.saturday || date.weekday == DateTime.sunday) {
       return 'Shift OFF';
     }
-    return 'Shift Office Hour [09:00 - 17:00]';
+    return 'Shift Office Hour';
   }
 
   @override

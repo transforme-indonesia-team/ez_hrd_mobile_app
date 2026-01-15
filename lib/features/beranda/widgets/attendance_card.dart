@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:hrd_app/core/config/env_config.dart';
 import 'package:hrd_app/core/theme/app_colors.dart';
 import 'package:hrd_app/core/theme/color_palette.dart';
-import 'package:hrd_app/core/utils/string_utils.dart';
+import 'package:hrd_app/core/widgets/skeleton_widget.dart';
+import 'package:hrd_app/core/widgets/user_avatar.dart';
+import 'package:hrd_app/features/beranda/widgets/attendance_photo_detail_bottom_sheet.dart';
 
 /// Attendance Card dengan expandable toggle
 class AttendanceCard extends StatefulWidget {
@@ -17,6 +20,9 @@ class AttendanceCard extends StatefulWidget {
   final VoidCallback? onShiftTap;
   final bool isLoading;
   final String? name;
+  final String? avatarUrl;
+  final String? photoIn;
+  final String? photoOut;
 
   const AttendanceCard({
     super.key,
@@ -30,6 +36,9 @@ class AttendanceCard extends StatefulWidget {
     this.onShiftTap,
     this.isLoading = false,
     this.name,
+    this.avatarUrl,
+    this.photoIn,
+    this.photoOut,
   });
 
   @override
@@ -68,8 +77,13 @@ class _AttendanceCardState extends State<AttendanceCard> {
           // Rekam Waktu button
           _buildRekamWaktuButton(colors),
 
-          // Lainnya button (hanya saat expanded)
-          if (_isExpanded) _buildLainnyaButton(colors),
+          // Attendance photo list and Lainnya button (hanya saat expanded)
+          if (_isExpanded) ...[
+            // Attendance photo list
+            _buildAttendancePhotoList(colors),
+
+            _buildLainnyaButton(colors),
+          ],
 
           // Toggle button
           Divider(color: colors.divider, thickness: 2.r),
@@ -100,14 +114,17 @@ class _AttendanceCardState extends State<AttendanceCard> {
                   ),
                 ),
                 SizedBox(height: 4.h),
-                Text(
-                  widget.shiftInfo,
-                  style: GoogleFonts.inter(
-                    fontSize: 12.sp,
-                    fontWeight: FontWeight.w500,
-                    color: colors.textPrimary,
+                if (widget.isLoading)
+                  _buildShiftSkeleton()
+                else
+                  Text(
+                    widget.shiftInfo,
+                    style: GoogleFonts.inter(
+                      fontSize: 12.sp,
+                      fontWeight: FontWeight.w500,
+                      color: colors.textPrimary,
+                    ),
                   ),
-                ),
               ],
             ),
           ),
@@ -126,6 +143,12 @@ class _AttendanceCardState extends State<AttendanceCard> {
     );
   }
 
+  Widget _buildShiftSkeleton() {
+    return SkeletonContainer(
+      child: SkeletonBox(width: 180.w, height: 14.h),
+    );
+  }
+
   Widget _buildTimeInfo(dynamic colors) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 16.w),
@@ -137,6 +160,7 @@ class _AttendanceCardState extends State<AttendanceCard> {
               colors: colors,
               label: 'Jam Masuk',
               time: widget.jamMasuk,
+              attendancePhoto: widget.photoIn,
               isCheckIn: true,
             ),
           ),
@@ -147,6 +171,7 @@ class _AttendanceCardState extends State<AttendanceCard> {
               colors: colors,
               label: 'Jam Keluar',
               time: widget.jamKeluar,
+              attendancePhoto: widget.photoOut,
               isCheckIn: false,
             ),
           ),
@@ -159,32 +184,50 @@ class _AttendanceCardState extends State<AttendanceCard> {
     required dynamic colors,
     required String label,
     required String? time,
+    required String? attendancePhoto,
     required bool isCheckIn,
   }) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 8.h),
       child: Row(
         children: [
-          // Avatar/initials
-          Container(
-            width: 32.w,
-            height: 32.w,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: ColorPalette.slate200,
-              // border: Border.all(color: ColorPalette.orange400, width: 1.5),
-            ),
-            child: Center(
-              child: Text(
-                StringUtils.getInitials(widget.name),
-                style: GoogleFonts.inter(
-                  fontSize: 10.sp,
-                  fontWeight: FontWeight.w600,
-                  color: ColorPalette.slate500,
+          // Attendance photo or user avatar
+          attendancePhoto != null
+              ? Container(
+                  width: 32.w,
+                  height: 32.w,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: isCheckIn
+                          ? ColorPalette.green500
+                          : ColorPalette.red500,
+                      width: 2,
+                    ),
+                  ),
+                  child: ClipOval(
+                    child: Image.network(
+                      '${EnvConfig.imageBaseUrl}$attendancePhoto',
+                      width: 32.w,
+                      height: 32.w,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) {
+                        return UserAvatar(
+                          avatarUrl: widget.avatarUrl,
+                          name: widget.name,
+                          size: 32,
+                          fontSize: 10,
+                        );
+                      },
+                    ),
+                  ),
+                )
+              : UserAvatar(
+                  avatarUrl: widget.avatarUrl,
+                  name: widget.name,
+                  size: 32,
+                  fontSize: 10,
                 ),
-              ),
-            ),
-          ),
           SizedBox(width: 8.w),
           Expanded(
             child: Column(
@@ -334,6 +377,163 @@ class _AttendanceCardState extends State<AttendanceCard> {
               color: colors.primaryBlue,
               size: 20.sp,
             ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAttendancePhotoList(dynamic colors) {
+    // Filter photos that exist
+    final List<Map<String, dynamic>> photos = [];
+
+    if (widget.photoIn != null && widget.jamMasuk != null) {
+      photos.add({
+        'photo': widget.photoIn!,
+        'date': widget.date,
+        'time': widget.jamMasuk!,
+        'isCheckIn': true,
+      });
+    }
+
+    if (widget.photoOut != null && widget.jamKeluar != null) {
+      photos.add({
+        'photo': widget.photoOut!,
+        'date': widget.date,
+        'time': widget.jamKeluar!,
+        'isCheckIn': false,
+      });
+    }
+
+    if (photos.isEmpty) return const SizedBox.shrink();
+
+    return Column(
+      children: photos.map((photoData) {
+        return _buildAttendancePhotoItem(
+          colors: colors,
+          photoUrl: photoData['photo'],
+          date: photoData['date'],
+          time: photoData['time'],
+          isCheckIn: photoData['isCheckIn'],
+        );
+      }).toList(),
+    );
+  }
+
+  Widget _buildAttendancePhotoItem({
+    required dynamic colors,
+    required String photoUrl,
+    required String date,
+    required String time,
+    required bool isCheckIn,
+  }) {
+    return InkWell(
+      onTap: () {
+        AttendancePhotoDetailBottomSheet.show(
+          context: context,
+          photoUrl: photoUrl,
+          date: date,
+          time: time,
+          isCheckIn: isCheckIn,
+        );
+      },
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+        decoration: BoxDecoration(
+          border: Border(bottom: BorderSide(color: colors.divider, width: 1)),
+        ),
+        child: Row(
+          children: [
+            // Photo thumbnail
+            Container(
+              width: 48.w,
+              height: 48.w,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: isCheckIn
+                      ? ColorPalette.green500
+                      : ColorPalette.red500,
+                  width: 2,
+                ),
+              ),
+              child: ClipOval(
+                child: Image.network(
+                  '${EnvConfig.imageBaseUrl}$photoUrl',
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Container(
+                      color: ColorPalette.slate200,
+                      child: Icon(
+                        Icons.broken_image_outlined,
+                        color: ColorPalette.slate400,
+                        size: 24.sp,
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ),
+            SizedBox(width: 12.w),
+            // Info
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    date,
+                    style: GoogleFonts.inter(
+                      fontSize: 13.sp,
+                      fontWeight: FontWeight.w500,
+                      color: colors.textPrimary,
+                    ),
+                  ),
+                  SizedBox(height: 4.h),
+                  Row(
+                    children: [
+                      Text(
+                        time,
+                        style: GoogleFonts.inter(
+                          fontSize: 12.sp,
+                          fontWeight: FontWeight.w500,
+                          color: ColorPalette.green500,
+                        ),
+                      ),
+                      SizedBox(width: 6.w),
+                      Icon(
+                        Icons.location_on,
+                        size: 14.sp,
+                        color: ColorPalette.green500,
+                      ),
+                      SizedBox(width: 4.w),
+                      Icon(
+                        Icons.camera_alt,
+                        size: 14.sp,
+                        color: ColorPalette.green500,
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            // Status badge
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 4.h),
+              decoration: BoxDecoration(
+                color: ColorPalette.green100,
+                borderRadius: BorderRadius.circular(12.r),
+              ),
+              child: Text(
+                'Telah diproses',
+                style: GoogleFonts.inter(
+                  fontSize: 10.sp,
+                  fontWeight: FontWeight.w500,
+                  color: ColorPalette.green700,
+                ),
+              ),
+            ),
+            SizedBox(width: 8.w),
+            Icon(Icons.chevron_right, color: colors.textSecondary, size: 20.sp),
           ],
         ),
       ),

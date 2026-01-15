@@ -12,6 +12,21 @@ class AttendanceService {
 
   final _api = BaseApiService();
 
+  Future<Map<String, dynamic>> getAbsentEmployee({
+    DateTime? startDate,
+    DateTime? endDate,
+  }) async {
+    final dateFormat = DateFormat('yyyy-MM-dd');
+
+    return _api.get(
+      '/attendance/absent-by-employee',
+      queryParameters: {
+        'start_date': startDate != null ? dateFormat.format(startDate) : null,
+        'end_date': endDate != null ? dateFormat.format(endDate) : null,
+      },
+    );
+  }
+
   Future<Map<String, dynamic>> absent({
     required double latitude,
     required double longitude,
