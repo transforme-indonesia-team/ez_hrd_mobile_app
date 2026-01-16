@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:hrd_app/core/theme/app_text_styles.dart';
 import 'package:hrd_app/core/theme/app_colors.dart';
+import 'package:hrd_app/core/widgets/empty_state_widget.dart';
 
 /// Screen Postingan dengan fitur empty state
 class PostinganScreen extends StatelessWidget {
@@ -14,11 +15,14 @@ class PostinganScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: colors.background,
       appBar: _buildAppBar(colors),
-      body: _buildEmptyState(colors),
+      body: const EmptyStateWidget(
+        message: 'Fitur Tidak Diaktifkan\nHubungi admin untuk akses',
+        icon: Icons.description_outlined,
+      ),
     );
   }
 
-  PreferredSizeWidget _buildAppBar(dynamic colors) {
+  PreferredSizeWidget _buildAppBar(ThemeColors colors) {
     return AppBar(
       backgroundColor: colors.background,
       surfaceTintColor: Colors.transparent,
@@ -29,11 +33,7 @@ class PostinganScreen extends StatelessWidget {
       titleSpacing: 16.w,
       title: Text(
         'Postingan',
-        style: GoogleFonts.inter(
-          fontSize: 18.sp,
-          fontWeight: FontWeight.w600,
-          color: colors.textPrimary,
-        ),
+        style: AppTextStyles.h3(colors.textPrimary),
       ),
       actions: [
         IconButton(
@@ -44,47 +44,6 @@ class PostinganScreen extends StatelessWidget {
         ),
         SizedBox(width: 8.w),
       ],
-    );
-  }
-
-  Widget _buildEmptyState(dynamic colors) {
-    return Center(
-      child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 32.w),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            // Icon illustration
-            Icon(
-              Icons.description_outlined,
-              size: 100.sp,
-              color: colors.divider,
-            ),
-            SizedBox(height: 24.h),
-            // Title
-            Text(
-              'Fitur Tidak Diaktifkan',
-              style: GoogleFonts.inter(
-                fontSize: 18.sp,
-                fontWeight: FontWeight.w600,
-                color: colors.textPrimary,
-              ),
-            ),
-            SizedBox(height: 12.h),
-            // Description
-            Text(
-              'Fitur ini tidak aktif untuk perusahaan Anda. Hubungi admin Anda untuk akses.',
-              textAlign: TextAlign.center,
-              style: GoogleFonts.inter(
-                fontSize: 14.sp,
-                fontWeight: FontWeight.w400,
-                color: colors.textSecondary,
-                height: 1.5,
-              ),
-            ),
-          ],
-        ),
-      ),
     );
   }
 }

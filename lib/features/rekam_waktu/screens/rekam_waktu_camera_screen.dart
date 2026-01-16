@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:hrd_app/core/theme/app_text_styles.dart';
 import 'package:camera/camera.dart';
 import 'package:hrd_app/core/theme/app_colors.dart';
 import 'package:hrd_app/core/utils/snackbar_utils.dart';
@@ -229,7 +229,7 @@ class _RekamWaktuCameraScreenState extends State<RekamWaktuCameraScreen> {
           SizedBox(height: 16.h),
           Text(
             'Memuat kamera...',
-            style: GoogleFonts.inter(color: Colors.white, fontSize: 14.sp),
+            style: AppTextStyles.body(Colors.white),
           ),
         ],
       ),
@@ -265,18 +265,11 @@ class _RekamWaktuCameraScreenState extends State<RekamWaktuCameraScreen> {
                 children: [
                   Text(
                     'Rekam Waktu',
-                    style: GoogleFonts.inter(
-                      fontSize: 16.sp,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.white,
-                    ),
+                    style: AppTextStyles.h4(Colors.white),
                   ),
                   Text(
                     'Posisikan wajah dalam bingkai',
-                    style: GoogleFonts.inter(
-                      fontSize: 12.sp,
-                      color: Colors.white70,
-                    ),
+                    style: AppTextStyles.caption(Colors.white70),
                   ),
                 ],
               ),

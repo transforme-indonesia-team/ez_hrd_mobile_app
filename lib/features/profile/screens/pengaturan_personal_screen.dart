@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:hrd_app/core/theme/app_text_styles.dart';
 import 'package:hrd_app/core/theme/app_colors.dart';
 import 'package:hrd_app/core/theme/color_palette.dart';
 import 'package:hrd_app/core/utils/snackbar_utils.dart';
@@ -24,11 +24,7 @@ class PengaturanPersonalScreen extends StatelessWidget {
         ),
         title: Text(
           'Pengaturan Personal',
-          style: GoogleFonts.inter(
-            fontSize: 18.sp,
-            fontWeight: FontWeight.w600,
-            color: colors.textPrimary,
-          ),
+          style: AppTextStyles.h3(colors.textPrimary),
         ),
       ),
       body: SingleChildScrollView(
@@ -87,21 +83,12 @@ class PengaturanPersonalScreen extends StatelessWidget {
         children: [
           Text(
             'Personalisasi Pengaturan Aplikasi Anda',
-            style: GoogleFonts.inter(
-              fontSize: 20.sp,
-              fontWeight: FontWeight.w700,
-              color: Colors.white,
-            ),
+            style: AppTextStyles.body(Colors.white),
           ),
           SizedBox(height: 8.h),
           Text(
             'Kelola profil, keamanan, dan preferensi sesuai dengan kebutuhan Anda untuk pengalaman terbaik.',
-            style: GoogleFonts.inter(
-              fontSize: 14.sp,
-              fontWeight: FontWeight.w400,
-              color: Colors.white.withValues(alpha: 0.9),
-              height: 1.5,
-            ),
+            style: AppTextStyles.body(Colors.white.withValues(alpha: 0.9)),
           ),
           SizedBox(height: 16.h),
           // Quick action chips
@@ -126,25 +113,13 @@ class PengaturanPersonalScreen extends StatelessWidget {
       ),
       child: Text(
         label,
-        style: GoogleFonts.inter(
-          fontSize: 12.sp,
-          fontWeight: FontWeight.w500,
-          color: ColorPalette.blue600,
-        ),
+        style: AppTextStyles.captionMedium(ColorPalette.blue600),
       ),
     );
   }
 
   Widget _buildSectionTitle(String title, ThemeColors colors) {
-    return Text(
-      title,
-      style: GoogleFonts.inter(
-        fontSize: 12.sp,
-        fontWeight: FontWeight.w600,
-        color: colors.textSecondary,
-        letterSpacing: 1.2,
-      ),
-    );
+    return Text(title, style: AppTextStyles.caption(colors.textSecondary));
   }
 
   Widget _buildMenuGrid(BuildContext context, List<_MenuItem> items) {
@@ -206,12 +181,7 @@ class PengaturanPersonalScreen extends StatelessWidget {
               textAlign: TextAlign.center,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
-              style: GoogleFonts.inter(
-                fontSize: 10.sp,
-                fontWeight: FontWeight.w500,
-                color: colors.textPrimary,
-                height: 1.2,
-              ),
+              style: AppTextStyles.body(colors.textPrimary),
             ),
           ),
         ],

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:hrd_app/core/theme/app_colors.dart';
+import 'package:hrd_app/core/theme/app_text_styles.dart';
 import 'package:hrd_app/features/fitur/models/fitur_item_model.dart';
 
 class FiturItemGrid extends StatelessWidget {
@@ -61,11 +61,7 @@ class FiturItemGrid extends StatelessWidget {
                 textAlign: TextAlign.center,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
-                style: GoogleFonts.inter(
-                  fontSize: 10.sp,
-                  fontWeight: FontWeight.w500,
-                  color: colors.textPrimary,
-                ),
+                style: AppTextStyles.xxSmall(colors.textPrimary),
               ),
             ),
           ),

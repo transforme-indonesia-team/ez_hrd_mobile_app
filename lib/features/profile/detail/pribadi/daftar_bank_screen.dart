@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:hrd_app/core/theme/app_text_styles.dart';
 import 'package:hrd_app/core/theme/app_colors.dart';
 import 'package:hrd_app/core/widgets/empty_state_widget.dart';
 import 'package:hrd_app/core/widgets/skeleton_widget.dart';
+import 'package:hrd_app/data/models/employee_bank_model.dart';
 import 'package:hrd_app/data/services/employee_service.dart';
 
 class DaftarBankScreen extends StatefulWidget {
@@ -15,7 +16,7 @@ class DaftarBankScreen extends StatefulWidget {
 
 class _DaftarBankScreenState extends State<DaftarBankScreen> {
   bool _isLoading = true;
-  List<dynamic> _bankList = [];
+  List<EmployeeBankModel> _bankList = [];
   String? _errorMessage;
 
   @override
@@ -29,7 +30,8 @@ class _DaftarBankScreenState extends State<DaftarBankScreen> {
       final response = await EmployeeService().getRelation(relation: 'BANK');
 
       final records = response['original']['records'] as Map<String, dynamic>?;
-      final data = records?['employee_bank'] as List? ?? [];
+      final rawData = records?['employee_bank'] as List? ?? [];
+      final data = rawData.map((e) => EmployeeBankModel.fromJson(e)).toList();
 
       if (mounted) {
         setState(() {
@@ -62,11 +64,7 @@ class _DaftarBankScreenState extends State<DaftarBankScreen> {
         ),
         title: Text(
           'Daftar Bank',
-          style: GoogleFonts.inter(
-            fontSize: 18.sp,
-            fontWeight: FontWeight.w600,
-            color: colors.textPrimary,
-          ),
+          style: AppTextStyles.h3(colors.textPrimary),
         ),
       ),
       body: _buildBody(colors),
@@ -85,7 +83,7 @@ class _DaftarBankScreenState extends State<DaftarBankScreen> {
       return Center(
         child: Text(
           _errorMessage!,
-          style: GoogleFonts.inter(color: colors.textSecondary),
+          style: AppTextStyles.body(colors.textSecondary),
         ),
       );
     }
@@ -114,10 +112,10 @@ class _DaftarBankScreenState extends State<DaftarBankScreen> {
     );
   }
 
-  Widget _buildBankCard(ThemeColors colors, Map<String, dynamic> bank) {
-    final bankName = bank['bank_name'] ?? '-';
-    final accountName = bank['bank_account_name_employee'] ?? '-';
-    final accountNumber = bank['bank_account_number_employee'] ?? '-';
+  Widget _buildBankCard(ThemeColors colors, EmployeeBankModel bank) {
+    final bankName = bank.displayBankName;
+    final accountName = bank.displayAccountName;
+    final accountNumber = bank.displayAccountNumber;
 
     return Container(
       width: double.infinity,
@@ -152,20 +150,12 @@ class _DaftarBankScreenState extends State<DaftarBankScreen> {
                   children: [
                     Text(
                       bankName,
-                      style: GoogleFonts.inter(
-                        fontSize: 14.sp,
-                        fontWeight: FontWeight.w600,
-                        color: colors.textPrimary,
-                      ),
+                      style: AppTextStyles.bodySemiBold(colors.textPrimary),
                     ),
                     SizedBox(height: 4.h),
                     Text(
                       accountName,
-                      style: GoogleFonts.inter(
-                        fontSize: 12.sp,
-                        color: colors.primaryBlue,
-                        fontWeight: FontWeight.w500,
-                      ),
+                      style: AppTextStyles.caption(colors.primaryBlue),
                     ),
                   ],
                 ),
@@ -198,19 +188,12 @@ class _DaftarBankScreenState extends State<DaftarBankScreen> {
         SizedBox(width: 8.w),
         Text(
           '$label: ',
-          style: GoogleFonts.inter(
-            fontSize: 13.sp,
-            color: colors.textSecondary,
-          ),
+          style: AppTextStyles.small(colors.textSecondary),
         ),
         Expanded(
           child: Text(
             value,
-            style: GoogleFonts.inter(
-              fontSize: 13.sp,
-              fontWeight: FontWeight.w500,
-              color: colors.textPrimary,
-            ),
+            style: AppTextStyles.smallMedium(colors.textPrimary),
           ),
         ),
       ],

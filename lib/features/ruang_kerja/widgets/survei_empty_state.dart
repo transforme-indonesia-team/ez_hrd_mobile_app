@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:hrd_app/core/theme/app_text_styles.dart';
 import 'package:hrd_app/core/theme/app_colors.dart';
 
 /// Empty state widget untuk tab Polling/Survei
@@ -28,11 +28,7 @@ class SurveiEmptyState extends StatelessWidget {
             // Text
             Text(
               'Tidak ada data untuk ditampilkan',
-              style: GoogleFonts.inter(
-                fontSize: 14.sp,
-                fontWeight: FontWeight.w500,
-                color: colors.textSecondary,
-              ),
+              style: AppTextStyles.bodyMedium(colors.textSecondary),
             ),
           ],
         ),

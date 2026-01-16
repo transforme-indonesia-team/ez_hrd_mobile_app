@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:hrd_app/core/theme/app_text_styles.dart';
 import 'package:hrd_app/core/theme/app_colors.dart';
+import 'package:hrd_app/core/widgets/empty_state_widget.dart';
 
 class KeluargaScreen extends StatelessWidget {
   const KeluargaScreen({super.key});
@@ -21,34 +21,12 @@ class KeluargaScreen extends StatelessWidget {
         ),
         title: Text(
           'Keluarga & Tanggungan',
-          style: GoogleFonts.inter(
-            fontSize: 18.sp,
-            fontWeight: FontWeight.w600,
-            color: colors.textPrimary,
-          ),
+          style: AppTextStyles.h3(colors.textPrimary),
         ),
       ),
-      body: _buildEmptyState(colors),
-    );
-  }
-
-  Widget _buildEmptyState(dynamic colors) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(Icons.description_outlined, size: 80.sp, color: colors.divider),
-          SizedBox(height: 16.h),
-          Text(
-            'Tidak ada data untuk\nditampilkan',
-            textAlign: TextAlign.center,
-            style: GoogleFonts.inter(
-              fontSize: 16.sp,
-              fontWeight: FontWeight.w600,
-              color: colors.textPrimary,
-            ),
-          ),
-        ],
+      body: const EmptyStateWidget(
+        message: 'Belum ada data keluarga',
+        icon: Icons.family_restroom_outlined,
       ),
     );
   }

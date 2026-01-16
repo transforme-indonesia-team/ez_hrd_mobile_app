@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:hrd_app/core/theme/app_text_styles.dart';
 import 'package:hrd_app/core/theme/app_colors.dart';
 
 /// Widget untuk menampilkan tabs Polling dan Survei
@@ -27,11 +27,7 @@ class SurveiKaryawanTabs extends StatelessWidget {
           // Title
           Text(
             'Survei Karyawan',
-            style: GoogleFonts.inter(
-              fontSize: 15.sp,
-              fontWeight: FontWeight.w600,
-              color: colors.textPrimary,
-            ),
+            style: AppTextStyles.body(colors.textPrimary),
           ),
           SizedBox(height: 16.h),
           // Tabs - menggunakan Row dengan Expanded untuk menyebar rata
@@ -79,11 +75,7 @@ class SurveiKaryawanTabs extends StatelessWidget {
             child: Text(
               label,
               textAlign: TextAlign.center,
-              style: GoogleFonts.inter(
-                fontSize: 14.sp,
-                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
-                color: isSelected ? colors.primaryBlue : colors.textSecondary,
-              ),
+              style: AppTextStyles.body(isSelected ? colors.primaryBlue : colors.textSecondary),
             ),
           ),
           SizedBox(height: 8.h),

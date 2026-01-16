@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:hrd_app/core/theme/app_text_styles.dart';
 import 'package:hrd_app/core/providers/auth_provider.dart';
 import 'package:hrd_app/core/theme/app_colors.dart';
 import 'package:hrd_app/data/models/user_model.dart';
@@ -76,11 +76,7 @@ class AlamatScreen extends StatelessWidget {
         ),
         title: Text(
           'Alamat',
-          style: GoogleFonts.inter(
-            fontSize: 18.sp,
-            fontWeight: FontWeight.w600,
-            color: colors.textPrimary,
-          ),
+          style: AppTextStyles.h3(colors.textPrimary),
         ),
       ),
       body: SingleChildScrollView(
@@ -141,11 +137,7 @@ class AlamatScreen extends StatelessWidget {
         children: [
           Text(
             title,
-            style: GoogleFonts.inter(
-              fontSize: 14.sp,
-              fontWeight: FontWeight.w600,
-              color: colors.textPrimary,
-            ),
+            style: AppTextStyles.bodySemiBold(colors.textPrimary),
           ),
           SizedBox(height: 12.h),
           Row(
@@ -160,12 +152,7 @@ class AlamatScreen extends StatelessWidget {
               Expanded(
                 child: Text(
                   address,
-                  style: GoogleFonts.inter(
-                    fontSize: 12.sp,
-                    fontWeight: FontWeight.w400,
-                    color: colors.textSecondary,
-                    height: 1.5,
-                  ),
+                  style: AppTextStyles.caption(colors.textSecondary),
                 ),
               ),
             ],

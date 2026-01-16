@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:hrd_app/core/theme/app_text_styles.dart';
 import 'package:hrd_app/core/utils/snackbar_utils.dart';
 import 'package:hrd_app/features/profile/detail/ketenagakerjaan/ketenagakerjaan_screen.dart';
 import 'package:provider/provider.dart';
@@ -176,11 +176,7 @@ class _ProfileDetailScreenState extends State<ProfileDetailScreen> {
         ),
         title: Text(
           'Profil Karyawan',
-          style: GoogleFonts.inter(
-            fontSize: 18.sp,
-            fontWeight: FontWeight.w600,
-            color: colors.textPrimary,
-          ),
+          style: AppTextStyles.h3(colors.textPrimary),
         ),
       ),
       body: SingleChildScrollView(

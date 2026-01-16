@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:hrd_app/core/theme/app_colors.dart';
+import 'package:hrd_app/core/theme/app_text_styles.dart';
 import 'package:hrd_app/core/theme/color_palette.dart';
 import 'package:hrd_app/features/profile/models/profile_detail_model.dart';
 
@@ -53,19 +53,11 @@ class ProfileInfoSection extends StatelessWidget {
     );
   }
 
-  Widget _buildSectionTitle(String title, dynamic colors) {
-    return Text(
-      title,
-      style: GoogleFonts.inter(
-        fontSize: 12.sp,
-        fontWeight: FontWeight.w600,
-        color: colors.textPrimary,
-        letterSpacing: 0.5,
-      ),
-    );
+  Widget _buildSectionTitle(String title, ThemeColors colors) {
+    return Text(title, style: AppTextStyles.captionMedium(colors.textPrimary));
   }
 
-  Widget _buildCompanyInfo(dynamic colors) {
+  Widget _buildCompanyInfo(ThemeColors colors) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -77,20 +69,12 @@ class ProfileInfoSection extends StatelessWidget {
             children: [
               Text(
                 company ?? '-',
-                style: GoogleFonts.inter(
-                  fontSize: 13.sp,
-                  fontWeight: FontWeight.w600,
-                  color: colors.textPrimary,
-                ),
+                style: AppTextStyles.smallMedium(colors.textPrimary),
               ),
               SizedBox(height: 2.h),
               Text(
                 organizationName ?? '-',
-                style: GoogleFonts.inter(
-                  fontSize: 12.sp,
-                  fontWeight: FontWeight.w600,
-                  color: colors.textPrimary,
-                ),
+                style: AppTextStyles.captionMedium(colors.textPrimary),
               ),
             ],
           ),

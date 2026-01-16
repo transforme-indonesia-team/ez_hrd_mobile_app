@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:hrd_app/core/config/env_config.dart';
 import 'package:hrd_app/core/theme/app_colors.dart';
+import 'package:hrd_app/core/theme/app_text_styles.dart';
 import 'package:hrd_app/core/theme/color_palette.dart';
+import 'package:hrd_app/core/utils/image_url_extension.dart';
 
 /// Bottom sheet untuk menampilkan detail foto attendance
 class AttendancePhotoDetailBottomSheet extends StatelessWidget {
@@ -65,7 +65,7 @@ class AttendancePhotoDetailBottomSheet extends StatelessWidget {
     );
   }
 
-  Widget _buildHeader(BuildContext context, dynamic colors) {
+  Widget _buildHeader(BuildContext context, ThemeColors colors) {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
       decoration: BoxDecoration(
@@ -75,12 +75,8 @@ class AttendancePhotoDetailBottomSheet extends StatelessWidget {
         children: [
           Expanded(
             child: Text(
-              isCheckIn ? 'Kam, $date' : 'Rab, $date',
-              style: GoogleFonts.inter(
-                fontSize: 16.sp,
-                fontWeight: FontWeight.w600,
-                color: colors.textPrimary,
-              ),
+              isCheckIn ? 'Masuk - $date' : 'Keluar - $date',
+              style: AppTextStyles.h4(colors.textPrimary),
             ),
           ),
           IconButton(
@@ -94,7 +90,7 @@ class AttendancePhotoDetailBottomSheet extends StatelessWidget {
     );
   }
 
-  Widget _buildPhoto(dynamic colors) {
+  Widget _buildPhoto(ThemeColors colors) {
     return Container(
       width: double.infinity,
       color: Colors.black,
@@ -102,7 +98,7 @@ class AttendancePhotoDetailBottomSheet extends StatelessWidget {
         minScale: 0.5,
         maxScale: 4.0,
         child: Image.network(
-          '${EnvConfig.imageBaseUrl}$photoUrl',
+          photoUrl.asFullImageUrl!,
           fit: BoxFit.contain,
           loadingBuilder: (context, child, loadingProgress) {
             if (loadingProgress == null) return child;
@@ -129,10 +125,7 @@ class AttendancePhotoDetailBottomSheet extends StatelessWidget {
                   SizedBox(height: 16.h),
                   Text(
                     'Gagal memuat foto',
-                    style: GoogleFonts.inter(
-                      fontSize: 14.sp,
-                      color: Colors.grey,
-                    ),
+                    style: AppTextStyles.body(Colors.grey),
                   ),
                 ],
               ),
@@ -143,7 +136,7 @@ class AttendancePhotoDetailBottomSheet extends StatelessWidget {
     );
   }
 
-  Widget _buildInfoSection(dynamic colors) {
+  Widget _buildInfoSection(ThemeColors colors) {
     return Container(
       padding: EdgeInsets.all(16.w),
       decoration: BoxDecoration(
@@ -155,14 +148,7 @@ class AttendancePhotoDetailBottomSheet extends StatelessWidget {
           // Time and icons
           Row(
             children: [
-              Text(
-                time,
-                style: GoogleFonts.inter(
-                  fontSize: 16.sp,
-                  fontWeight: FontWeight.w600,
-                  color: ColorPalette.green500,
-                ),
-              ),
+              Text(time, style: AppTextStyles.h4(ColorPalette.green500)),
               SizedBox(width: 8.w),
               Icon(
                 Icons.location_on,
@@ -178,13 +164,7 @@ class AttendancePhotoDetailBottomSheet extends StatelessWidget {
           // Status
           Row(
             children: [
-              Text(
-                'Status',
-                style: GoogleFonts.inter(
-                  fontSize: 13.sp,
-                  color: colors.textSecondary,
-                ),
-              ),
+              Text('Status', style: AppTextStyles.small(colors.textSecondary)),
               SizedBox(width: 8.w),
               Container(
                 padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 4.h),
@@ -194,11 +174,7 @@ class AttendancePhotoDetailBottomSheet extends StatelessWidget {
                 ),
                 child: Text(
                   'Telah diproses',
-                  style: GoogleFonts.inter(
-                    fontSize: 11.sp,
-                    fontWeight: FontWeight.w500,
-                    color: ColorPalette.green700,
-                  ),
+                  style: AppTextStyles.xSmallMedium(ColorPalette.green700),
                 ),
               ),
             ],

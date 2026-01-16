@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:hrd_app/core/theme/app_colors.dart';
+import 'package:hrd_app/core/theme/app_text_styles.dart';
 
 /// Header untuk category
 /// Contoh: "Perusahaan", "Karyawan", "Kehadiran", "Cuti"
@@ -15,14 +15,7 @@ class FiturCategoryHeader extends StatelessWidget {
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-      child: Text(
-        title,
-        style: GoogleFonts.inter(
-          fontSize: 14,
-          fontWeight: FontWeight.w600,
-          color: colors.textPrimary,
-        ),
-      ),
+      child: Text(title, style: AppTextStyles.bodySemiBold(colors.textPrimary)),
     );
   }
 }

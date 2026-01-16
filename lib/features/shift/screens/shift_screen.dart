@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:hrd_app/core/theme/app_text_styles.dart';
 import 'package:hrd_app/core/theme/app_colors.dart';
 import 'package:hrd_app/core/utils/format_date.dart';
 
@@ -69,11 +69,7 @@ class _ShiftScreenState extends State<ShiftScreen> {
         ),
         title: Text(
           'Shift',
-          style: GoogleFonts.inter(
-            fontSize: 18.sp,
-            fontWeight: FontWeight.w600,
-            color: colors.textPrimary,
-          ),
+          style: AppTextStyles.h3(colors.textPrimary),
         ),
       ),
       body: SingleChildScrollView(
@@ -124,19 +120,11 @@ class _ShiftScreenState extends State<ShiftScreen> {
               children: [
                 Text(
                   'Lokasi Kerja Hari Ini',
-                  style: GoogleFonts.inter(
-                    fontSize: 11.sp,
-                    fontWeight: FontWeight.w400,
-                    color: colors.textSecondary,
-                  ),
+                  style: AppTextStyles.body(colors.textSecondary),
                 ),
                 Text(
                   'LOKASI BARU PARKIR',
-                  style: GoogleFonts.inter(
-                    fontSize: 14.sp,
-                    fontWeight: FontWeight.w600,
-                    color: colors.textPrimary,
-                  ),
+                  style: AppTextStyles.bodySemiBold(colors.textPrimary),
                 ),
               ],
             ),
@@ -151,19 +139,11 @@ class _ShiftScreenState extends State<ShiftScreen> {
               children: [
                 Text(
                   'Lokasi Kehadiran Default',
-                  style: GoogleFonts.inter(
-                    fontSize: 14.sp,
-                    fontWeight: FontWeight.w500,
-                    color: colors.textPrimary,
-                  ),
+                  style: AppTextStyles.bodyMedium(colors.textPrimary),
                 ),
                 Text(
                   '0 Lokasi',
-                  style: GoogleFonts.inter(
-                    fontSize: 12.sp,
-                    fontWeight: FontWeight.w400,
-                    color: colors.textSecondary,
-                  ),
+                  style: AppTextStyles.body(colors.textSecondary),
                 ),
               ],
             ),
@@ -195,11 +175,7 @@ class _ShiftScreenState extends State<ShiftScreen> {
             padding: EdgeInsets.all(16.w),
             child: Text(
               'Jadwal shift mingguan',
-              style: GoogleFonts.inter(
-                fontSize: 15.sp,
-                fontWeight: FontWeight.w700,
-                color: colors.textPrimary,
-              ),
+              style: AppTextStyles.body(colors.textPrimary),
             ),
           ),
           // Week navigator
@@ -214,11 +190,7 @@ class _ShiftScreenState extends State<ShiftScreen> {
                 ),
                 Text(
                   FormatDate.dateRange(_currentWeekStart, weekEnd),
-                  style: GoogleFonts.inter(
-                    fontSize: 12.sp,
-                    fontWeight: FontWeight.w500,
-                    color: colors.textPrimary,
-                  ),
+                  style: AppTextStyles.captionMedium(colors.textPrimary),
                 ),
                 IconButton(
                   onPressed: _nextWeek,
@@ -275,20 +247,12 @@ class _ShiftScreenState extends State<ShiftScreen> {
           children: [
             Text(
               FormatDate.dayWithFullDate(date),
-              style: GoogleFonts.inter(
-                fontSize: 12.sp,
-                fontWeight: FontWeight.w400,
-                color: colors.textSecondary,
-              ),
+              style: AppTextStyles.body(colors.textSecondary),
             ),
             SizedBox(height: 4.h),
             Text(
               shift,
-              style: GoogleFonts.inter(
-                fontSize: 14.sp,
-                fontWeight: FontWeight.w500,
-                color: colors.textPrimary,
-              ),
+              style: AppTextStyles.bodyMedium(colors.textPrimary),
             ),
           ],
         ),

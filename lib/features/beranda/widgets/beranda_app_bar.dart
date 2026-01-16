@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:hrd_app/core/theme/app_colors.dart';
+import 'package:hrd_app/core/theme/app_text_styles.dart';
 
 /// Custom App Bar untuk Beranda
 class BerandaAppBar extends StatelessWidget implements PreferredSizeWidget {
@@ -22,14 +22,7 @@ class BerandaAppBar extends StatelessWidget implements PreferredSizeWidget {
       leading: const SizedBox.shrink(),
       leadingWidth: 0,
       titleSpacing: 16.w,
-      title: Text(
-        'EZ Parking',
-        style: GoogleFonts.inter(
-          fontSize: 18.sp,
-          fontWeight: FontWeight.w600,
-          color: colors.textPrimary,
-        ),
-      ),
+      title: Text('EZ Parking', style: AppTextStyles.h3(colors.textPrimary)),
       actions: [
         IconButton(
           onPressed: () {

@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:hrd_app/core/config/env_config.dart';
 import 'package:hrd_app/core/theme/app_colors.dart';
+import 'package:hrd_app/core/theme/app_text_styles.dart';
 import 'package:hrd_app/core/theme/color_palette.dart';
+import 'package:hrd_app/core/utils/image_url_extension.dart';
+import 'package:hrd_app/core/widgets/empty_state_widget.dart';
 import 'package:intl/intl.dart';
 
 /// Bottom sheet untuk menampilkan Riwayat Kehadiran
-class RiwayatKehadiranBottomSheet extends StatefulWidget {
-  const RiwayatKehadiranBottomSheet({super.key});
-
+abstract class RiwayatKehadiranBottomSheet {
   static void show(
     BuildContext context, {
     List<Map<String, dynamic>>? records,
@@ -31,18 +30,6 @@ class RiwayatKehadiranBottomSheet extends StatefulWidget {
         },
       ),
     );
-  }
-
-  @override
-  State<RiwayatKehadiranBottomSheet> createState() =>
-      _RiwayatKehadiranBottomSheetState();
-}
-
-class _RiwayatKehadiranBottomSheetState
-    extends State<RiwayatKehadiranBottomSheet> {
-  @override
-  Widget build(BuildContext context) {
-    return const SizedBox.shrink();
   }
 }
 
@@ -79,9 +66,9 @@ class _RiwayatKehadiranContentState extends State<_RiwayatKehadiranContent> {
           // Content
           Expanded(
             child: _selectedTab == 1
-                ? _buildEmptyState(colors) // Kehadiran Bersama = always empty
+                ? const EmptyStateWidget() // Kehadiran Bersama = always empty
                 : widget.records.isEmpty
-                ? _buildEmptyState(colors)
+                ? const EmptyStateWidget()
                 : _buildAttendanceList(colors),
           ),
         ],
@@ -89,7 +76,7 @@ class _RiwayatKehadiranContentState extends State<_RiwayatKehadiranContent> {
     );
   }
 
-  Widget _buildHeader(dynamic colors) {
+  Widget _buildHeader(ThemeColors colors) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -126,11 +113,7 @@ class _RiwayatKehadiranContentState extends State<_RiwayatKehadiranContent> {
                 padding: EdgeInsets.fromLTRB(16.w, 0, 16.w, 12.h),
                 child: Text(
                   'Riwayat Kehadiran',
-                  style: GoogleFonts.inter(
-                    fontSize: 18.sp,
-                    fontWeight: FontWeight.w600,
-                    color: colors.textPrimary,
-                  ),
+                  style: AppTextStyles.h3(colors.textPrimary),
                 ),
               ),
             ],
@@ -164,11 +147,7 @@ class _RiwayatKehadiranContentState extends State<_RiwayatKehadiranContent> {
             _selectedTab == 0
                 ? 'Meninjau riwayat kehadiran Anda secara mendetail'
                 : 'Riwayat kehadiran rekan kerja Anda yang direkam menggunakan perangkat Anda',
-            style: GoogleFonts.inter(
-              fontSize: 12.sp,
-              fontWeight: FontWeight.w400,
-              color: colors.textSecondary,
-            ),
+            style: AppTextStyles.caption(colors.textSecondary),
           ),
         ),
       ],
@@ -176,7 +155,7 @@ class _RiwayatKehadiranContentState extends State<_RiwayatKehadiranContent> {
   }
 
   Widget _buildTabButton({
-    required dynamic colors,
+    required ThemeColors colors,
     required String label,
     required bool isSelected,
     required VoidCallback onTap,
@@ -194,17 +173,15 @@ class _RiwayatKehadiranContentState extends State<_RiwayatKehadiranContent> {
         ),
         child: Text(
           label,
-          style: GoogleFonts.inter(
-            fontSize: 13.sp,
-            fontWeight: FontWeight.w500,
-            color: isSelected ? Colors.white : colors.textPrimary,
+          style: AppTextStyles.smallMedium(
+            isSelected ? Colors.white : colors.textPrimary,
           ),
         ),
       ),
     );
   }
 
-  Widget _buildAttendanceList(dynamic colors) {
+  Widget _buildAttendanceList(ThemeColors colors) {
     return ListView.builder(
       controller: widget.scrollController,
       padding: EdgeInsets.zero,
@@ -216,7 +193,7 @@ class _RiwayatKehadiranContentState extends State<_RiwayatKehadiranContent> {
     );
   }
 
-  Widget _buildAttendanceItem(dynamic colors, Map<String, dynamic> record) {
+  Widget _buildAttendanceItem(ThemeColors colors, Map<String, dynamic> record) {
     final dateStr = record['date_schedule'] as String?;
     final time = record['time'] as String?;
     final photo = record['photo'] as String?;
@@ -242,18 +219,22 @@ class _RiwayatKehadiranContentState extends State<_RiwayatKehadiranContent> {
       ),
       child: Row(
         children: [
-          // Photo
+          // Photo with border color based on check-in/check-out
           Container(
             width: 48.w,
             height: 48.w,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               color: ColorPalette.slate200,
+              border: Border.all(
+                color: isCheckIn ? ColorPalette.green500 : ColorPalette.red500,
+                width: 2,
+              ),
             ),
-            child: photo != null && photo != '-'
+            child: photo.asFullImageUrl != null
                 ? ClipOval(
                     child: Image.network(
-                      '${EnvConfig.imageBaseUrl}$photo',
+                      photo.asFullImageUrl!,
                       fit: BoxFit.cover,
                       errorBuilder: (context, error, stackTrace) {
                         return Icon(
@@ -272,13 +253,26 @@ class _RiwayatKehadiranContentState extends State<_RiwayatKehadiranContent> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                // Type label (Masuk/Keluar)
+                Container(
+                  margin: EdgeInsets.only(bottom: 4.h),
+                  padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 2.h),
+                  decoration: BoxDecoration(
+                    color: isCheckIn
+                        ? ColorPalette.green100
+                        : ColorPalette.red100,
+                    borderRadius: BorderRadius.circular(4.r),
+                  ),
+                  child: Text(
+                    isCheckIn ? 'Masuk' : 'Keluar',
+                    style: AppTextStyles.xxSmall(
+                      isCheckIn ? ColorPalette.green700 : ColorPalette.red700,
+                    ),
+                  ),
+                ),
                 Text(
                   formattedDate,
-                  style: GoogleFonts.inter(
-                    fontSize: 13.sp,
-                    fontWeight: FontWeight.w500,
-                    color: colors.textPrimary,
-                  ),
+                  style: AppTextStyles.smallMedium(colors.textPrimary),
                 ),
                 SizedBox(height: 4.h),
                 Row(
@@ -291,11 +285,7 @@ class _RiwayatKehadiranContentState extends State<_RiwayatKehadiranContent> {
                     SizedBox(width: 4.w),
                     Text(
                       'Telah diproses',
-                      style: GoogleFonts.inter(
-                        fontSize: 11.sp,
-                        fontWeight: FontWeight.w400,
-                        color: ColorPalette.green500,
-                      ),
+                      style: AppTextStyles.xSmall(ColorPalette.green500),
                     ),
                   ],
                 ),
@@ -335,40 +325,5 @@ class _RiwayatKehadiranContentState extends State<_RiwayatKehadiranContent> {
     );
   }
 
-  Widget _buildEmptyState(dynamic colors) {
-    return Container(
-      width: double.infinity,
-      padding: EdgeInsets.symmetric(vertical: 60.h),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          // Icon document
-          Container(
-            width: 80.w,
-            height: 80.w,
-            decoration: BoxDecoration(
-              color: Colors.grey.shade100,
-              borderRadius: BorderRadius.circular(16.r),
-            ),
-            child: Icon(
-              Icons.description_outlined,
-              size: 48.sp,
-              color: Colors.grey.shade400,
-            ),
-          ),
-          SizedBox(height: 24.h),
-          // Title
-          Text(
-            'Tidak ada data untuk\nditampilkan',
-            textAlign: TextAlign.center,
-            style: GoogleFonts.inter(
-              fontSize: 18.sp,
-              fontWeight: FontWeight.w600,
-              color: colors.textPrimary,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+  // Using EmptyStateWidget from core/widgets instead of duplicate implementation
 }

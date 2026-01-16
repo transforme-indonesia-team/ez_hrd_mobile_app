@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:hrd_app/core/theme/app_text_styles.dart';
 import 'package:hrd_app/core/providers/auth_provider.dart';
 import 'package:hrd_app/core/theme/app_colors.dart';
 import 'package:hrd_app/data/models/user_model.dart';
@@ -23,14 +23,7 @@ class KontakScreen extends StatelessWidget {
           icon: Icon(Icons.arrow_back, color: colors.textPrimary),
           onPressed: () => Navigator.pop(context),
         ),
-        title: Text(
-          'Kontak',
-          style: GoogleFonts.inter(
-            fontSize: 18.sp,
-            fontWeight: FontWeight.w600,
-            color: colors.textPrimary,
-          ),
-        ),
+        title: Text('Kontak', style: AppTextStyles.h3(colors.textPrimary)),
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(16.w),
@@ -39,7 +32,7 @@ class KontakScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildContent(dynamic colors, UserModel? user) {
+  Widget _buildContent(ThemeColors colors, UserModel? user) {
     return Container(
       width: double.infinity,
       padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
@@ -60,7 +53,7 @@ class KontakScreen extends StatelessWidget {
   }
 
   Widget _buildInfoRow(
-    dynamic colors,
+    ThemeColors colors,
     String label,
     String? value, {
     bool isRequired = false,
@@ -71,34 +64,19 @@ class KontakScreen extends StatelessWidget {
         RichText(
           text: TextSpan(
             text: label,
-            style: GoogleFonts.inter(
-              fontSize: 14.sp,
-              color: colors.textPrimary,
-              fontWeight: FontWeight.w500,
-            ),
+            style: AppTextStyles.bodyMedium(colors.textPrimary),
             children: isRequired
                 ? [
                     TextSpan(
                       text: ' *',
-                      style: GoogleFonts.inter(
-                        fontSize: 14.sp,
-                        color: colors.error,
-                        fontWeight: FontWeight.w500,
-                      ),
+                      style: AppTextStyles.bodyMedium(colors.error),
                     ),
                   ]
                 : null,
           ),
         ),
         SizedBox(height: 4.h),
-        Text(
-          value ?? '-',
-          style: GoogleFonts.inter(
-            fontSize: 14.sp,
-            color: colors.textPrimary,
-            fontWeight: FontWeight.w400,
-          ),
-        ),
+        Text(value ?? '-', style: AppTextStyles.body(colors.textPrimary)),
       ],
     );
   }

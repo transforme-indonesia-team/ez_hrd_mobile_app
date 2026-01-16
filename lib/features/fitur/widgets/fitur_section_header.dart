@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:hrd_app/core/theme/app_colors.dart';
+import 'package:hrd_app/core/theme/app_text_styles.dart';
 
 /// Header untuk section (background abu-abu)
 /// Contoh: "Inti", "Waktu Kehadiran"
@@ -17,14 +17,7 @@ class FiturSectionHeader extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       color: colors.surface,
-      child: Text(
-        title,
-        style: GoogleFonts.inter(
-          fontSize: 16,
-          fontWeight: FontWeight.w700,
-          color: colors.textPrimary,
-        ),
-      ),
+      child: Text(title, style: AppTextStyles.h4(colors.textPrimary)),
     );
   }
 }

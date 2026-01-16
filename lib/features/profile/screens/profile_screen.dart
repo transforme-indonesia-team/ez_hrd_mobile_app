@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:hrd_app/core/config/env_config.dart';
+import 'package:hrd_app/core/theme/app_text_styles.dart';
+import 'package:hrd_app/core/utils/image_url_extension.dart';
 import 'package:hrd_app/features/profile/screens/pengaturan_personal_screen.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
@@ -56,14 +56,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         automaticallyImplyLeading: false,
         leading: const SizedBox.shrink(),
         leadingWidth: 0,
-        title: Text(
-          'Profil',
-          style: GoogleFonts.inter(
-            fontSize: 20,
-            fontWeight: FontWeight.w600,
-            color: colors.textPrimary,
-          ),
-        ),
+        title: Text('Profil', style: AppTextStyles.h2(colors.textPrimary)),
         actions: [
           IconButton(
             icon: Icon(Icons.search, color: colors.textPrimary),
@@ -129,7 +122,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Widget _buildUserHeader(
-    dynamic colors,
+    ThemeColors colors,
     String userName,
     String userRole,
     String? avatarUrl,
@@ -148,9 +141,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
               border: Border.all(color: colors.divider, width: 2),
             ),
             child: ClipOval(
-              child: avatarUrl != null && avatarUrl.isNotEmpty
+              child: avatarUrl?.asFullImageUrl != null
                   ? Image.network(
-                      '${EnvConfig.imageBaseUrl}$avatarUrl',
+                      avatarUrl.asFullImageUrl!,
                       fit: BoxFit.cover,
                       width: 56,
                       height: 56,
@@ -159,11 +152,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         return Center(
                           child: Text(
                             _getInitials(userName),
-                            style: GoogleFonts.inter(
-                              fontSize: 20,
-                              fontWeight: FontWeight.w600,
-                              color: colors.textSecondary,
-                            ),
+                            style: AppTextStyles.h2(colors.textSecondary),
                           ),
                         );
                       },
@@ -171,11 +160,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   : Center(
                       child: Text(
                         _getInitials(userName),
-                        style: GoogleFonts.inter(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w600,
-                          color: colors.textSecondary,
-                        ),
+                        style: AppTextStyles.h2(colors.textSecondary),
                       ),
                     ),
             ),
@@ -187,20 +172,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
             children: [
               Text(
                 'Hai, $userName',
-                style: GoogleFonts.inter(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                  color: colors.textPrimary,
-                ),
+                style: AppTextStyles.h3(colors.textPrimary),
               ),
               const SizedBox(height: 4),
-              Text(
-                userRole,
-                style: GoogleFonts.inter(
-                  fontSize: 14,
-                  color: colors.textSecondary,
-                ),
-              ),
+              Text(userRole, style: AppTextStyles.body(colors.textSecondary)),
             ],
           ),
         ],
@@ -216,7 +191,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return name.isNotEmpty ? name[0].toUpperCase() : '';
   }
 
-  Widget _buildMenuSection(dynamic colors, List<MenuItemModel> items) {
+  Widget _buildMenuSection(ThemeColors colors, List<MenuItemModel> items) {
     return Container(
       color: colors.background,
       child: Column(
@@ -227,7 +202,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _buildSettingsSection(dynamic colors, ThemeProvider themeProvider) {
+  Widget _buildSettingsSection(
+    ThemeColors colors,
+    ThemeProvider themeProvider,
+  ) {
     return Container(
       color: colors.background,
       child: Column(
@@ -247,10 +225,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 Expanded(
                   child: Text(
                     themeProvider.modeLabel,
-                    style: GoogleFonts.inter(
-                      fontSize: 16,
-                      color: colors.textPrimary,
-                    ),
+                    style: AppTextStyles.h4(colors.textPrimary),
                   ),
                 ),
                 Transform.scale(
@@ -275,7 +250,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
             title: Text(
               'Kebijakan Privasi',
-              style: GoogleFonts.inter(fontSize: 16, color: colors.textPrimary),
+              style: AppTextStyles.h4(colors.textPrimary),
             ),
             trailing: Icon(Icons.chevron_right, color: colors.inactiveGray),
             onTap: () {
@@ -288,7 +263,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             leading: Icon(Icons.help_outline, color: colors.textSecondary),
             title: Text(
               'Bantuan & Dukungan',
-              style: GoogleFonts.inter(fontSize: 16, color: colors.textPrimary),
+              style: AppTextStyles.h4(colors.textPrimary),
             ),
             trailing: Icon(Icons.chevron_right, color: colors.inactiveGray),
             onTap: () {
@@ -300,7 +275,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _buildLogoutSection(dynamic colors, AuthProvider authProvider) {
+  Widget _buildLogoutSection(ThemeColors colors, AuthProvider authProvider) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Row(
@@ -341,16 +316,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
               );
             },
             icon: Icon(Icons.logout, color: colors.error),
-            label: Text(
-              'Keluar',
-              style: GoogleFonts.inter(fontSize: 16, color: colors.error),
-            ),
+            label: Text('Keluar', style: AppTextStyles.h4(colors.error)),
             style: TextButton.styleFrom(padding: EdgeInsets.zero),
           ),
-          Text(
-            _appVersion,
-            style: GoogleFonts.inter(fontSize: 14, color: colors.textSecondary),
-          ),
+          Text(_appVersion, style: AppTextStyles.body(colors.textSecondary)),
         ],
       ),
     );

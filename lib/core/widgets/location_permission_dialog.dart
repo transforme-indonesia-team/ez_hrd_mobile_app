@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:hrd_app/core/theme/app_colors.dart';
+import 'package:hrd_app/core/theme/app_text_styles.dart';
 
 enum LocationDialogType { gpsDisabled, permissionDenied }
 
@@ -91,25 +91,14 @@ class LocationPermissionDialog extends StatelessWidget {
   }
 
   Widget _buildTitle(_DialogConfig config, ThemeColors colors) {
-    return Text(
-      config.title,
-      style: GoogleFonts.inter(
-        fontSize: 18.sp,
-        fontWeight: FontWeight.w600,
-        color: colors.textPrimary,
-      ),
-    );
+    return Text(config.title, style: AppTextStyles.h3(colors.textPrimary));
   }
 
   Widget _buildMessage(_DialogConfig config, ThemeColors colors) {
     return Text(
       config.message,
       textAlign: TextAlign.center,
-      style: GoogleFonts.inter(
-        fontSize: 14.sp,
-        color: colors.textSecondary,
-        height: 1.5,
-      ),
+      style: AppTextStyles.body(colors.textSecondary),
     );
   }
 
@@ -128,11 +117,7 @@ class LocationPermissionDialog extends StatelessWidget {
             ),
             child: Text(
               'Nanti Saja',
-              style: GoogleFonts.inter(
-                fontSize: 14.sp,
-                fontWeight: FontWeight.w500,
-                color: colors.textSecondary,
-              ),
+              style: AppTextStyles.bodyMedium(colors.textSecondary),
             ),
           ),
         ),
@@ -150,11 +135,7 @@ class LocationPermissionDialog extends StatelessWidget {
             ),
             child: Text(
               config.confirmButtonText,
-              style: GoogleFonts.inter(
-                fontSize: 14.sp,
-                fontWeight: FontWeight.w600,
-                color: Colors.white,
-              ),
+              style: AppTextStyles.bodySemiBold(Colors.white),
             ),
           ),
         ),

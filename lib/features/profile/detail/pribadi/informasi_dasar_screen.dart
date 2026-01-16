@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:hrd_app/core/providers/auth_provider.dart';
 import 'package:hrd_app/core/theme/app_colors.dart';
+import 'package:hrd_app/core/theme/app_text_styles.dart';
 import 'package:hrd_app/data/models/user_model.dart';
 import 'package:provider/provider.dart';
 
@@ -80,11 +80,7 @@ class InformasiDasarScreen extends StatelessWidget {
         ),
         title: Text(
           'Informasi Dasar',
-          style: GoogleFonts.inter(
-            fontSize: 18.sp,
-            fontWeight: FontWeight.w600,
-            color: colors.textPrimary,
-          ),
+          style: AppTextStyles.h3(colors.textPrimary),
         ),
       ),
       body: SingleChildScrollView(
@@ -94,7 +90,7 @@ class InformasiDasarScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildContent(dynamic colors, UserModel? user) {
+  Widget _buildContent(ThemeColors colors, UserModel? user) {
     return Column(
       children: [
         _buildSectionCard(
@@ -163,7 +159,7 @@ class InformasiDasarScreen extends StatelessWidget {
   }
 
   Widget _buildSectionCard(
-    dynamic colors, {
+    ThemeColors colors, {
     required String title,
     required String subtitle,
     required List<Widget> children,
@@ -180,23 +176,9 @@ class InformasiDasarScreen extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            title,
-            style: GoogleFonts.inter(
-              fontSize: 14.sp,
-              fontWeight: FontWeight.w600,
-              color: colors.textPrimary,
-            ),
-          ),
+          Text(title, style: AppTextStyles.bodySemiBold(colors.textPrimary)),
           SizedBox(height: 4.h),
-          Text(
-            subtitle,
-            style: GoogleFonts.inter(
-              fontSize: 12.sp,
-              color: colors.textPrimary,
-              fontWeight: FontWeight.w300,
-            ),
-          ),
+          Text(subtitle, style: AppTextStyles.caption(colors.textPrimary)),
           SizedBox(height: 8.h),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -209,7 +191,7 @@ class InformasiDasarScreen extends StatelessWidget {
   }
 
   Widget _buildInfoRow(
-    dynamic colors,
+    ThemeColors colors,
     String label,
     String? value, {
     String? note,
@@ -217,33 +199,12 @@ class InformasiDasarScreen extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          label,
-          style: GoogleFonts.inter(
-            fontSize: 14.sp,
-            color: colors.textPrimary,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
+        Text(label, style: AppTextStyles.bodyMedium(colors.textPrimary)),
         SizedBox(height: 4.h),
-        Text(
-          value ?? '-',
-          style: GoogleFonts.inter(
-            fontSize: 14.sp,
-            color: colors.textPrimary,
-            fontWeight: FontWeight.w400,
-          ),
-        ),
+        Text(value ?? '-', style: AppTextStyles.body(colors.textPrimary)),
         if (note != null) ...[
           SizedBox(height: 4.h),
-          Text(
-            note,
-            style: GoogleFonts.inter(
-              fontSize: 12.sp,
-              color: colors.textSecondary,
-              fontWeight: FontWeight.w400,
-            ),
-          ),
+          Text(note, style: AppTextStyles.caption(colors.textSecondary)),
         ],
       ],
     );

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:hrd_app/core/theme/app_text_styles.dart';
 import 'package:hrd_app/core/theme/app_colors.dart';
 import 'package:hrd_app/features/notification/widgets/empty_notification_state.dart';
 
@@ -43,11 +43,7 @@ class _NotificationScreenState extends State<NotificationScreen>
         ),
         title: Text(
           'Notifikasi',
-          style: GoogleFonts.inter(
-            fontSize: 18.sp,
-            fontWeight: FontWeight.w600,
-            color: colors.textPrimary,
-          ),
+          style: AppTextStyles.h3(colors.textPrimary),
         ),
         bottom: PreferredSize(
           preferredSize: Size.fromHeight(48.h),
@@ -63,14 +59,8 @@ class _NotificationScreenState extends State<NotificationScreen>
                 ),
                 indicatorSize: TabBarIndicatorSize.tab,
                 dividerColor: Colors.transparent,
-                labelStyle: GoogleFonts.inter(
-                  fontSize: 14.sp,
-                  fontWeight: FontWeight.w600,
-                ),
-                unselectedLabelStyle: GoogleFonts.inter(
-                  fontSize: 14.sp,
-                  fontWeight: FontWeight.w500,
-                ),
+                labelStyle: AppTextStyles.body(Colors.black),
+                unselectedLabelStyle: AppTextStyles.body(Colors.black),
                 tabs: const [
                   Tab(text: 'Semua'),
                   Tab(text: 'Permintaan'),

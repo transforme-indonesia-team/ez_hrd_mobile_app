@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:hrd_app/core/theme/app_text_styles.dart';
 import 'package:hrd_app/core/theme/app_colors.dart';
 import 'package:provider/provider.dart';
 import 'package:hrd_app/core/providers/auth_provider.dart';
@@ -123,11 +123,7 @@ class _GantiPasswordScreenState extends State<GantiPasswordScreen> {
         ),
         title: Text(
           'Ganti Kata Sandi',
-          style: GoogleFonts.inter(
-            fontSize: 18.sp,
-            fontWeight: FontWeight.w600,
-            color: colors.textPrimary,
-          ),
+          style: AppTextStyles.h3(colors.textPrimary),
         ),
       ),
       body: SingleChildScrollView(
@@ -232,11 +228,7 @@ class _GantiPasswordScreenState extends State<GantiPasswordScreen> {
           Expanded(
             child: Text(
               'Pastikan kata sandi baru Anda kuat dan mudah diingat.',
-              style: GoogleFonts.inter(
-                fontSize: 13.sp,
-                color: colors.primaryBlue,
-                height: 1.4,
-              ),
+              style: AppTextStyles.small(colors.primaryBlue),
             ),
           ),
         ],
@@ -259,14 +251,7 @@ class _GantiPasswordScreenState extends State<GantiPasswordScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          label,
-          style: GoogleFonts.inter(
-            fontSize: 14.sp,
-            fontWeight: FontWeight.w600,
-            color: colors.textPrimary,
-          ),
-        ),
+        Text(label, style: AppTextStyles.bodySemiBold(colors.textPrimary)),
         SizedBox(height: 8.h),
         Container(
           decoration: BoxDecoration(
@@ -286,16 +271,12 @@ class _GantiPasswordScreenState extends State<GantiPasswordScreen> {
             textInputAction: textInputAction,
             onFieldSubmitted: onFieldSubmitted,
             autovalidateMode: AutovalidateMode.onUserInteraction,
-            style: GoogleFonts.inter(
-              fontSize: 14.sp,
-              color: colors.textPrimary,
-            ),
+            style: AppTextStyles.body(colors.textPrimary),
             cursorColor: colors.primaryBlue,
             decoration: InputDecoration(
               hintText: hint,
-              hintStyle: GoogleFonts.inter(
-                color: colors.textSubtitle.withValues(alpha: 0.6),
-                fontSize: 14.sp,
+              hintStyle: AppTextStyles.body(
+                colors.textSubtitle.withValues(alpha: 0.6),
               ),
               prefixIcon: Icon(
                 Icons.lock_outlined,
@@ -356,18 +337,11 @@ class _GantiPasswordScreenState extends State<GantiPasswordScreen> {
           children: [
             Text(
               'Kekuatan: ',
-              style: GoogleFonts.inter(
-                fontSize: 12.sp,
-                color: colors.textSubtitle,
-              ),
+              style: AppTextStyles.caption(colors.textSubtitle),
             ),
             Text(
               strength.label,
-              style: GoogleFonts.inter(
-                fontSize: 12.sp,
-                fontWeight: FontWeight.w600,
-                color: strength.color,
-              ),
+              style: AppTextStyles.captionMedium(strength.color),
             ),
           ],
         ),
@@ -432,10 +406,8 @@ class _GantiPasswordScreenState extends State<GantiPasswordScreen> {
                       )
                     : Text(
                         'Simpan Perubahan',
-                        style: GoogleFonts.inter(
-                          fontSize: 16.sp,
-                          fontWeight: FontWeight.w600,
-                          color: _isFormValid
+                        style: AppTextStyles.h4(
+                          _isFormValid
                               ? Colors.white
                               : Colors.white.withValues(alpha: 0.7),
                         ),
@@ -461,11 +433,7 @@ class _GantiPasswordScreenState extends State<GantiPasswordScreen> {
         children: [
           Text(
             'Tips Kata Sandi Kuat:',
-            style: GoogleFonts.inter(
-              fontSize: 13.sp,
-              fontWeight: FontWeight.w600,
-              color: colors.textPrimary,
-            ),
+            style: AppTextStyles.body(colors.textPrimary),
           ),
           SizedBox(height: 8.h),
           _buildTipItem('Minimal 8 karakter', colors),
@@ -488,13 +456,7 @@ class _GantiPasswordScreenState extends State<GantiPasswordScreen> {
             color: colors.textSubtitle,
           ),
           SizedBox(width: 8.w),
-          Text(
-            text,
-            style: GoogleFonts.inter(
-              fontSize: 12.sp,
-              color: colors.textSubtitle,
-            ),
-          ),
+          Text(text, style: AppTextStyles.caption(colors.textSubtitle)),
         ],
       ),
     );

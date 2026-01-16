@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:hrd_app/core/config/env_config.dart';
 import 'package:hrd_app/core/theme/app_colors.dart';
+import 'package:hrd_app/core/theme/app_text_styles.dart';
+import 'package:hrd_app/core/utils/image_url_extension.dart';
 import 'package:hrd_app/core/utils/string_utils.dart';
 // import 'package:hrd_app/core/theme/color_palette.dart';
 import 'package:hrd_app/features/profile/models/profile_detail_model.dart';
@@ -41,28 +41,17 @@ class ProfileHeader extends StatelessWidget {
               children: [
                 Text(
                   profile.name.toUpperCase(),
-                  style: GoogleFonts.inter(
-                    fontSize: 14.sp,
-                    fontWeight: FontWeight.w600,
-                    color: colors.textPrimary,
-                  ),
+                  style: AppTextStyles.bodySemiBold(colors.textPrimary),
                 ),
                 SizedBox(height: 4.h),
                 Text(
                   profile.role,
-                  style: GoogleFonts.inter(
-                    fontSize: 12.sp,
-                    fontWeight: FontWeight.w500,
-                    color: colors.textSecondary,
-                  ),
+                  style: AppTextStyles.captionMedium(colors.textSecondary),
                 ),
                 SizedBox(height: 2.h),
                 Text(
                   profile.username!,
-                  style: GoogleFonts.inter(
-                    fontSize: 12.sp,
-                    color: colors.textSecondary,
-                  ),
+                  style: AppTextStyles.caption(colors.textSecondary),
                 ),
               ],
             ),
@@ -73,7 +62,7 @@ class ProfileHeader extends StatelessWidget {
     );
   }
 
-  Widget _buildAvatar(dynamic colors) {
+  Widget _buildAvatar(ThemeColors colors) {
     return Container(
       width: 56.w,
       height: 56.w,
@@ -85,7 +74,7 @@ class ProfileHeader extends StatelessWidget {
       child: profile.avatarUrl != null
           ? ClipOval(
               child: Image.network(
-                '${EnvConfig.imageBaseUrl}${profile.avatarUrl!}',
+                profile.avatarUrl!.asFullImageUrl!,
                 fit: BoxFit.cover,
                 errorBuilder: (_, __, ___) => _buildInitials(colors),
               ),
@@ -94,15 +83,11 @@ class ProfileHeader extends StatelessWidget {
     );
   }
 
-  Widget _buildInitials(dynamic colors) {
+  Widget _buildInitials(ThemeColors colors) {
     return Center(
       child: Text(
         StringUtils.getInitials(profile.name),
-        style: GoogleFonts.inter(
-          fontSize: 20.sp,
-          fontWeight: FontWeight.w600,
-          color: colors.textSecondary,
-        ),
+        style: AppTextStyles.h2(colors.textSecondary),
       ),
     );
   }

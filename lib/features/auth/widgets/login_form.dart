@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:hrd_app/core/providers/auth_provider.dart';
 import 'package:hrd_app/core/theme/app_colors.dart';
+import 'package:hrd_app/core/theme/app_text_styles.dart';
 import 'package:hrd_app/core/utils/validators.dart';
 import 'package:hrd_app/core/utils/snackbar_utils.dart';
 import 'package:hrd_app/routes/app_routes.dart';
@@ -92,15 +92,12 @@ class _LoginFormState extends State<LoginForm> {
   InputDecoration _buildInputDecoration({
     required String hintText,
     required IconData prefixIcon,
-    required dynamic colors,
+    required ThemeColors colors,
     Widget? suffixIcon,
   }) {
     return InputDecoration(
       hintText: hintText,
-      hintStyle: GoogleFonts.inter(
-        color: colors.textSubtitle.withValues(alpha: 0.6),
-        fontSize: 14,
-      ),
+      hintStyle: AppTextStyles.body(colors.textSubtitle.withValues(alpha: 0.6)),
       prefixIcon: Icon(prefixIcon, color: colors.textSubtitle, size: 20),
       suffixIcon: suffixIcon,
       filled: true,
@@ -168,27 +165,18 @@ class _LoginFormState extends State<LoginForm> {
           Text(
             'EZ HRD APP',
             textAlign: TextAlign.center,
-            style: GoogleFonts.inter(
-              fontSize: 28,
-              fontWeight: FontWeight.bold,
-              color: colors.appTitle, // Putih di dark, biru tua di light
-              letterSpacing: 1,
-            ),
+            style: AppTextStyles.h1(colors.appTitle),
           ),
           const SizedBox(height: 8),
           Text(
             'Silakan login untuk melanjutkan',
             textAlign: TextAlign.center,
-            style: GoogleFonts.inter(fontSize: 14, color: colors.textSubtitle),
+            style: AppTextStyles.body(colors.textSubtitle),
           ),
           const SizedBox(height: 40),
           Text(
             'Nama Pengguna',
-            style: GoogleFonts.inter(
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-              color: colors.textPrimary,
-            ),
+            style: AppTextStyles.bodySemiBold(colors.textPrimary),
           ),
           const SizedBox(height: 8),
           Container(
@@ -209,7 +197,7 @@ class _LoginFormState extends State<LoginForm> {
               maxLength: 30,
               textInputAction: TextInputAction.next,
               onFieldSubmitted: (_) => _passwordFocusNode.requestFocus(),
-              style: GoogleFonts.inter(fontSize: 14, color: colors.textPrimary),
+              style: AppTextStyles.body(colors.textPrimary),
               decoration: _buildInputDecoration(
                 hintText: 'Masukkan nama pengguna',
                 prefixIcon: Icons.person_outlined,
@@ -221,11 +209,7 @@ class _LoginFormState extends State<LoginForm> {
           const SizedBox(height: 20),
           Text(
             'Kata Sandi',
-            style: GoogleFonts.inter(
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-              color: colors.textPrimary,
-            ),
+            style: AppTextStyles.bodySemiBold(colors.textPrimary),
           ),
           const SizedBox(height: 8),
           Container(
@@ -247,7 +231,7 @@ class _LoginFormState extends State<LoginForm> {
               maxLength: 20,
               textInputAction: TextInputAction.done,
               onFieldSubmitted: (_) => _handleLogin(),
-              style: GoogleFonts.inter(fontSize: 14, color: colors.textPrimary),
+              style: AppTextStyles.body(colors.textPrimary),
               decoration: _buildInputDecoration(
                 hintText: 'Masukkan kata sandi',
                 prefixIcon: Icons.lock_outlined,
@@ -286,10 +270,7 @@ class _LoginFormState extends State<LoginForm> {
                 ),
                 child: Text(
                   'Lupa Kata Sandi?',
-                  style: GoogleFonts.inter(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                  ),
+                  style: AppTextStyles.bodyMedium(colors.linkColor),
                 ),
               ),
             ],
@@ -332,10 +313,8 @@ class _LoginFormState extends State<LoginForm> {
                           )
                         : Text(
                             'Login',
-                            style: GoogleFonts.inter(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                              color: _isFormValid
+                            style: AppTextStyles.h4(
+                              _isFormValid
                                   ? Colors.white
                                   : Colors.white.withValues(alpha: 0.7),
                             ),
@@ -349,9 +328,8 @@ class _LoginFormState extends State<LoginForm> {
           Text(
             'Versi $_appVersion',
             textAlign: TextAlign.center,
-            style: GoogleFonts.inter(
-              fontSize: 12,
-              color: colors.textSecondary.withValues(alpha: 0.6),
+            style: AppTextStyles.caption(
+              colors.textSecondary.withValues(alpha: 0.6),
             ),
           ),
         ],

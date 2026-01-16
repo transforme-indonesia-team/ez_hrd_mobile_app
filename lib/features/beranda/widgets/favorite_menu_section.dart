@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:hrd_app/core/theme/app_colors.dart';
+import 'package:hrd_app/core/theme/app_text_styles.dart';
 import 'package:hrd_app/features/beranda/data/favorite_menu_data.dart';
 import 'package:hrd_app/features/fitur/models/fitur_item_model.dart';
 import 'package:hrd_app/features/fitur/widgets/fitur_item_grid.dart';
@@ -28,11 +28,7 @@ class FavoriteMenuSection extends StatelessWidget {
             padding: EdgeInsets.symmetric(horizontal: 16.w),
             child: Text(
               'Menu Favorit',
-              style: GoogleFonts.inter(
-                fontSize: 16.sp,
-                fontWeight: FontWeight.w600,
-                color: colors.textPrimary,
-              ),
+              style: AppTextStyles.h4(colors.textPrimary),
             ),
           ),
           SizedBox(height: 16.h),

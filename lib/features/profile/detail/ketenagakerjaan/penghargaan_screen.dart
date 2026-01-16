@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:hrd_app/core/theme/app_text_styles.dart';
 import 'package:hrd_app/core/theme/app_colors.dart';
 import 'package:hrd_app/core/widgets/empty_state_widget.dart';
 import 'package:hrd_app/core/widgets/skeleton_widget.dart';
@@ -84,14 +84,7 @@ class _PenghargaanScreenState extends State<PenghargaanScreen> {
           icon: Icon(Icons.arrow_back, color: colors.textPrimary),
           onPressed: () => Navigator.pop(context),
         ),
-        title: Text(
-          'Penghargaan',
-          style: GoogleFonts.inter(
-            fontSize: 18.sp,
-            fontWeight: FontWeight.w600,
-            color: colors.textPrimary,
-          ),
-        ),
+        title: Text('Penghargaan', style: AppTextStyles.h3(colors.textPrimary)),
       ),
       body: _buildBody(colors),
     );
@@ -109,7 +102,7 @@ class _PenghargaanScreenState extends State<PenghargaanScreen> {
       return Center(
         child: Text(
           _errorMessage!,
-          style: GoogleFonts.inter(color: colors.textSecondary),
+          style: AppTextStyles.body(colors.textSecondary),
         ),
       );
     }
@@ -179,11 +172,7 @@ class _PenghargaanScreenState extends State<PenghargaanScreen> {
                   children: [
                     Text(
                       typeName,
-                      style: GoogleFonts.inter(
-                        fontSize: 14.sp,
-                        fontWeight: FontWeight.w600,
-                        color: colors.textPrimary,
-                      ),
+                      style: AppTextStyles.bodySemiBold(colors.textPrimary),
                     ),
                     SizedBox(height: 4.h),
                     Container(
@@ -197,11 +186,7 @@ class _PenghargaanScreenState extends State<PenghargaanScreen> {
                       ),
                       child: Text(
                         '$startDate - $endDate',
-                        style: GoogleFonts.inter(
-                          fontSize: 11.sp,
-                          color: Colors.amber[700],
-                          fontWeight: FontWeight.w500,
-                        ),
+                        style: AppTextStyles.xxSmall(Colors.amber.shade700),
                       ),
                     ),
                   ],
@@ -243,21 +228,11 @@ class _PenghargaanScreenState extends State<PenghargaanScreen> {
       children: [
         Icon(icon, size: 16.sp, color: colors.textSecondary),
         SizedBox(width: 8.w),
-        Text(
-          '$label: ',
-          style: GoogleFonts.inter(
-            fontSize: 13.sp,
-            color: colors.textSecondary,
-          ),
-        ),
+        Text('$label: ', style: AppTextStyles.small(colors.textSecondary)),
         Expanded(
           child: Text(
             value,
-            style: GoogleFonts.inter(
-              fontSize: 13.sp,
-              fontWeight: FontWeight.w500,
-              color: colors.textPrimary,
-            ),
+            style: AppTextStyles.smallMedium(colors.textPrimary),
           ),
         ),
       ],

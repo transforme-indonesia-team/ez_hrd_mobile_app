@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:hrd_app/core/theme/app_colors.dart';
+import 'package:hrd_app/core/theme/app_text_styles.dart';
 
 /// Reusable gradient button dengan loading state
-/// 
+///
 /// Digunakan untuk tombol utama seperti Login, Submit, dll.
 class GradientButton extends StatelessWidget {
   final String label;
@@ -67,10 +67,8 @@ class GradientButton extends StatelessWidget {
                   )
                 : Text(
                     label,
-                    style: GoogleFonts.inter(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: effectiveEnabled
+                    style: AppTextStyles.h4(
+                      effectiveEnabled
                           ? Colors.white
                           : Colors.white.withValues(alpha: 0.7),
                     ),

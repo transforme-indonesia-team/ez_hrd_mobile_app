@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:hrd_app/core/theme/app_colors.dart';
+import 'package:hrd_app/core/theme/app_text_styles.dart';
 import 'package:hrd_app/core/utils/snackbar_utils.dart';
+import 'package:hrd_app/core/widgets/empty_state_widget.dart';
 import 'package:hrd_app/features/fitur/data/fitur_data.dart';
 import 'package:hrd_app/features/fitur/models/fitur_item_model.dart';
 import 'package:hrd_app/features/fitur/widgets/fitur_search_bar.dart';
@@ -64,7 +65,10 @@ class _FiturScreenState extends State<FiturScreen> {
             // Content
             Expanded(
               child: filteredSections.isEmpty
-                  ? _buildEmptyState(colors)
+                  ? const EmptyStateWidget(
+                      message: 'Fitur tidak ditemukan',
+                      icon: Icons.search_off,
+                    )
                   : _buildContent(filteredSections, colors),
             ),
           ],
@@ -73,7 +77,7 @@ class _FiturScreenState extends State<FiturScreen> {
     );
   }
 
-  Widget _buildHeader(dynamic colors) {
+  Widget _buildHeader(ThemeColors colors) {
     return Container(
       color: colors.background,
       // color: Colors.red,
@@ -82,14 +86,7 @@ class _FiturScreenState extends State<FiturScreen> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
-              'Fitur',
-              style: GoogleFonts.inter(
-                fontSize: 16.sp,
-                fontWeight: FontWeight.w600,
-                color: colors.textPrimary,
-              ),
-            ),
+            Text('Fitur', style: AppTextStyles.h4(colors.textPrimary)),
             Row(
               children: [
                 // List view button
@@ -132,23 +129,7 @@ class _FiturScreenState extends State<FiturScreen> {
     );
   }
 
-  Widget _buildEmptyState(dynamic colors) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(Icons.search_off, size: 64, color: colors.inactiveGray),
-          const SizedBox(height: 16),
-          Text(
-            'Fitur tidak ditemukan',
-            style: GoogleFonts.inter(fontSize: 16, color: colors.textSecondary),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildContent(List<FiturSectionModel> sections, dynamic colors) {
+  Widget _buildContent(List<FiturSectionModel> sections, ThemeColors colors) {
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -190,7 +171,10 @@ class _FiturScreenState extends State<FiturScreen> {
     );
   }
 
-  Widget _buildSectionWithLainnya(FiturSectionModel section, dynamic colors) {
+  Widget _buildSectionWithLainnya(
+    FiturSectionModel section,
+    ThemeColors colors,
+  ) {
     final allItems = <FiturItemModel>[];
     Color? bgColor;
     Color? iconColor;
@@ -224,11 +208,7 @@ class _FiturScreenState extends State<FiturScreen> {
                   children: [
                     Text(
                       lainnyaDisplayTitle,
-                      style: GoogleFonts.inter(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w600,
-                        color: colors.textPrimary,
-                      ),
+                      style: AppTextStyles.bodyMedium(colors.textPrimary),
                     ),
                     // Lainnya button
                     TextButton(
@@ -243,11 +223,7 @@ class _FiturScreenState extends State<FiturScreen> {
                         children: [
                           Text(
                             'Lainnya',
-                            style: GoogleFonts.inter(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500,
-                              color: colors.primaryBlue,
-                            ),
+                            style: AppTextStyles.bodyMedium(colors.primaryBlue),
                           ),
                           const SizedBox(width: 4),
                           Icon(

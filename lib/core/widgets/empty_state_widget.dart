@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:hrd_app/core/theme/app_colors.dart';
+import 'package:hrd_app/core/theme/app_text_styles.dart';
 
 class EmptyStateWidget extends StatelessWidget {
   final String message;
@@ -26,11 +26,7 @@ class EmptyStateWidget extends StatelessWidget {
           Text(
             message,
             textAlign: TextAlign.center,
-            style: GoogleFonts.inter(
-              fontSize: 16.sp,
-              fontWeight: FontWeight.w600,
-              color: colors.textPrimary,
-            ),
+            style: AppTextStyles.h4(colors.textPrimary),
           ),
         ],
       ),

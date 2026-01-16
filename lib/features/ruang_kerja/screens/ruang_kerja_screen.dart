@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:hrd_app/core/theme/app_text_styles.dart';
 import 'package:hrd_app/core/theme/app_colors.dart';
 import 'package:hrd_app/core/utils/snackbar_utils.dart';
 import 'package:hrd_app/features/ruang_kerja/widgets/survei_karyawan_tabs.dart';
@@ -87,11 +87,7 @@ class _RuangKerjaScreenState extends State<RuangKerjaScreen> {
       titleSpacing: 16.w,
       title: Text(
         'Ruang Kerja',
-        style: GoogleFonts.inter(
-          fontSize: 18.sp,
-          fontWeight: FontWeight.w600,
-          color: colors.textPrimary,
-        ),
+        style: AppTextStyles.h3(colors.textPrimary),
       ),
       actions: [
         IconButton(

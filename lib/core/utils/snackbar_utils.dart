@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:hrd_app/core/theme/app_text_styles.dart';
 
 /// Tipe snackbar yang tersedia
 enum SnackbarType { success, error, warning, info }
@@ -57,11 +57,7 @@ class AppSnackbar {
             Expanded(
               child: Text(
                 message,
-                style: GoogleFonts.inter(
-                  fontSize: 14.sp,
-                  fontWeight: FontWeight.w500,
-                  color: Colors.white,
-                ),
+                style: AppTextStyles.bodyMedium(Colors.white),
               ),
             ),
           ],

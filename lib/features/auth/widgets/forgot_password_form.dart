@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:hrd_app/core/theme/app_text_styles.dart';
 import 'package:hrd_app/core/theme/app_colors.dart';
 import 'package:hrd_app/core/utils/validators.dart';
 import 'package:hrd_app/core/providers/auth_provider.dart';
@@ -82,10 +82,7 @@ class _ForgotPasswordFormState extends State<ForgotPasswordForm> {
   }) {
     return InputDecoration(
       hintText: hintText,
-      hintStyle: GoogleFonts.inter(
-        color: colors.textSubtitle.withValues(alpha: 0.6),
-        fontSize: 14,
-      ),
+      hintStyle: AppTextStyles.body(colors.textSubtitle.withValues(alpha: 0.6)),
       prefixIcon: Icon(prefixIcon, color: colors.textSubtitle, size: 20),
       filled: true,
       fillColor: colors.inputFill,
@@ -139,31 +136,18 @@ class _ForgotPasswordFormState extends State<ForgotPasswordForm> {
           Text(
             'Jangan khawatir! Kami \nmembantu Anda.',
             textAlign: TextAlign.left,
-            style: GoogleFonts.inter(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              color: colors.textPrimary,
-              height: 1.3,
-            ),
+            style: AppTextStyles.body(colors.textPrimary),
           ),
           const SizedBox(height: 12),
           Text(
             'Masukkan nama pengguna atau email yang telah terdaftar di EZ HRD.',
             textAlign: TextAlign.left,
-            style: GoogleFonts.inter(
-              fontSize: 14,
-              color: colors.textSubtitle,
-              height: 1.5,
-            ),
+            style: AppTextStyles.body(colors.textSubtitle),
           ),
           const SizedBox(height: 32),
           Text(
             'Nama Pengguna / Email',
-            style: GoogleFonts.inter(
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-              color: colors.textPrimary,
-            ),
+            style: AppTextStyles.body(colors.textPrimary),
           ),
           const SizedBox(height: 8),
           Container(
@@ -184,7 +168,7 @@ class _ForgotPasswordFormState extends State<ForgotPasswordForm> {
               maxLength: 50,
               textInputAction: TextInputAction.done,
               onFieldSubmitted: (_) => _handleSubmit(),
-              style: GoogleFonts.inter(fontSize: 14, color: colors.textPrimary),
+              style: AppTextStyles.body(colors.textPrimary),
               decoration: _buildInputDecoration(
                 hintText: 'Masukkan Nama Pengguna atau Email',
                 prefixIcon: Icons.person_outlined,
@@ -211,10 +195,7 @@ class _ForgotPasswordFormState extends State<ForgotPasswordForm> {
               ),
               child: Text(
                 'Kembali ke Login?',
-                style: GoogleFonts.inter(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                ),
+                style: AppTextStyles.body(Colors.black),
               ),
             ),
           ),
@@ -256,10 +237,8 @@ class _ForgotPasswordFormState extends State<ForgotPasswordForm> {
                           )
                         : Text(
                             'Kirim OTP',
-                            style: GoogleFonts.inter(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                              color: _isFormValid
+                            style: AppTextStyles.h4(
+                              _isFormValid
                                   ? Colors.white
                                   : Colors.white.withValues(alpha: 0.7),
                             ),

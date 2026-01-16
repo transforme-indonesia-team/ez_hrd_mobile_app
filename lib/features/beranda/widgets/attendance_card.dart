@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:hrd_app/core/config/env_config.dart';
 import 'package:hrd_app/core/theme/app_colors.dart';
+import 'package:hrd_app/core/theme/app_text_styles.dart';
 import 'package:hrd_app/core/theme/color_palette.dart';
+import 'package:hrd_app/core/utils/image_url_extension.dart';
 import 'package:hrd_app/core/widgets/skeleton_widget.dart';
 import 'package:hrd_app/core/widgets/user_avatar.dart';
 import 'package:hrd_app/features/beranda/widgets/attendance_photo_detail_bottom_sheet.dart';
@@ -94,7 +94,7 @@ class _AttendanceCardState extends State<AttendanceCard> {
     );
   }
 
-  Widget _buildHeader(dynamic colors) {
+  Widget _buildHeader(ThemeColors colors) {
     return Padding(
       padding: EdgeInsets.fromLTRB(16.w, 12.h, 16.w, 1.h),
       child: Row(
@@ -107,11 +107,7 @@ class _AttendanceCardState extends State<AttendanceCard> {
               children: [
                 Text(
                   widget.date,
-                  style: GoogleFonts.inter(
-                    fontSize: 11.sp,
-                    fontWeight: FontWeight.w400,
-                    color: colors.textSecondary,
-                  ),
+                  style: AppTextStyles.xSmall(colors.textSecondary),
                 ),
                 SizedBox(height: 4.h),
                 if (widget.isLoading)
@@ -119,11 +115,7 @@ class _AttendanceCardState extends State<AttendanceCard> {
                 else
                   Text(
                     widget.shiftInfo,
-                    style: GoogleFonts.inter(
-                      fontSize: 12.sp,
-                      fontWeight: FontWeight.w500,
-                      color: colors.textPrimary,
-                    ),
+                    style: AppTextStyles.captionMedium(colors.textPrimary),
                   ),
               ],
             ),
@@ -149,7 +141,7 @@ class _AttendanceCardState extends State<AttendanceCard> {
     );
   }
 
-  Widget _buildTimeInfo(dynamic colors) {
+  Widget _buildTimeInfo(ThemeColors colors) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 16.w),
       child: Row(
@@ -181,7 +173,7 @@ class _AttendanceCardState extends State<AttendanceCard> {
   }
 
   Widget _buildTimeColumn({
-    required dynamic colors,
+    required ThemeColors colors,
     required String label,
     required String? time,
     required String? attendancePhoto,
@@ -207,7 +199,7 @@ class _AttendanceCardState extends State<AttendanceCard> {
                   ),
                   child: ClipOval(
                     child: Image.network(
-                      '${EnvConfig.imageBaseUrl}$attendancePhoto',
+                      attendancePhoto.asFullImageUrl!,
                       width: 32.w,
                       height: 32.w,
                       fit: BoxFit.cover,
@@ -233,23 +225,12 @@ class _AttendanceCardState extends State<AttendanceCard> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  label,
-                  style: GoogleFonts.inter(
-                    fontSize: 11.sp,
-                    fontWeight: FontWeight.w400,
-                    color: colors.textSecondary,
-                  ),
-                ),
+                Text(label, style: AppTextStyles.xSmall(colors.textSecondary)),
                 Row(
                   children: [
                     Text(
                       time ?? '--:--',
-                      style: GoogleFonts.inter(
-                        fontSize: 12.sp,
-                        fontWeight: FontWeight.w500,
-                        color: colors.textSecondary,
-                      ),
+                      style: AppTextStyles.captionMedium(colors.textSecondary),
                     ),
                     SizedBox(width: 4.w),
                     Icon(
@@ -276,7 +257,7 @@ class _AttendanceCardState extends State<AttendanceCard> {
     );
   }
 
-  Widget _buildRekamWaktuButton(dynamic colors) {
+  Widget _buildRekamWaktuButton(ThemeColors colors) {
     final buttonHeight = 36.h; // Tinggi tetap untuk kedua button
 
     return Padding(
@@ -299,10 +280,7 @@ class _AttendanceCardState extends State<AttendanceCard> {
                 ),
                 child: Text(
                   'Rekam Waktu',
-                  style: GoogleFonts.inter(
-                    fontSize: 14.sp,
-                    fontWeight: FontWeight.w600,
-                  ),
+                  style: AppTextStyles.bodySemiBold(Colors.white),
                 ),
               ),
             ),
@@ -332,7 +310,7 @@ class _AttendanceCardState extends State<AttendanceCard> {
     );
   }
 
-  Widget _buildLainnyaButton(dynamic colors) {
+  Widget _buildLainnyaButton(ThemeColors colors) {
     return GestureDetector(
       onTap: widget.onLainnyaTap ?? () {},
       child: Container(
@@ -341,17 +319,13 @@ class _AttendanceCardState extends State<AttendanceCard> {
         alignment: Alignment.center,
         child: Text(
           'Lainnya',
-          style: GoogleFonts.inter(
-            fontSize: 13.sp,
-            fontWeight: FontWeight.w500,
-            color: colors.textSecondary,
-          ),
+          style: AppTextStyles.smallMedium(colors.textSecondary),
         ),
       ),
     );
   }
 
-  Widget _buildToggleButton(dynamic colors) {
+  Widget _buildToggleButton(ThemeColors colors) {
     return InkWell(
       onTap: () {
         setState(() {
@@ -365,11 +339,7 @@ class _AttendanceCardState extends State<AttendanceCard> {
           children: [
             Text(
               _isExpanded ? 'Sembunyikan Detail' : 'Lihat Detail',
-              style: GoogleFonts.inter(
-                fontSize: 13.sp,
-                fontWeight: FontWeight.w500,
-                color: colors.primaryBlue,
-              ),
+              style: AppTextStyles.smallMedium(colors.primaryBlue),
             ),
             SizedBox(width: 4.w),
             Icon(
@@ -383,7 +353,7 @@ class _AttendanceCardState extends State<AttendanceCard> {
     );
   }
 
-  Widget _buildAttendancePhotoList(dynamic colors) {
+  Widget _buildAttendancePhotoList(ThemeColors colors) {
     // Filter photos that exist
     final List<Map<String, dynamic>> photos = [];
 
@@ -421,7 +391,7 @@ class _AttendanceCardState extends State<AttendanceCard> {
   }
 
   Widget _buildAttendancePhotoItem({
-    required dynamic colors,
+    required ThemeColors colors,
     required String photoUrl,
     required String date,
     required String time,
@@ -459,7 +429,7 @@ class _AttendanceCardState extends State<AttendanceCard> {
               ),
               child: ClipOval(
                 child: Image.network(
-                  '${EnvConfig.imageBaseUrl}$photoUrl',
+                  photoUrl.asFullImageUrl!,
                   fit: BoxFit.cover,
                   errorBuilder: (context, error, stackTrace) {
                     return Container(
@@ -482,21 +452,15 @@ class _AttendanceCardState extends State<AttendanceCard> {
                 children: [
                   Text(
                     date,
-                    style: GoogleFonts.inter(
-                      fontSize: 13.sp,
-                      fontWeight: FontWeight.w500,
-                      color: colors.textPrimary,
-                    ),
+                    style: AppTextStyles.smallMedium(colors.textPrimary),
                   ),
                   SizedBox(height: 4.h),
                   Row(
                     children: [
                       Text(
                         time,
-                        style: GoogleFonts.inter(
-                          fontSize: 12.sp,
-                          fontWeight: FontWeight.w500,
-                          color: ColorPalette.green500,
+                        style: AppTextStyles.captionMedium(
+                          ColorPalette.green500,
                         ),
                       ),
                       SizedBox(width: 6.w),
@@ -525,11 +489,7 @@ class _AttendanceCardState extends State<AttendanceCard> {
               ),
               child: Text(
                 'Telah diproses',
-                style: GoogleFonts.inter(
-                  fontSize: 10.sp,
-                  fontWeight: FontWeight.w500,
-                  color: ColorPalette.green700,
-                ),
+                style: AppTextStyles.xxSmall(ColorPalette.green700),
               ),
             ),
             SizedBox(width: 8.w),

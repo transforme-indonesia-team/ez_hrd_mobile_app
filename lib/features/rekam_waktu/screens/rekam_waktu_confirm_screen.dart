@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:hrd_app/core/theme/app_text_styles.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:hrd_app/data/services/attendance_service.dart';
@@ -11,7 +11,7 @@ import 'package:hrd_app/core/theme/app_colors.dart';
 import 'package:hrd_app/core/providers/auth_provider.dart';
 import 'package:hrd_app/core/utils/snackbar_utils.dart';
 import 'package:hrd_app/core/utils/location_utils.dart';
-import 'package:hrd_app/core/config/env_config.dart';
+import 'package:hrd_app/core/utils/image_url_extension.dart';
 
 /// Screen konfirmasi kehadiran dengan map dan foto.
 /// Lokasi ditampilkan real-time menggunakan blue dot Google Maps.
@@ -112,11 +112,7 @@ class _RekamWaktuConfirmScreenState extends State<RekamWaktuConfirmScreen> {
       ),
       title: Text(
         'Lihat Langsung',
-        style: GoogleFonts.inter(
-          fontSize: 16.sp,
-          fontWeight: FontWeight.w600,
-          color: colors.textPrimary,
-        ),
+        style: AppTextStyles.h4(colors.textPrimary),
       ),
     );
   }
@@ -187,10 +183,7 @@ class _RekamWaktuConfirmScreenState extends State<RekamWaktuConfirmScreen> {
             SizedBox(height: 12.h),
             Text(
               'Memuat peta...',
-              style: GoogleFonts.inter(
-                fontSize: 12.sp,
-                color: colors.textSecondary,
-              ),
+              style: AppTextStyles.caption(colors.textSecondary),
             ),
           ],
         ),
@@ -232,11 +225,7 @@ class _RekamWaktuConfirmScreenState extends State<RekamWaktuConfirmScreen> {
   Widget _buildUserName(String userName, ThemeColors colors) {
     return Text(
       userName,
-      style: GoogleFonts.inter(
-        fontSize: 18.sp,
-        fontWeight: FontWeight.w700,
-        color: colors.textPrimary,
-      ),
+      style: AppTextStyles.body(colors.textPrimary),
     );
   }
 
@@ -247,7 +236,7 @@ class _RekamWaktuConfirmScreenState extends State<RekamWaktuConfirmScreen> {
 
     return RichText(
       text: TextSpan(
-        style: GoogleFonts.inter(fontSize: 14.sp, color: colors.textSecondary),
+        style: AppTextStyles.body(colors.textSecondary),
         children: [
           TextSpan(text: '$datePart, '),
           TextSpan(
@@ -312,19 +301,16 @@ class _RekamWaktuConfirmScreenState extends State<RekamWaktuConfirmScreen> {
         SizedBox(height: 8.h),
         Text(
           label,
-          style: GoogleFonts.inter(
-            fontSize: 12.sp,
-            color: colors.textSecondary,
-          ),
+          style: AppTextStyles.caption(colors.textSecondary),
         ),
       ],
     );
   }
 
   Widget _buildProfilePhoto(String? profilePhotoUrl, ThemeColors colors) {
-    if (profilePhotoUrl != null && profilePhotoUrl.isNotEmpty) {
+    if (profilePhotoUrl?.asFullImageUrl != null) {
       return Image.network(
-        '${EnvConfig.imageBaseUrl}$profilePhotoUrl',
+        profilePhotoUrl.asFullImageUrl!,
         width: 120.w,
         height: 150.h,
         fit: BoxFit.cover,
@@ -371,22 +357,15 @@ class _RekamWaktuConfirmScreenState extends State<RekamWaktuConfirmScreen> {
           SizedBox(width: 8.w),
           Text(
             'Identifikasi Wajah : ',
-            style: GoogleFonts.inter(
-              fontSize: 13.sp,
-              color: colors.textPrimary,
-            ),
+            style: AppTextStyles.body(colors.textPrimary),
           ),
           Text(
             'Lulus',
-            style: GoogleFonts.inter(
-              fontSize: 13.sp,
-              fontWeight: FontWeight.w600,
-              color: Colors.green,
-            ),
+            style: AppTextStyles.body(Colors.green),
           ),
           Text(
             ' (--% Cocok)',
-            style: GoogleFonts.inter(fontSize: 13.sp, color: Colors.green),
+            style: AppTextStyles.body(Colors.green),
           ),
         ],
       ),
@@ -432,10 +411,7 @@ class _RekamWaktuConfirmScreenState extends State<RekamWaktuConfirmScreen> {
                   )
                 : Text(
                     'Simpan Kehadiran',
-                    style: GoogleFonts.inter(
-                      fontSize: 16.sp,
-                      fontWeight: FontWeight.w600,
-                    ),
+                    style: AppTextStyles.body(Colors.black),
                   ),
           ),
         ),

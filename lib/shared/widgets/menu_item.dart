@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:hrd_app/core/theme/app_colors.dart';
+import 'package:hrd_app/core/theme/app_text_styles.dart';
 
 /// Model untuk menu item dengan icon, title, dan callback
 class MenuItemModel {
@@ -8,11 +8,7 @@ class MenuItemModel {
   final String title;
   final VoidCallback? onTap;
 
-  const MenuItemModel({
-    required this.icon,
-    required this.title,
-    this.onTap,
-  });
+  const MenuItemModel({required this.icon, required this.title, this.onTap});
 }
 
 /// Reusable menu item widget dengan icon dan chevron
@@ -29,10 +25,7 @@ class MenuItem extends StatelessWidget {
       color: colors.background,
       child: ListTile(
         leading: Icon(item.icon, color: colors.textSecondary),
-        title: Text(
-          item.title,
-          style: GoogleFonts.inter(fontSize: 16, color: colors.textPrimary),
-        ),
+        title: Text(item.title, style: AppTextStyles.h4(colors.textPrimary)),
         trailing: Icon(Icons.chevron_right, color: colors.inactiveGray),
         onTap: item.onTap,
       ),

@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:hrd_app/core/theme/app_text_styles.dart';
 import 'package:pinput/pinput.dart';
 import 'package:hrd_app/core/theme/app_colors.dart';
 import 'package:hrd_app/core/providers/auth_provider.dart';
@@ -177,11 +177,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
     final defaultPinTheme = PinTheme(
       width: 48.w,
       height: 56.h,
-      textStyle: GoogleFonts.inter(
-        fontSize: 22.sp,
-        fontWeight: FontWeight.w600,
-        color: colors.textPrimary,
-      ),
+      textStyle: AppTextStyles.body(colors.textPrimary),
       decoration: BoxDecoration(
         color: colors.inputFill,
         borderRadius: BorderRadius.circular(12.r),
@@ -231,21 +227,13 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                 Text(
                   'Verifikasi OTP',
                   textAlign: TextAlign.center,
-                  style: GoogleFonts.inter(
-                    fontSize: 24.sp,
-                    fontWeight: FontWeight.bold,
-                    color: colors.textPrimary,
-                  ),
+                  style: AppTextStyles.body(colors.textPrimary),
                 ),
                 SizedBox(height: 12.h),
                 Text(
                   'Masukkan kode 6 digit yang telah dikirim ke ${widget.usernameOrEmail}',
                   textAlign: TextAlign.center,
-                  style: GoogleFonts.inter(
-                    fontSize: 14.sp,
-                    color: colors.textSubtitle,
-                    height: 1.5,
-                  ),
+                  style: AppTextStyles.body(colors.textSubtitle),
                 ),
                 SizedBox(height: 40.h),
                 // Pinput OTP Input
@@ -292,13 +280,9 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                             _canResend
                                 ? 'Kirim Ulang OTP'
                                 : 'Kirim ulang dalam ${_formatTime(_remainingSeconds)}',
-                            style: GoogleFonts.inter(
-                              fontSize: 14.sp,
-                              color: _canResend
+                            style: AppTextStyles.body(_canResend
                                   ? colors.linkColor
-                                  : colors.textSubtitle,
-                              fontWeight: FontWeight.w500,
-                            ),
+                                  : colors.textSubtitle),
                           ),
                         ),
                 ),
@@ -343,10 +327,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                                 )
                               : Text(
                                   'Verifikasi',
-                                  style: GoogleFonts.inter(
-                                    fontSize: 16.sp,
-                                    fontWeight: FontWeight.w600,
-                                    color: _isOtpComplete
+                                  style: AppTextStyles.h4(_isOtpComplete
                                         ? Colors.white
                                         : Colors.white.withValues(alpha: 0.7),
                                   ),
@@ -373,10 +354,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                     ),
                     child: Text(
                       'Kembali ke Login',
-                      style: GoogleFonts.inter(
-                        fontSize: 14.sp,
-                        fontWeight: FontWeight.w500,
-                      ),
+                      style: AppTextStyles.body(Colors.black),
                     ),
                   ),
                 ),

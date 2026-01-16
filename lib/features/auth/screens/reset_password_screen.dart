@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:hrd_app/core/theme/app_text_styles.dart';
 import 'package:hrd_app/core/theme/app_colors.dart';
 import 'package:hrd_app/core/utils/validators.dart';
 import 'package:hrd_app/core/providers/auth_provider.dart';
@@ -93,10 +93,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
   }) {
     return InputDecoration(
       hintText: hintText,
-      hintStyle: GoogleFonts.inter(
-        color: colors.textSubtitle.withValues(alpha: 0.6),
-        fontSize: 14.sp,
-      ),
+      hintStyle: AppTextStyles.body(colors.textSubtitle.withValues(alpha: 0.6)),
       prefixIcon: Icon(prefixIcon, color: colors.textSubtitle, size: 20.sp),
       suffixIcon: IconButton(
         icon: Icon(
@@ -165,31 +162,19 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                   Text(
                     'Reset Password',
                     textAlign: TextAlign.center,
-                    style: GoogleFonts.inter(
-                      fontSize: 24.sp,
-                      fontWeight: FontWeight.bold,
-                      color: colors.textPrimary,
-                    ),
+                    style: AppTextStyles.body(colors.textPrimary),
                   ),
                   SizedBox(height: 12.h),
                   Text(
                     'Buat password baru untuk akun Anda',
                     textAlign: TextAlign.center,
-                    style: GoogleFonts.inter(
-                      fontSize: 14.sp,
-                      color: colors.textSubtitle,
-                      height: 1.5,
-                    ),
+                    style: AppTextStyles.body(colors.textSubtitle),
                   ),
                   SizedBox(height: 40.h),
                   // Password Field
                   Text(
                     'Password Baru',
-                    style: GoogleFonts.inter(
-                      fontSize: 14.sp,
-                      fontWeight: FontWeight.w600,
-                      color: colors.textPrimary,
-                    ),
+                    style: AppTextStyles.bodySemiBold(colors.textPrimary),
                   ),
                   SizedBox(height: 8.h),
                   Container(
@@ -210,10 +195,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                       textInputAction: TextInputAction.next,
                       onFieldSubmitted: (_) =>
                           _confirmPasswordFocusNode.requestFocus(),
-                      style: GoogleFonts.inter(
-                        fontSize: 14.sp,
-                        color: colors.textPrimary,
-                      ),
+                      style: AppTextStyles.body(colors.textPrimary),
                       cursorColor: colors.primaryBlue,
                       decoration: _buildInputDecoration(
                         hintText: 'Masukkan password baru',
@@ -234,11 +216,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                   // Confirm Password Field
                   Text(
                     'Konfirmasi Password',
-                    style: GoogleFonts.inter(
-                      fontSize: 14.sp,
-                      fontWeight: FontWeight.w600,
-                      color: colors.textPrimary,
-                    ),
+                    style: AppTextStyles.bodySemiBold(colors.textPrimary),
                   ),
                   SizedBox(height: 8.h),
                   Container(
@@ -259,10 +237,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                       maxLength: 20,
                       textInputAction: TextInputAction.done,
                       onFieldSubmitted: (_) => _handleSubmit(),
-                      style: GoogleFonts.inter(
-                        fontSize: 14.sp,
-                        color: colors.textPrimary,
-                      ),
+                      style: AppTextStyles.body(colors.textPrimary),
                       cursorColor: colors.primaryBlue,
                       decoration: _buildInputDecoration(
                         hintText: 'Konfirmasi password baru',
@@ -327,10 +302,8 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                                   )
                                 : Text(
                                     'Reset Password',
-                                    style: GoogleFonts.inter(
-                                      fontSize: 16.sp,
-                                      fontWeight: FontWeight.w600,
-                                      color: _isFormValid
+                                    style: AppTextStyles.h4(
+                                      _isFormValid
                                           ? Colors.white
                                           : Colors.white.withValues(alpha: 0.7),
                                     ),
@@ -357,10 +330,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                       ),
                       child: Text(
                         'Kembali ke Login',
-                        style: GoogleFonts.inter(
-                          fontSize: 14.sp,
-                          fontWeight: FontWeight.w500,
-                        ),
+                        style: AppTextStyles.body(Colors.black),
                       ),
                     ),
                   ),

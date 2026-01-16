@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:hrd_app/core/theme/app_colors.dart';
+import 'package:hrd_app/core/theme/app_text_styles.dart';
 
 /// Search bar untuk mencari fitur
 class FiturSearchBar extends StatelessWidget {
@@ -32,17 +32,11 @@ class FiturSearchBar extends StatelessWidget {
       child: TextField(
         controller: controller,
         onChanged: onChanged,
-        style: GoogleFonts.inter(
-          fontSize: 14.sp,
-          color: colors.textPrimary,
-          fontWeight: FontWeight.w500,
-        ),
+        style: AppTextStyles.bodyMedium(colors.textPrimary),
         decoration: InputDecoration(
           hintText: 'Cari fitur...',
-          hintStyle: GoogleFonts.inter(
-            fontSize: 14.sp,
-            color: colors.textSecondary.withValues(alpha: 0.6),
-            fontWeight: FontWeight.w400,
+          hintStyle: AppTextStyles.body(
+            colors.textSecondary.withValues(alpha: 0.6),
           ),
           prefixIcon: Padding(
             padding: EdgeInsets.only(left: 12.w, right: 8.w),

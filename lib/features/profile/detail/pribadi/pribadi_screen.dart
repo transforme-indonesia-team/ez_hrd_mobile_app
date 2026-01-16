@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:hrd_app/core/config/env_config.dart';
 import 'package:hrd_app/core/theme/app_colors.dart';
+import 'package:hrd_app/core/theme/app_text_styles.dart';
+import 'package:hrd_app/core/utils/image_url_extension.dart';
 import 'package:hrd_app/core/utils/string_utils.dart';
 import 'package:hrd_app/core/utils/snackbar_utils.dart';
 import 'package:hrd_app/features/profile/models/profile_detail_model.dart';
@@ -46,19 +46,13 @@ class PribadiScreen extends StatelessWidget {
             CircleAvatar(
               radius: 16,
               backgroundColor: colors.divider,
-              backgroundImage: profile.avatarUrl != null
-                  ? NetworkImage(
-                      '${EnvConfig.imageBaseUrl}${profile.avatarUrl!}',
-                    )
+              backgroundImage: profile.avatarUrl?.asFullImageUrl != null
+                  ? NetworkImage(profile.avatarUrl!.asFullImageUrl!)
                   : null,
               child: profile.avatarUrl == null
                   ? Text(
                       StringUtils.getInitials(profile.name),
-                      style: GoogleFonts.inter(
-                        fontSize: 12.sp,
-                        color: colors.textSecondary,
-                        fontWeight: FontWeight.w600,
-                      ),
+                      style: AppTextStyles.captionMedium(colors.textSecondary),
                     )
                   : null,
             ),
@@ -66,11 +60,7 @@ class PribadiScreen extends StatelessWidget {
             Expanded(
               child: Text(
                 profile.name,
-                style: GoogleFonts.inter(
-                  fontSize: 16.sp,
-                  fontWeight: FontWeight.w600,
-                  color: colors.textPrimary,
-                ),
+                style: AppTextStyles.h4(colors.textPrimary),
                 overflow: TextOverflow.ellipsis,
               ),
             ),
@@ -116,10 +106,8 @@ class PribadiScreen extends StatelessWidget {
             leading: Icon(icon, color: colors.textSecondary, size: 24.sp),
             title: Text(
               itemTitle,
-              style: GoogleFonts.inter(
-                fontSize: 14.sp,
-                color: colors.textPrimary.withValues(alpha: 0.8),
-                fontWeight: FontWeight.w400,
+              style: AppTextStyles.body(
+                colors.textPrimary.withValues(alpha: 0.8),
               ),
             ),
             trailing: Icon(

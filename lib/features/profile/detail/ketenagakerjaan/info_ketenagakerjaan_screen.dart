@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:hrd_app/core/theme/app_text_styles.dart';
 import 'package:hrd_app/core/theme/app_colors.dart';
 import 'package:hrd_app/data/services/employee_service.dart';
 import 'package:shimmer/shimmer.dart';
@@ -87,11 +87,7 @@ class _InfoKetenagakerjaanScreenState extends State<InfoKetenagakerjaanScreen> {
         ),
         title: Text(
           'Informasi Ketenagakerjaan',
-          style: GoogleFonts.inter(
-            fontSize: 18.sp,
-            fontWeight: FontWeight.w600,
-            color: colors.textPrimary,
-          ),
+          style: AppTextStyles.h3(colors.textPrimary),
         ),
       ),
       body: _buildBody(colors),
@@ -110,7 +106,7 @@ class _InfoKetenagakerjaanScreenState extends State<InfoKetenagakerjaanScreen> {
       return Center(
         child: Text(
           _errorMessage!,
-          style: GoogleFonts.inter(color: colors.textSecondary),
+          style: AppTextStyles.body(colors.textSecondary),
         ),
       );
     }
@@ -178,20 +174,12 @@ class _InfoKetenagakerjaanScreenState extends State<InfoKetenagakerjaanScreen> {
         children: [
           Text(
             title,
-            style: GoogleFonts.inter(
-              fontSize: 14.sp,
-              fontWeight: FontWeight.w600,
-              color: colors.textPrimary,
-            ),
+            style: AppTextStyles.bodySemiBold(colors.textPrimary),
           ),
           SizedBox(height: 4.h),
           Text(
             subtitle,
-            style: GoogleFonts.inter(
-              fontSize: 12.sp,
-              color: colors.textPrimary,
-              fontWeight: FontWeight.w300,
-            ),
+            style: AppTextStyles.caption(colors.textPrimary),
           ),
           SizedBox(height: 8.h),
           Column(
@@ -215,30 +203,18 @@ class _InfoKetenagakerjaanScreenState extends State<InfoKetenagakerjaanScreen> {
       children: [
         Text(
           label,
-          style: GoogleFonts.inter(
-            fontSize: 14.sp,
-            color: colors.textPrimary,
-            fontWeight: FontWeight.w500,
-          ),
+          style: AppTextStyles.bodyMedium(colors.textPrimary),
         ),
         SizedBox(height: 4.h),
         Text(
           value ?? '-',
-          style: GoogleFonts.inter(
-            fontSize: 14.sp,
-            color: colors.textPrimary,
-            fontWeight: FontWeight.w400,
-          ),
+          style: AppTextStyles.body(colors.textPrimary),
         ),
         if (note != null) ...[
           SizedBox(height: 4.h),
           Text(
             note,
-            style: GoogleFonts.inter(
-              fontSize: 12.sp,
-              color: colors.textSecondary,
-              fontWeight: FontWeight.w400,
-            ),
+            style: AppTextStyles.caption(colors.textSecondary),
           ),
         ],
       ],

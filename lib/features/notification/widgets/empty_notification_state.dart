@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:hrd_app/core/theme/app_text_styles.dart';
 
 /// Reusable empty state widget for notification tabs
 class EmptyNotificationState extends StatelessWidget {
@@ -40,22 +40,14 @@ class EmptyNotificationState extends StatelessWidget {
             Text(
               title,
               textAlign: TextAlign.center,
-              style: GoogleFonts.inter(
-                fontSize: 16.sp,
-                fontWeight: FontWeight.w600,
-                color: Colors.black87,
-              ),
+              style: AppTextStyles.h4(Colors.black87),
             ),
             SizedBox(height: 8.h),
             // Subtitle
             Text(
               subtitle,
               textAlign: TextAlign.center,
-              style: GoogleFonts.inter(
-                fontSize: 14.sp,
-                fontWeight: FontWeight.w400,
-                color: Colors.grey.shade500,
-              ),
+              style: AppTextStyles.body(Colors.grey.shade500),
             ),
           ],
         ),

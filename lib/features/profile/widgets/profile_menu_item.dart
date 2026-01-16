@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:hrd_app/core/theme/app_colors.dart';
+import 'package:hrd_app/core/theme/app_text_styles.dart';
 import 'package:hrd_app/features/profile/models/profile_detail_model.dart';
 
 /// Widget untuk menu item di halaman profil detail
@@ -52,21 +52,13 @@ class ProfileMenuItem extends StatelessWidget {
                 children: [
                   Text(
                     item.title,
-                    style: GoogleFonts.inter(
-                      fontSize: 15.sp,
-                      fontWeight: FontWeight.w600,
-                      color: colors.textPrimary,
-                    ),
+                    style: AppTextStyles.bodyMedium(colors.textPrimary),
                   ),
                   if (item.subItems.isNotEmpty) ...[
                     SizedBox(height: 4.h),
                     Text(
                       item.subtitle,
-                      style: GoogleFonts.inter(
-                        fontSize: 12.sp,
-                        color: colors.textSecondary,
-                        height: 1.4,
-                      ),
+                      style: AppTextStyles.caption(colors.textSecondary),
                       maxLines: 3,
                       overflow: TextOverflow.ellipsis,
                     ),
