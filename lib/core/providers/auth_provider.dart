@@ -7,6 +7,8 @@ import 'package:hrd_app/data/services/base_api_service.dart';
 class AuthProvider extends ChangeNotifier {
   static const String _userKey = 'saved_user';
 
+  final AuthService _authService = AuthService();
+
   UserModel? _user;
   bool _isLoading = false;
   bool _isInitialized = false;
@@ -35,7 +37,7 @@ class AuthProvider extends ChangeNotifier {
           await prefs.remove(_userKey);
         }
       }
-    } catch (e) {}
+    } catch (_) {}
 
     _isInitialized = true;
     notifyListeners();
@@ -64,8 +66,7 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final authService = AuthService();
-      final response = await authService.login(
+      final response = await _authService.login(
         username: username,
         password: password,
       );
@@ -100,7 +101,7 @@ class AuthProvider extends ChangeNotifier {
     try {
       final prefs = await SharedPreferences.getInstance();
       await prefs.remove(_userKey);
-    } catch (e) {}
+    } catch (_) {}
 
     notifyListeners();
   }
@@ -111,7 +112,7 @@ class AuthProvider extends ChangeNotifier {
     try {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString(_userKey, _user!.toJsonString());
-    } catch (e) {}
+    } catch (_) {}
   }
 
   void updateUser(UserModel updatedUser) {
@@ -130,8 +131,6 @@ class AuthProvider extends ChangeNotifier {
 
     return false;
   }
-
-  final AuthService _authService = AuthService();
 
   Future<Map<String, dynamic>> forgotPassword({
     required String usernameOrEmail,

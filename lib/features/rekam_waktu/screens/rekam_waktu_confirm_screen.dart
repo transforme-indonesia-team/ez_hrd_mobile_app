@@ -53,7 +53,7 @@ class _RekamWaktuConfirmScreenState extends State<RekamWaktuConfirmScreen> {
           CameraUpdate.newLatLng(_initialPosition!),
         );
       }
-    } catch (e) {}
+    } catch (_) {}
   }
 
   @override
@@ -154,7 +154,7 @@ class _RekamWaktuConfirmScreenState extends State<RekamWaktuConfirmScreen> {
           CameraUpdate.newLatLng(LatLng(position.latitude, position.longitude)),
         );
       }
-    } catch (e) {}
+    } catch (_) {}
   }
 
   Widget _buildMapLoadingOverlay(ThemeColors colors) {

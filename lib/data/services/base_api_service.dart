@@ -176,10 +176,6 @@ class BaseApiService {
 
     final decryptedData = _crypto.decryptPayload(encryptedResponse);
 
-    if (decryptedData == null) {
-      throw Exception('Gagal mendekripsi response');
-    }
-
     final original = decryptedData['original'] as Map<String, dynamic>?;
 
     if (original == null) {

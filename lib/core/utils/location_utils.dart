@@ -29,7 +29,7 @@ class LocationUtils {
       if (lastPosition != null) {
         return lastPosition;
       }
-    } catch (e) {}
+    } catch (_) {}
 
     try {
       return await Geolocator.getCurrentPosition(

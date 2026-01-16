@@ -21,8 +21,7 @@ void main() async {
 
   try {
     CryptoUtils().initialize();
-    // ignore: empty_catches
-  } catch (e) {}
+  } catch (_) {}
 
   final themeProvider = ThemeProvider();
   await themeProvider.initialize();

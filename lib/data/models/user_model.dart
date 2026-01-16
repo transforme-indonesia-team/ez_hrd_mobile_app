@@ -118,7 +118,7 @@ class UserModel {
       postalCode: employee['postal_code']?.toString(),
       npwp: employee['npwp'],
       taxRegisteredName: employee['tax_registered_name'],
-      npwpRegistrationData: employee['npwp_registration_date'],
+      npwpRegistrationData: employee['npwp_registration_data'],
     );
   }
 

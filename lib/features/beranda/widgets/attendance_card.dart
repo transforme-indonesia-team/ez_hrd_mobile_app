@@ -114,7 +114,7 @@ class _AttendanceCardState extends State<AttendanceCard> {
             ),
           ),
           IconButton(
-            onPressed: widget.onShiftTap ?? () {},
+            onPressed: widget.onShiftTap,
             icon: Icon(
               Icons.description_outlined,
               color: colors.textSecondary,
@@ -189,7 +189,7 @@ class _AttendanceCardState extends State<AttendanceCard> {
                   ),
                   child: ClipOval(
                     child: Image.network(
-                      attendancePhoto.asFullImageUrl!,
+                      attendancePhoto.asFullImageUrl ?? attendancePhoto,
                       width: 32.w,
                       height: 32.w,
                       fit: BoxFit.cover,
@@ -285,7 +285,7 @@ class _AttendanceCardState extends State<AttendanceCard> {
                 borderRadius: BorderRadius.circular(8.r),
               ),
               child: IconButton(
-                onPressed: widget.onBarcodeTap ?? () {},
+                onPressed: widget.onBarcodeTap,
                 padding: EdgeInsets.zero,
                 icon: Icon(
                   Icons.qr_code_scanner,
@@ -302,7 +302,7 @@ class _AttendanceCardState extends State<AttendanceCard> {
 
   Widget _buildLainnyaButton(ThemeColors colors) {
     return GestureDetector(
-      onTap: widget.onLainnyaTap ?? () {},
+      onTap: widget.onLainnyaTap,
       child: Container(
         width: double.infinity,
         padding: EdgeInsets.symmetric(vertical: 8.h),
@@ -417,7 +417,7 @@ class _AttendanceCardState extends State<AttendanceCard> {
               ),
               child: ClipOval(
                 child: Image.network(
-                  photoUrl.asFullImageUrl!,
+                  photoUrl.asFullImageUrl ?? photoUrl,
                   fit: BoxFit.cover,
                   errorBuilder: (context, error, stackTrace) {
                     return Container(

@@ -43,7 +43,7 @@ class CryptoUtils {
     }
   }
 
-  Map<String, dynamic>? decryptPayload(String encryptedBase64) {
+  Map<String, dynamic> decryptPayload(String encryptedBase64) {
     try {
       final decrypted = _encrypter.decrypt64(encryptedBase64, iv: _iv);
 

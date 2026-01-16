@@ -11,7 +11,7 @@ class Validators {
     return null;
   }
 
-  static String? password(String? value, {int minLength = 2, int? maxLength}) {
+  static String? password(String? value, {int minLength = 8, int? maxLength}) {
     if (value == null || value.isEmpty) {
       return 'Kata Sandi tidak boleh kosong';
     }
