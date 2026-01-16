@@ -33,9 +33,9 @@ class PribadiScreen extends StatelessWidget {
     final colors = context.colors;
 
     return Scaffold(
-      backgroundColor: colors.background,
+      // backgroundColor: colors.background,
       appBar: AppBar(
-        elevation: 5,
+        elevation: 2,
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: colors.textPrimary),
           onPressed: () => Navigator.pop(context),

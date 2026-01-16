@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:hrd_app/core/constants/app_constants.dart';
 import 'package:hrd_app/core/providers/auth_provider.dart';
 import 'package:hrd_app/core/theme/app_colors.dart';
 import 'package:hrd_app/core/theme/app_text_styles.dart';
@@ -192,7 +193,7 @@ class _LoginFormState extends State<LoginForm> {
               controller: _usernameController,
               keyboardType: TextInputType.text,
               autovalidateMode: AutovalidateMode.onUserInteraction,
-              maxLength: 30,
+              maxLength: AppConstants.usernameMaxLength,
               textInputAction: TextInputAction.next,
               onFieldSubmitted: (_) => _passwordFocusNode.requestFocus(),
               style: AppTextStyles.body(colors.textPrimary),
@@ -201,7 +202,10 @@ class _LoginFormState extends State<LoginForm> {
                 prefixIcon: Icons.person_outlined,
                 colors: colors,
               ),
-              validator: (value) => Validators.username(value, maxLength: 30),
+              validator: (value) => Validators.username(
+                value,
+                maxLength: AppConstants.usernameMaxLength,
+              ),
             ),
           ),
           const SizedBox(height: 20),
@@ -226,7 +230,7 @@ class _LoginFormState extends State<LoginForm> {
               focusNode: _passwordFocusNode,
               obscureText: _obscurePassword,
               autovalidateMode: AutovalidateMode.onUserInteraction,
-              maxLength: 20,
+              maxLength: AppConstants.passwordMaxLength,
               textInputAction: TextInputAction.done,
               onFieldSubmitted: (_) => _handleLogin(),
               style: AppTextStyles.body(colors.textPrimary),
@@ -249,7 +253,10 @@ class _LoginFormState extends State<LoginForm> {
                   },
                 ),
               ),
-              validator: (value) => Validators.password(value, maxLength: 20),
+              validator: (value) => Validators.password(
+                value,
+                maxLength: AppConstants.passwordMaxLength,
+              ),
             ),
           ),
           const SizedBox(height: 28),

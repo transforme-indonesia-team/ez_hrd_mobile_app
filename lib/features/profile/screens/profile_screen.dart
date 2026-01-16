@@ -211,7 +211,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 Expanded(
                   child: Text(
                     themeProvider.modeLabel,
-                    style: AppTextStyles.h4(colors.textPrimary),
+                    style: AppTextStyles.bodyMedium(colors.textPrimary),
                   ),
                 ),
                 Transform.scale(
@@ -235,7 +235,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
             title: Text(
               'Kebijakan Privasi',
-              style: AppTextStyles.h4(colors.textPrimary),
+              style: AppTextStyles.bodyMedium(colors.textPrimary),
             ),
             trailing: Icon(Icons.chevron_right, color: colors.inactiveGray),
             onTap: () {},
@@ -245,7 +245,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             leading: Icon(Icons.help_outline, color: colors.textSecondary),
             title: Text(
               'Bantuan & Dukungan',
-              style: AppTextStyles.h4(colors.textPrimary),
+              style: AppTextStyles.bodyMedium(colors.textPrimary),
             ),
             trailing: Icon(Icons.chevron_right, color: colors.inactiveGray),
             onTap: () {},
@@ -294,7 +294,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
               );
             },
             icon: Icon(Icons.logout, color: colors.error),
-            label: Text('Keluar', style: AppTextStyles.h4(colors.error)),
+            label: Text(
+              'Keluar',
+              style: AppTextStyles.bodyMedium(colors.error),
+            ),
             style: TextButton.styleFrom(padding: EdgeInsets.zero),
           ),
           Text(_appVersion, style: AppTextStyles.body(colors.textSecondary)),

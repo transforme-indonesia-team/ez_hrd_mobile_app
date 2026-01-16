@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:hrd_app/core/config/env_config.dart';
 import 'package:hrd_app/core/utils/crypto_utils.dart';
 
@@ -177,6 +178,8 @@ class BaseApiService {
     final decryptedData = _crypto.decryptPayload(encryptedResponse);
 
     final original = decryptedData['original'] as Map<String, dynamic>?;
+
+    debugPrint('DEBUG-API: ${original.toString()}');
 
     if (original == null) {
       throw Exception('Response tidak valid');

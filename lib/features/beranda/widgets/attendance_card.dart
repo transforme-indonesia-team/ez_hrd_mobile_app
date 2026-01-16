@@ -195,7 +195,6 @@ class _AttendanceCardState extends State<AttendanceCard> {
                       fit: BoxFit.cover,
                       errorBuilder: (context, error, stackTrace) {
                         return UserAvatar(
-                          avatarUrl: widget.avatarUrl,
                           name: widget.name,
                           size: 32,
                           fontSize: 10,
@@ -204,12 +203,7 @@ class _AttendanceCardState extends State<AttendanceCard> {
                     ),
                   ),
                 )
-              : UserAvatar(
-                  avatarUrl: widget.avatarUrl,
-                  name: widget.name,
-                  size: 32,
-                  fontSize: 10,
-                ),
+              : UserAvatar(name: widget.name, size: 32, fontSize: 10),
           SizedBox(width: 8.w),
           Expanded(
             child: Column(

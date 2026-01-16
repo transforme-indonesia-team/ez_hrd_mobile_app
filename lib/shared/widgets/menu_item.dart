@@ -23,7 +23,10 @@ class MenuItem extends StatelessWidget {
       color: colors.background,
       child: ListTile(
         leading: Icon(item.icon, color: colors.textSecondary),
-        title: Text(item.title, style: AppTextStyles.h4(colors.textPrimary)),
+        title: Text(
+          item.title,
+          style: AppTextStyles.bodyMedium(colors.textPrimary),
+        ),
         trailing: Icon(Icons.chevron_right, color: colors.inactiveGray),
         onTap: item.onTap,
       ),
