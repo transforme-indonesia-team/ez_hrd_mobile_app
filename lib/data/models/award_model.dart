@@ -1,4 +1,3 @@
-/// Model untuk data penghargaan karyawan
 class AwardModel {
   final String? typeName;
   final String? referenceNumber;

@@ -8,7 +8,6 @@ import 'package:hrd_app/core/widgets/skeleton_widget.dart';
 import 'package:hrd_app/core/widgets/user_avatar.dart';
 import 'package:hrd_app/features/beranda/widgets/attendance_photo_detail_bottom_sheet.dart';
 
-/// Attendance Card dengan expandable toggle
 class AttendanceCard extends StatefulWidget {
   final String shiftInfo;
   final String date;
@@ -67,25 +66,19 @@ class _AttendanceCardState extends State<AttendanceCard> {
       ),
       child: Column(
         children: [
-          // Header info (selalu tampil)
           _buildHeader(colors),
 
           Divider(color: colors.divider, thickness: 2.r),
-          // Jam masuk & keluar
           _buildTimeInfo(colors),
 
-          // Rekam Waktu button
           _buildRekamWaktuButton(colors),
 
-          // Attendance photo list and Lainnya button (hanya saat expanded)
           if (_isExpanded) ...[
-            // Attendance photo list
             _buildAttendancePhotoList(colors),
 
             _buildLainnyaButton(colors),
           ],
 
-          // Toggle button
           Divider(color: colors.divider, thickness: 2.r),
           _buildToggleButton(colors),
           SizedBox(height: 8.h),
@@ -146,7 +139,6 @@ class _AttendanceCardState extends State<AttendanceCard> {
       padding: EdgeInsets.symmetric(horizontal: 16.w),
       child: Row(
         children: [
-          // Jam Masuk
           Expanded(
             child: _buildTimeColumn(
               colors: colors,
@@ -157,7 +149,6 @@ class _AttendanceCardState extends State<AttendanceCard> {
             ),
           ),
           Container(height: 40.h, width: 1, color: colors.divider),
-          // Jam Keluar
           Expanded(
             child: _buildTimeColumn(
               colors: colors,
@@ -183,7 +174,6 @@ class _AttendanceCardState extends State<AttendanceCard> {
       padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 8.h),
       child: Row(
         children: [
-          // Attendance photo or user avatar
           attendancePhoto != null
               ? Container(
                   width: 32.w,
@@ -258,7 +248,7 @@ class _AttendanceCardState extends State<AttendanceCard> {
   }
 
   Widget _buildRekamWaktuButton(ThemeColors colors) {
-    final buttonHeight = 36.h; // Tinggi tetap untuk kedua button
+    final buttonHeight = 36.h;
 
     return Padding(
       padding: EdgeInsets.fromLTRB(16.w, 8.h, 16.w, 8.h),
@@ -287,7 +277,7 @@ class _AttendanceCardState extends State<AttendanceCard> {
           ),
           SizedBox(width: 8.w),
           SizedBox(
-            width: buttonHeight, // Sama dengan tinggi = persegi
+            width: buttonHeight,
             height: buttonHeight,
             child: Container(
               decoration: BoxDecoration(
@@ -354,7 +344,6 @@ class _AttendanceCardState extends State<AttendanceCard> {
   }
 
   Widget _buildAttendancePhotoList(ThemeColors colors) {
-    // Filter photos that exist
     final List<Map<String, dynamic>> photos = [];
 
     if (widget.photoIn != null && widget.jamMasuk != null) {
@@ -414,7 +403,6 @@ class _AttendanceCardState extends State<AttendanceCard> {
         ),
         child: Row(
           children: [
-            // Photo thumbnail
             Container(
               width: 48.w,
               height: 48.w,
@@ -445,7 +433,6 @@ class _AttendanceCardState extends State<AttendanceCard> {
               ),
             ),
             SizedBox(width: 12.w),
-            // Info
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -480,7 +467,6 @@ class _AttendanceCardState extends State<AttendanceCard> {
                 ],
               ),
             ),
-            // Status badge
             Container(
               padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 4.h),
               decoration: BoxDecoration(

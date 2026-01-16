@@ -29,7 +29,6 @@ class FiturItemGrid extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           SizedBox(height: 2.h),
-          // Icon container - wrapped in Flexible with FittedBox
           Flexible(
             flex: 3,
             child: FittedBox(
@@ -51,7 +50,6 @@ class FiturItemGrid extends StatelessWidget {
             ),
           ),
           SizedBox(height: 4.h),
-          // Title - wrapped in Flexible to prevent overflow
           Flexible(
             flex: 2,
             child: Padding(

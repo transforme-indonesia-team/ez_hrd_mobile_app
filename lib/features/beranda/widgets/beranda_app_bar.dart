@@ -3,7 +3,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hrd_app/core/theme/app_colors.dart';
 import 'package:hrd_app/core/theme/app_text_styles.dart';
 
-/// Custom App Bar untuk Beranda
 class BerandaAppBar extends StatelessWidget implements PreferredSizeWidget {
   const BerandaAppBar({super.key});
 
@@ -26,7 +25,6 @@ class BerandaAppBar extends StatelessWidget implements PreferredSizeWidget {
       actions: [
         IconButton(
           onPressed: () {
-            // TODO: Navigate to more options
           },
           icon: Icon(
             Icons.chevron_right,
@@ -36,7 +34,6 @@ class BerandaAppBar extends StatelessWidget implements PreferredSizeWidget {
         ),
         IconButton(
           onPressed: () {
-            // TODO: Navigate to search
           },
           icon: Icon(Icons.search, color: colors.textSecondary, size: 24.sp),
         ),

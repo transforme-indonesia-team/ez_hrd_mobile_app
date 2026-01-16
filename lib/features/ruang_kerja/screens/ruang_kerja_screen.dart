@@ -8,7 +8,6 @@ import 'package:hrd_app/features/ruang_kerja/widgets/survei_empty_state.dart';
 import 'package:hrd_app/features/ruang_kerja/widgets/rekan_setim_section.dart';
 import 'package:hrd_app/features/ruang_kerja/widgets/tugasmu_section.dart';
 
-/// Screen Ruang Kerja dengan Polling, Survei, Rekan Setim, dan Tugasmu
 class RuangKerjaScreen extends StatefulWidget {
   const RuangKerjaScreen({super.key});
 
@@ -19,7 +18,6 @@ class RuangKerjaScreen extends StatefulWidget {
 class _RuangKerjaScreenState extends State<RuangKerjaScreen> {
   int _selectedTabIndex = 0;
 
-  // Dummy data untuk rekan setim
   final List<TeamMember> _teamMembers = const [
     TeamMember(name: 'SYAHRUL', initials: 'ST'),
   ];
@@ -34,7 +32,6 @@ class _RuangKerjaScreenState extends State<RuangKerjaScreen> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            // Survei Karyawan Tabs
             SurveiKaryawanTabs(
               selectedIndex: _selectedTabIndex,
               onTabChanged: (index) {
@@ -44,12 +41,10 @@ class _RuangKerjaScreenState extends State<RuangKerjaScreen> {
               },
             ),
 
-            // Tab content - Empty state
             const SurveiEmptyState(),
 
             SizedBox(height: 8.h),
 
-            // Rekan Setim Section
             RekanSetimSection(
               members: _teamMembers,
               onLainnyaTap: () {
@@ -62,7 +57,6 @@ class _RuangKerjaScreenState extends State<RuangKerjaScreen> {
 
             SizedBox(height: 8.h),
 
-            // Tugasmu Section
             TugasmuSection(
               onLainnyaTap: () {
                 context.showInfoSnackbar('Fitur Lainnya belum tersedia');
@@ -85,15 +79,10 @@ class _RuangKerjaScreenState extends State<RuangKerjaScreen> {
       leading: const SizedBox.shrink(),
       leadingWidth: 0,
       titleSpacing: 16.w,
-      title: Text(
-        'Ruang Kerja',
-        style: AppTextStyles.h3(colors.textPrimary),
-      ),
+      title: Text('Ruang Kerja', style: AppTextStyles.h3(colors.textPrimary)),
       actions: [
         IconButton(
-          onPressed: () {
-            // TODO: Implement search
-          },
+          onPressed: () {},
           icon: Icon(Icons.search, color: colors.textSecondary, size: 24.sp),
         ),
         SizedBox(width: 8.w),

@@ -2,41 +2,32 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hrd_app/core/theme/app_text_styles.dart';
 
-/// Tipe snackbar yang tersedia
 enum SnackbarType { success, error, warning, info }
 
-/// Global Snackbar utility untuk konsistensi UI di seluruh aplikasi
 class AppSnackbar {
   AppSnackbar._();
 
-  /// Menampilkan snackbar sukses
   static void showSuccess(BuildContext context, String message) {
     _show(context, message, SnackbarType.success);
   }
 
-  /// Menampilkan snackbar error
   static void showError(BuildContext context, String message) {
     _show(context, message, SnackbarType.error);
   }
 
-  /// Menampilkan snackbar warning
   static void showWarning(BuildContext context, String message) {
     _show(context, message, SnackbarType.warning);
   }
 
-  /// Menampilkan snackbar info
   static void showInfo(BuildContext context, String message) {
     _show(context, message, SnackbarType.info);
   }
 
-  /// Menampilkan snackbar fitur belum tersedia
   static void showNotAvailable(BuildContext context, String featureName) {
     _show(context, '$featureName belum tersedia', SnackbarType.info);
   }
 
-  /// Core method untuk menampilkan snackbar
   static void _show(BuildContext context, String message, SnackbarType type) {
-    // Hapus snackbar yang sedang tampil sebelum menampilkan yang baru
     ScaffoldMessenger.of(context).hideCurrentSnackBar();
 
     final config = _getConfig(type);
@@ -80,25 +71,25 @@ class AppSnackbar {
       case SnackbarType.success:
         return _SnackbarConfig(
           icon: Icons.check_circle_rounded,
-          backgroundColor: const Color(0xFF10B981), // Green
+          backgroundColor: const Color(0xFF10B981),
           duration: const Duration(seconds: 3),
         );
       case SnackbarType.error:
         return _SnackbarConfig(
           icon: Icons.error_rounded,
-          backgroundColor: const Color(0xFFEF4444), // Red
+          backgroundColor: const Color(0xFFEF4444),
           duration: const Duration(seconds: 4),
         );
       case SnackbarType.warning:
         return _SnackbarConfig(
           icon: Icons.warning_rounded,
-          backgroundColor: const Color(0xFFF59E0B), // Orange/Amber
+          backgroundColor: const Color(0xFFF59E0B),
           duration: const Duration(seconds: 3),
         );
       case SnackbarType.info:
         return _SnackbarConfig(
           icon: Icons.info_rounded,
-          backgroundColor: const Color(0xFF3B82F6), // Blue
+          backgroundColor: const Color(0xFF3B82F6),
           duration: const Duration(seconds: 2),
         );
     }
@@ -117,7 +108,6 @@ class _SnackbarConfig {
   });
 }
 
-/// Extension untuk kemudahan akses dari BuildContext
 extension SnackbarExtension on BuildContext {
   void showSuccessSnackbar(String message) =>
       AppSnackbar.showSuccess(this, message);
@@ -133,7 +123,6 @@ extension SnackbarExtension on BuildContext {
   void showNotAvailableSnackbar(String featureName) =>
       AppSnackbar.showNotAvailable(this, featureName);
 
-  // Backward compatible methods
   void showMenuNotAvailable(String menuName) =>
       AppSnackbar.showInfo(this, 'Menu "$menuName" belum tersedia');
 

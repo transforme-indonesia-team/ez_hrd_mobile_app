@@ -3,9 +3,6 @@ import 'package:flutter/material.dart';
 class ColorPalette {
   ColorPalette._();
 
-  // ============================================
-  // SLATE (Gray with blue undertone)
-  // ============================================
   static const Color slate50 = Color(0xFFF8FAFC);
   static const Color slate100 = Color(0xFFF1F5F9);
   static const Color slate200 = Color(0xFFE2E8F0);
@@ -18,9 +15,6 @@ class ColorPalette {
   static const Color slate900 = Color(0xFF0F172A);
   static const Color slate950 = Color(0xFF020617);
 
-  // ============================================
-  // GRAY (Neutral gray)
-  // ============================================
   static const Color gray50 = Color(0xFFF9FAFB);
   static const Color gray100 = Color(0xFFF3F4F6);
   static const Color gray200 = Color(0xFFE5E7EB);
@@ -33,9 +27,6 @@ class ColorPalette {
   static const Color gray900 = Color(0xFF111827);
   static const Color gray950 = Color(0xFF030712);
 
-  // ============================================
-  // BLUE
-  // ============================================
   static const Color blue50 = Color(0xFFEFF6FF);
   static const Color blue100 = Color(0xFFDBEAFE);
   static const Color blue200 = Color(0xFFBFDBFE);
@@ -48,9 +39,6 @@ class ColorPalette {
   static const Color blue900 = Color(0xFF1E3A8A);
   static const Color blue950 = Color(0xFF172554);
 
-  // ============================================
-  // GREEN
-  // ============================================
   static const Color green50 = Color(0xFFF0FDF4);
   static const Color green100 = Color(0xFFDCFCE7);
   static const Color green200 = Color(0xFFBBF7D0);
@@ -63,9 +51,6 @@ class ColorPalette {
   static const Color green900 = Color(0xFF14532D);
   static const Color green950 = Color(0xFF052E16);
 
-  // ============================================
-  // RED
-  // ============================================
   static const Color red50 = Color(0xFFFEF2F2);
   static const Color red100 = Color(0xFFFEE2E2);
   static const Color red200 = Color(0xFFFECACA);
@@ -78,9 +63,6 @@ class ColorPalette {
   static const Color red900 = Color(0xFF7F1D1D);
   static const Color red950 = Color(0xFF450A0A);
 
-  // ============================================
-  // ORANGE
-  // ============================================
   static const Color orange50 = Color(0xFFFFF7ED);
   static const Color orange100 = Color(0xFFFFEDD5);
   static const Color orange200 = Color(0xFFFED7AA);
@@ -93,9 +75,6 @@ class ColorPalette {
   static const Color orange900 = Color(0xFF7C2D12);
   static const Color orange950 = Color(0xFF431407);
 
-  // ============================================
-  // YELLOW
-  // ============================================
   static const Color yellow50 = Color(0xFFFEFCE8);
   static const Color yellow100 = Color(0xFFFEF9C3);
   static const Color yellow200 = Color(0xFFFEF08A);

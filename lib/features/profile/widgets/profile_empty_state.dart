@@ -3,7 +3,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hrd_app/core/theme/app_colors.dart';
 import 'package:hrd_app/core/theme/app_text_styles.dart';
 
-/// Widget untuk menampilkan empty state "Tidak ada data untuk ditampilkan"
 class ProfileEmptyState extends StatelessWidget {
   final String? message;
 
@@ -18,11 +17,9 @@ class ProfileEmptyState extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          // Document icon illustration
           _buildDocumentIcon(colors),
           SizedBox(height: 16.h),
 
-          // Text
           Text(
             message ?? 'Tidak ada data untuk\nditampilkan',
             textAlign: TextAlign.center,
@@ -45,7 +42,6 @@ class ProfileEmptyState extends StatelessWidget {
       child: Stack(
         alignment: Alignment.center,
         children: [
-          // Document lines illustration
           Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [

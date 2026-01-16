@@ -211,7 +211,6 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 SizedBox(height: 20.h),
-                // Logo
                 Center(
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(16.r),
@@ -236,7 +235,6 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                   style: AppTextStyles.body(colors.textSubtitle),
                 ),
                 SizedBox(height: 40.h),
-                // Pinput OTP Input
                 Center(
                   child: Pinput(
                     length: 6,
@@ -264,7 +262,6 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                   ),
                 ),
                 SizedBox(height: 32.h),
-                // Resend Timer
                 Center(
                   child: _isResending
                       ? SizedBox(
@@ -287,7 +284,6 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                         ),
                 ),
                 SizedBox(height: 32.h),
-                // Verify Button
                 Container(
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
@@ -338,7 +334,6 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                   ),
                 ),
                 SizedBox(height: 24.h),
-                // Back to Login
                 Align(
                   alignment: Alignment.center,
                   child: TextButton(

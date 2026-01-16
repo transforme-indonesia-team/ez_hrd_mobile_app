@@ -17,7 +17,6 @@ class DashboardScreen extends StatefulWidget {
 class _DashboardScreenState extends State<DashboardScreen> {
   int _currentIndex = 0;
 
-  // Daftar halaman untuk setiap tab
   List<Widget> get _pages => [
     const BerandaScreen(),
     const FiturScreen(),
@@ -90,6 +89,3 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 }
 
-// ============================================
-// HALAMAN-HALAMAN PLACEHOLDER
-// ============================================

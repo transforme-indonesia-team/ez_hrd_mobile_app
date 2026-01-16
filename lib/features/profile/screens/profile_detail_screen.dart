@@ -33,7 +33,6 @@ class _ProfileDetailScreenState extends State<ProfileDetailScreen> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    // Get user data from AuthProvider and create profile
     final user = context.read<AuthProvider>().user;
     _profile = ProfileDetailModel.fromUser(user);
   }
@@ -44,10 +43,7 @@ class _ProfileDetailScreenState extends State<ProfileDetailScreen> {
       'Alamat',
       'Kontak',
       'Kontak darurat',
-      // 'Keluarga & Tanggungan',
       'Pendidikan',
-      // 'Rekam Medis',
-      // 'Pengalaman',
       'Daftar Bank',
       'Data Asuransi',
       'Catatan Pelatihan',
@@ -57,7 +53,6 @@ class _ProfileDetailScreenState extends State<ProfileDetailScreen> {
       'Info Ketenagakerjaan',
       'Disiplin',
       'Penghargaan',
-      // 'Kontrol Dokumen',
     ];
 
     _menuItems = [
@@ -78,12 +73,7 @@ class _ProfileDetailScreenState extends State<ProfileDetailScreen> {
       ProfileMenuItemModel(
         icon: Icons.work_outline,
         title: 'Data Ketenagakerjaan',
-        subItems: [
-          'Info Ketenagakerjaan',
-          'Disiplin',
-          'Penghargaan',
-          // 'Kontrol Dokumen',
-        ],
+        subItems: ['Info Ketenagakerjaan', 'Disiplin', 'Penghargaan'],
         onTap: () {
           Navigator.push(
             context,
@@ -140,7 +130,6 @@ class _ProfileDetailScreenState extends State<ProfileDetailScreen> {
               title: const Text('Edit Profil'),
               onTap: () {
                 Navigator.pop(context);
-                // TODO: Navigate to edit profile
               },
             ),
             ListTile(
@@ -148,7 +137,6 @@ class _ProfileDetailScreenState extends State<ProfileDetailScreen> {
               title: const Text('Bagikan Profil'),
               onTap: () {
                 Navigator.pop(context);
-                // TODO: Share profile
               },
             ),
           ],

@@ -4,7 +4,6 @@ import 'package:hrd_app/core/theme/app_text_styles.dart';
 import 'package:hrd_app/core/theme/app_colors.dart';
 import 'package:hrd_app/core/widgets/empty_state_widget.dart';
 
-/// Screen Postingan dengan fitur empty state
 class PostinganScreen extends StatelessWidget {
   const PostinganScreen({super.key});
 
@@ -31,15 +30,10 @@ class PostinganScreen extends StatelessWidget {
       leading: const SizedBox.shrink(),
       leadingWidth: 0,
       titleSpacing: 16.w,
-      title: Text(
-        'Postingan',
-        style: AppTextStyles.h3(colors.textPrimary),
-      ),
+      title: Text('Postingan', style: AppTextStyles.h3(colors.textPrimary)),
       actions: [
         IconButton(
-          onPressed: () {
-            // TODO: Implement search
-          },
+          onPressed: () {},
           icon: Icon(Icons.search, color: colors.textSecondary, size: 24.sp),
         ),
         SizedBox(width: 8.w),

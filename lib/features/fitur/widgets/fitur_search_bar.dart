@@ -3,7 +3,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hrd_app/core/theme/app_colors.dart';
 import 'package:hrd_app/core/theme/app_text_styles.dart';
 
-/// Search bar untuk mencari fitur
 class FiturSearchBar extends StatelessWidget {
   final TextEditingController controller;
   final ValueChanged<String>? onChanged;
@@ -16,7 +15,6 @@ class FiturSearchBar extends StatelessWidget {
 
     return Container(
       margin: EdgeInsets.fromLTRB(16.w, 8.h, 16.w, 12.h),
-      // height: 40.h,
       decoration: BoxDecoration(
         color: colors.surface,
         borderRadius: BorderRadius.circular(12.r),

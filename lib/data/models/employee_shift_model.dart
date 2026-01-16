@@ -44,10 +44,8 @@ class EmployeeShiftModel {
   String? get formattedCheckIn => _formatTime(checkIn);
   String? get formattedCheckOut => _formatTime(checkOut);
 
-  /// Get formatted photo URL for check-in, returns null if photo not available
   String? get formattedPhotoIn => _formatPhoto(attendancePhotoIn);
 
-  /// Get formatted photo URL for check-out, returns null if photo not available
   String? get formattedPhotoOut => _formatPhoto(attendancePhotoOut);
 
   String? _formatTime(String? time) {

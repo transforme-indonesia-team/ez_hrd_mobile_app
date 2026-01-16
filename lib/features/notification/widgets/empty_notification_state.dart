@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hrd_app/core/theme/app_text_styles.dart';
 
-/// Reusable empty state widget for notification tabs
 class EmptyNotificationState extends StatelessWidget {
   final String title;
   final String subtitle;
@@ -21,7 +20,6 @@ class EmptyNotificationState extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // Document icon
             Container(
               width: 80.w,
               height: 80.w,
@@ -36,14 +34,12 @@ class EmptyNotificationState extends StatelessWidget {
               ),
             ),
             SizedBox(height: 24.h),
-            // Title
             Text(
               title,
               textAlign: TextAlign.center,
               style: AppTextStyles.h4(Colors.black87),
             ),
             SizedBox(height: 8.h),
-            // Subtitle
             Text(
               subtitle,
               textAlign: TextAlign.center,

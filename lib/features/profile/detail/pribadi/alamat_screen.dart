@@ -9,8 +9,6 @@ import 'package:provider/provider.dart';
 class AlamatScreen extends StatelessWidget {
   const AlamatScreen({super.key});
 
-  /// Mengubah text UPPERCASE menjadi Title Case
-  /// Contoh: "KAB. BOALEMO" → "Kab. Boalemo"
   String _toTitleCase(String? text) {
     if (text == null || text.isEmpty) return '';
 
@@ -18,14 +16,11 @@ class AlamatScreen extends StatelessWidget {
         .split(' ')
         .map((word) {
           if (word.isEmpty) return word;
-          // Handle kata dengan titik seperti "KAB." → "Kab."
           return word[0].toUpperCase() + word.substring(1).toLowerCase();
         })
         .join(' ');
   }
 
-  /// Format alamat lengkap dari data user
-  /// Format: {alamat}, Kecamatan {kecamatan}, {kota}, {provinsi} {kodepos}
   String _formatFullAddress({
     String? address,
     String? subdistrict,
@@ -74,10 +69,7 @@ class AlamatScreen extends StatelessWidget {
           icon: Icon(Icons.arrow_back, color: colors.textPrimary),
           onPressed: () => Navigator.pop(context),
         ),
-        title: Text(
-          'Alamat',
-          style: AppTextStyles.h3(colors.textPrimary),
-        ),
+        title: Text('Alamat', style: AppTextStyles.h3(colors.textPrimary)),
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(16.w),
@@ -87,7 +79,6 @@ class AlamatScreen extends StatelessWidget {
   }
 
   Widget _buildContent(dynamic colors, UserModel? user) {
-    // Format alamat KTP
     final alamatKtp = _formatFullAddress(
       address: user?.employeeAddress,
       subdistrict: user?.subdistrictName,
@@ -96,7 +87,6 @@ class AlamatScreen extends StatelessWidget {
       postalCode: user?.postalCode,
     );
 
-    // Format alamat Domisili - langsung ambil value saja
     final alamatDomisili =
         user?.domicileAddress != null && user!.domicileAddress!.isNotEmpty
         ? _toTitleCase(user.domicileAddress)
@@ -135,10 +125,7 @@ class AlamatScreen extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            title,
-            style: AppTextStyles.bodySemiBold(colors.textPrimary),
-          ),
+          Text(title, style: AppTextStyles.bodySemiBold(colors.textPrimary)),
           SizedBox(height: 12.h),
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,

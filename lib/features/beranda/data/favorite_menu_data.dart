@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hrd_app/features/fitur/models/fitur_item_model.dart';
 
-/// Data menu favorit untuk beranda
-/// Menggunakan warna yang sama dengan fitur section
 class FavoriteMenuData {
   FavoriteMenuData._();
 
@@ -29,8 +27,6 @@ class FavoriteMenuData {
     ),
   ];
 
-  /// Warna background dan icon untuk setiap menu item
-  /// Disesuaikan dengan warna di fitur_data.dart
   static Color getBackgroundColor(String id) {
     switch (id) {
       case 'permintaan_lembur':

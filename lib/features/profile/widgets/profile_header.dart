@@ -4,7 +4,6 @@ import 'package:hrd_app/core/theme/app_colors.dart';
 import 'package:hrd_app/core/theme/app_text_styles.dart';
 import 'package:hrd_app/core/utils/image_url_extension.dart';
 import 'package:hrd_app/core/utils/string_utils.dart';
-// import 'package:hrd_app/core/theme/color_palette.dart';
 import 'package:hrd_app/features/profile/models/profile_detail_model.dart';
 
 class ProfileHeader extends StatelessWidget {
@@ -56,7 +55,6 @@ class ProfileHeader extends StatelessWidget {
               ],
             ),
           ),
-          // _buildActionButtons(colors),
         ],
       ),
     );
@@ -91,43 +89,4 @@ class ProfileHeader extends StatelessWidget {
       ),
     );
   }
-
-  // Widget _buildActionButtons(dynamic colors) {
-  //   return Row(
-  //     mainAxisSize: MainAxisSize.min,
-  //     children: [
-  //       // _buildActionButton(
-  //       //   icon: Icons.qr_code_2_outlined,
-  //       //   colors: colors,
-  //       //   onTap: onQRTap,
-  //       // ),
-  //       SizedBox(width: 8.w),
-  //       // More menu button
-  //       _buildActionButton(
-  //         icon: Icons.more_vert,
-  //         colors: colors,
-  //         onTap: onMenuTap,
-  //       ),
-  //     ],
-  //   );
-  // }
-
-  // Widget _buildActionButton({
-  //   required IconData icon,
-  //   required dynamic colors,
-  //   VoidCallback? onTap,
-  // }) {
-  //   return InkWell(
-  //     onTap: onTap,
-  //     borderRadius: BorderRadius.circular(8.r),
-  //     child: Container(
-  //       padding: EdgeInsets.all(4.w),
-  //       decoration: BoxDecoration(
-  //         border: Border.all(color: ColorPalette.slate500),
-  //         borderRadius: BorderRadius.circular(4.r),
-  //       ),
-  //       child: Icon(icon, size: 20.sp, color: colors.primaryBlue),
-  //     ),
-  //   );
-  // }
 }

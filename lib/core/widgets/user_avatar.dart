@@ -5,7 +5,6 @@ import 'package:hrd_app/core/theme/color_palette.dart';
 import 'package:hrd_app/core/utils/image_url_extension.dart';
 import 'package:hrd_app/core/utils/string_utils.dart';
 
-/// Reusable avatar widget that shows user photo or initials as fallback
 class UserAvatar extends StatelessWidget {
   final String? avatarUrl;
   final String? name;
@@ -39,7 +38,6 @@ class UserAvatar extends StatelessWidget {
                 height: size.w,
                 fit: BoxFit.cover,
                 errorBuilder: (context, error, stackTrace) {
-                  // Fallback to initials if image fails to load
                   return Center(
                     child: Text(
                       initials,

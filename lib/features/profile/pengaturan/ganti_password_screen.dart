@@ -89,7 +89,6 @@ class _GantiPasswordScreenState extends State<GantiPasswordScreen> {
       if (mounted) {
         context.showSuccessSnackbar('Sukses! Silakan login kembali.');
 
-        // Logout and navigate to login
         await context.read<AuthProvider>().logout();
 
         if (mounted) {

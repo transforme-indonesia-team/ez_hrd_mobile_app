@@ -34,7 +34,6 @@ class _BerandaScreenState extends State<BerandaScreen>
   bool _waitingForLocationSettings = false;
   bool _waitingForAppSettings = false;
 
-  // Shift loading state
   bool _isLoadingShift = true;
   EmployeeShiftModel? _shiftData;
   List<Map<String, dynamic>> _attendanceRecords = [];
@@ -57,8 +56,7 @@ class _BerandaScreenState extends State<BerandaScreen>
       final today = DateTime.now();
       final todayStr = DateFormat('yyyy-MM-dd').format(today);
 
-      // Get current week attendance (Monday to today+1)
-      final weekday = today.weekday; // 1 = Monday, 7 = Sunday
+      final weekday = today.weekday;
       final startDate = DateTime(
         today.year,
         today.month,
@@ -80,11 +78,9 @@ class _BerandaScreenState extends State<BerandaScreen>
           original['records'] != null) {
         final recordsList = original['records'] as List;
 
-        // Create separate entries for check-in and check-out
         final List<Map<String, dynamic>> validRecords = [];
         for (final r in recordsList) {
           final record = r as Map<String, dynamic>;
-          // Add check-in entry if exists
           if (record['check_in'] != null && record['check_in'] != '-') {
             validRecords.add({
               ...record,
@@ -93,7 +89,6 @@ class _BerandaScreenState extends State<BerandaScreen>
               'photo': record['attendance_photo_in'],
             });
           }
-          // Add check-out entry if exists
           if (record['check_out'] != null && record['check_out'] != '-') {
             validRecords.add({
               ...record,
@@ -104,7 +99,6 @@ class _BerandaScreenState extends State<BerandaScreen>
           }
         }
 
-        // Find today's record for shift display
         final todayRecord = recordsList.firstWhere(
           (record) => record['date_schedule'] == todayStr,
           orElse: () => null,
@@ -151,10 +145,7 @@ class _BerandaScreenState extends State<BerandaScreen>
     }
   }
 
-  /// Check if GPS is enabled and permission is granted
-  /// Returns true if ready, false if not
   Future<bool> _checkGPSAndPermission() async {
-    // 1. Check GPS service
     bool serviceEnabled = await LocationUtils.isLocationServiceEnabled();
     if (!mounted) return false;
 
@@ -169,7 +160,6 @@ class _BerandaScreenState extends State<BerandaScreen>
       return false;
     }
 
-    // 2. Check permission
     var permission = await LocationUtils.checkPermission();
     if (!mounted) return false;
 

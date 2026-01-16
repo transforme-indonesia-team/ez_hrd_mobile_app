@@ -22,14 +22,12 @@ class _RekamMedisScreenState extends State<RekamMedisScreen> {
   }
 
   Future<void> _fetchData() async {
-    // Simulasi Fetch API
     await Future.delayed(const Duration(seconds: 2));
 
     if (mounted) {
       setState(() {
         _isLoading = false;
         _data = {
-          // Data Rekam Medis
           'tinggi': '-',
           'berat': '-',
           'golongan_darah': '-',
@@ -37,7 +35,6 @@ class _RekamMedisScreenState extends State<RekamMedisScreen> {
           'ukuran_baju': '-',
           'ukuran_celana': '-',
 
-          // Laporan Medis
           'memiliki_disabilitas': '-',
           'test_kesehatan': false,
           'alasan_test_medis': '-',
@@ -76,7 +73,6 @@ class _RekamMedisScreenState extends State<RekamMedisScreen> {
   Widget _buildContent(dynamic colors) {
     return Column(
       children: [
-        // SECTION 1: Rekam Medis
         _buildSectionCard(
           colors,
           title: 'Rekam Medis',
@@ -93,7 +89,6 @@ class _RekamMedisScreenState extends State<RekamMedisScreen> {
         ),
         SizedBox(height: 16.h),
 
-        // SECTION 2: Laporan Medis
         _buildSectionCard(
           colors,
           title: 'Laporan Medis',
@@ -196,12 +191,10 @@ class _RekamMedisScreenState extends State<RekamMedisScreen> {
             style: AppTextStyles.caption(colors.textSecondary),
           ),
         ],
-        // SizedBox(height: 8.h),
       ],
     );
   }
 
-  // --- SKELETON WIDGETS ---
 
   Widget _buildSkeletonLoading() {
     return Column(
@@ -228,7 +221,6 @@ class _RekamMedisScreenState extends State<RekamMedisScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Title Skeleton
             Container(
               width: 150.w,
               height: 20.h,
@@ -238,7 +230,6 @@ class _RekamMedisScreenState extends State<RekamMedisScreen> {
               ),
             ),
             SizedBox(height: 8.h),
-            // Subtitle Skeleton
             Container(
               width: 250.w,
               height: 14.h,
@@ -248,7 +239,6 @@ class _RekamMedisScreenState extends State<RekamMedisScreen> {
               ),
             ),
             SizedBox(height: 24.h),
-            // Items
             ...List.generate(itemCount, (index) => _buildSkeletonItem()),
           ],
         ),
@@ -269,7 +259,7 @@ class _RekamMedisScreenState extends State<RekamMedisScreen> {
               color: Colors.white,
               borderRadius: BorderRadius.circular(4.r),
             ),
-          ), // Label
+          ),
           SizedBox(height: 6.h),
           Container(
             width: double.infinity,
@@ -278,7 +268,7 @@ class _RekamMedisScreenState extends State<RekamMedisScreen> {
               color: Colors.white,
               borderRadius: BorderRadius.circular(4.r),
             ),
-          ), // Value
+          ),
         ],
       ),
     );

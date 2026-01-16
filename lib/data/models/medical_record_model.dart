@@ -1,6 +1,4 @@
-/// Model untuk data rekam medis karyawan
 class MedicalRecordModel {
-  // Physical measurements
   final String? height;
   final String? weight;
   final String? bloodType;
@@ -8,7 +6,6 @@ class MedicalRecordModel {
   final String? shirtSize;
   final String? pantsSize;
 
-  // Medical report
   final String? hasDisability;
   final bool? healthTest;
   final String? medicalTestReason;

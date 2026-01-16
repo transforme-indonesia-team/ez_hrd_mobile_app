@@ -221,7 +221,6 @@ class _InfoKetenagakerjaanScreenState extends State<InfoKetenagakerjaanScreen> {
     );
   }
 
-  // --- SKELETON WIDGETS ---
 
   Widget _buildSkeletonLoading() {
     return Column(children: [_buildSkeletonCard(8)]);
@@ -242,7 +241,6 @@ class _InfoKetenagakerjaanScreenState extends State<InfoKetenagakerjaanScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Title Skeleton
             Container(
               width: 150.w,
               height: 20.h,
@@ -252,7 +250,6 @@ class _InfoKetenagakerjaanScreenState extends State<InfoKetenagakerjaanScreen> {
               ),
             ),
             SizedBox(height: 8.h),
-            // Subtitle Skeleton
             Container(
               width: 250.w,
               height: 14.h,
@@ -262,7 +259,6 @@ class _InfoKetenagakerjaanScreenState extends State<InfoKetenagakerjaanScreen> {
               ),
             ),
             SizedBox(height: 24.h),
-            // Items
             ...List.generate(itemCount, (index) => _buildSkeletonItem()),
           ],
         ),
@@ -283,7 +279,7 @@ class _InfoKetenagakerjaanScreenState extends State<InfoKetenagakerjaanScreen> {
               color: Colors.white,
               borderRadius: BorderRadius.circular(4.r),
             ),
-          ), // Label
+          ),
           SizedBox(height: 6.h),
           Container(
             width: double.infinity,
@@ -292,7 +288,7 @@ class _InfoKetenagakerjaanScreenState extends State<InfoKetenagakerjaanScreen> {
               color: Colors.white,
               borderRadius: BorderRadius.circular(4.r),
             ),
-          ), // Value
+          ),
         ],
       ),
     );

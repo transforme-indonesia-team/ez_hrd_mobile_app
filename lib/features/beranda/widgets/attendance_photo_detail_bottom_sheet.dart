@@ -5,7 +5,6 @@ import 'package:hrd_app/core/theme/app_text_styles.dart';
 import 'package:hrd_app/core/theme/color_palette.dart';
 import 'package:hrd_app/core/utils/image_url_extension.dart';
 
-/// Bottom sheet untuk menampilkan detail foto attendance
 class AttendancePhotoDetailBottomSheet extends StatelessWidget {
   final String photoUrl;
   final String date;
@@ -52,13 +51,10 @@ class AttendancePhotoDetailBottomSheet extends StatelessWidget {
       ),
       child: Column(
         children: [
-          // Header
           _buildHeader(context, colors),
 
-          // Photo
           Expanded(child: _buildPhoto(colors)),
 
-          // Info section
           _buildInfoSection(colors),
         ],
       ),
@@ -145,7 +141,6 @@ class AttendancePhotoDetailBottomSheet extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Time and icons
           Row(
             children: [
               Text(time, style: AppTextStyles.h4(ColorPalette.green500)),
@@ -161,7 +156,6 @@ class AttendancePhotoDetailBottomSheet extends StatelessWidget {
           ),
           SizedBox(height: 12.h),
 
-          // Status
           Row(
             children: [
               Text('Status', style: AppTextStyles.small(colors.textSecondary)),

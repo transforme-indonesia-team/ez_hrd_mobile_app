@@ -1,4 +1,3 @@
-/// Model untuk data pendidikan karyawan
 class EducationModel {
   final String? institutionName;
   final String? levelName;

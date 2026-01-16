@@ -7,7 +7,6 @@ import 'package:hrd_app/core/utils/image_url_extension.dart';
 import 'package:hrd_app/core/widgets/empty_state_widget.dart';
 import 'package:intl/intl.dart';
 
-/// Bottom sheet untuk menampilkan Riwayat Kehadiran
 abstract class RiwayatKehadiranBottomSheet {
   static void show(
     BuildContext context, {
@@ -61,12 +60,10 @@ class _RiwayatKehadiranContentState extends State<_RiwayatKehadiranContent> {
       ),
       child: Column(
         children: [
-          // Header
           _buildHeader(colors),
-          // Content
           Expanded(
             child: _selectedTab == 1
-                ? const EmptyStateWidget() // Kehadiran Bersama = always empty
+                ? const EmptyStateWidget()
                 : widget.records.isEmpty
                 ? const EmptyStateWidget()
                 : _buildAttendanceList(colors),
@@ -80,7 +77,6 @@ class _RiwayatKehadiranContentState extends State<_RiwayatKehadiranContent> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Title bar with background
         Container(
           decoration: BoxDecoration(
             color: ColorPalette.slate200,
@@ -96,7 +92,6 @@ class _RiwayatKehadiranContentState extends State<_RiwayatKehadiranContent> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Handle bar
               Center(
                 child: Container(
                   margin: EdgeInsets.only(top: 12.h, bottom: 8.h),
@@ -108,7 +103,6 @@ class _RiwayatKehadiranContentState extends State<_RiwayatKehadiranContent> {
                   ),
                 ),
               ),
-              // Title
               Padding(
                 padding: EdgeInsets.fromLTRB(16.w, 0, 16.w, 12.h),
                 child: Text(
@@ -119,7 +113,6 @@ class _RiwayatKehadiranContentState extends State<_RiwayatKehadiranContent> {
             ],
           ),
         ),
-        // Toggle buttons (no background)
         Padding(
           padding: EdgeInsets.fromLTRB(16.w, 16.h, 16.w, 0),
           child: Row(
@@ -140,7 +133,6 @@ class _RiwayatKehadiranContentState extends State<_RiwayatKehadiranContent> {
             ],
           ),
         ),
-        // Description text
         Padding(
           padding: EdgeInsets.fromLTRB(16.w, 12.h, 16.w, 16.h),
           child: Text(
@@ -200,7 +192,6 @@ class _RiwayatKehadiranContentState extends State<_RiwayatKehadiranContent> {
     final type = record['type'] as String?;
     final isCheckIn = type == 'check_in';
 
-    // Format date
     String formattedDate = dateStr ?? '';
     if (dateStr != null) {
       try {
@@ -219,7 +210,6 @@ class _RiwayatKehadiranContentState extends State<_RiwayatKehadiranContent> {
       ),
       child: Row(
         children: [
-          // Photo with border color based on check-in/check-out
           Container(
             width: 48.w,
             height: 48.w,
@@ -248,12 +238,10 @@ class _RiwayatKehadiranContentState extends State<_RiwayatKehadiranContent> {
                 : Icon(Icons.person, color: ColorPalette.slate400, size: 24.sp),
           ),
           SizedBox(width: 12.w),
-          // Info
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Type label (Masuk/Keluar)
                 Container(
                   margin: EdgeInsets.only(bottom: 4.h),
                   padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 2.h),
@@ -314,7 +302,6 @@ class _RiwayatKehadiranContentState extends State<_RiwayatKehadiranContent> {
               ],
             ),
           ),
-          // Location icon
           Icon(
             Icons.location_on_outlined,
             color: ColorPalette.orange400,
@@ -325,5 +312,4 @@ class _RiwayatKehadiranContentState extends State<_RiwayatKehadiranContent> {
     );
   }
 
-  // Using EmptyStateWidget from core/widgets instead of duplicate implementation
 }

@@ -4,7 +4,6 @@ import 'package:hrd_app/core/theme/app_text_styles.dart';
 import 'package:hrd_app/features/fitur/models/fitur_item_model.dart';
 import 'package:hrd_app/features/fitur/widgets/fitur_item_grid.dart';
 
-/// Bottom sheet dengan kategori yang expandable (accordion)
 class FiturBottomSheet extends StatefulWidget {
   final String title;
   final List<FiturCategoryModel> categories;
@@ -17,7 +16,6 @@ class FiturBottomSheet extends StatefulWidget {
     required this.onItemTap,
   });
 
-  /// Show the bottom sheet
   static void show(
     BuildContext context, {
     required String title,
@@ -41,13 +39,11 @@ class FiturBottomSheet extends StatefulWidget {
 }
 
 class _FiturBottomSheetState extends State<FiturBottomSheet> {
-  // Track which categories are expanded
   final Set<int> _expandedCategories = {};
 
   @override
   void initState() {
     super.initState();
-    // Default: expand first category
     if (widget.categories.isNotEmpty) {
       _expandedCategories.add(0);
     }
@@ -68,11 +64,11 @@ class _FiturBottomSheetState extends State<FiturBottomSheet> {
     final colors = context.colors;
 
     return DraggableScrollableSheet(
-      initialChildSize: 0.5, // 50% of screen height initially
-      minChildSize: 0.3, // Minimum 30% of screen
-      maxChildSize: 0.95, // Maximum 95% of screen (almost full)
-      snap: true, // Enable snapping to positions
-      snapSizes: const [0.5, 0.95], // Snap points
+      initialChildSize: 0.5,
+      minChildSize: 0.3,
+      maxChildSize: 0.95,
+      snap: true,
+      snapSizes: const [0.5, 0.95],
       expand: false,
       builder: (context, scrollController) {
         return Container(
@@ -83,11 +79,9 @@ class _FiturBottomSheetState extends State<FiturBottomSheet> {
           child: CustomScrollView(
             controller: scrollController,
             slivers: [
-              // Handle bar and title (pinned at top)
               SliverToBoxAdapter(
                 child: Column(
                   children: [
-                    // Handle bar (drag indicator)
                     Container(
                       width: double.infinity,
                       padding: const EdgeInsets.only(top: 12, bottom: 8),
@@ -103,7 +97,6 @@ class _FiturBottomSheetState extends State<FiturBottomSheet> {
                       ),
                     ),
 
-                    // Title
                     Padding(
                       padding: const EdgeInsets.fromLTRB(20, 8, 20, 8),
                       child: Row(
@@ -123,7 +116,6 @@ class _FiturBottomSheetState extends State<FiturBottomSheet> {
                 ),
               ),
 
-              // Categories list
               SliverList(
                 delegate: SliverChildBuilderDelegate((context, index) {
                   final category = widget.categories[index];
@@ -137,7 +129,6 @@ class _FiturBottomSheetState extends State<FiturBottomSheet> {
                 }, childCount: widget.categories.length),
               ),
 
-              // Bottom padding
               const SliverToBoxAdapter(child: SizedBox(height: 20)),
             ],
           ),
@@ -154,7 +145,6 @@ class _FiturBottomSheetState extends State<FiturBottomSheet> {
   ) {
     return Column(
       children: [
-        // Category header (tap to expand/collapse)
         InkWell(
           onTap: () => _toggleCategory(index),
           child: Padding(
@@ -178,7 +168,6 @@ class _FiturBottomSheetState extends State<FiturBottomSheet> {
           ),
         ),
 
-        // Expanded content (items grid)
         AnimatedCrossFade(
           firstChild: const SizedBox.shrink(),
           secondChild: _buildItemsGrid(category, colors),
@@ -202,7 +191,7 @@ class _FiturBottomSheetState extends State<FiturBottomSheet> {
           children: category.items.map((item) {
             return SizedBox(
               width: 72,
-              height: 90, // Fixed height for proper layout
+              height: 90,
               child: FiturItemGrid(
                 item: item,
                 categoryBackgroundColor: category.backgroundColor,

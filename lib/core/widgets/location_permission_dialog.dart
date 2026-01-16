@@ -17,7 +17,6 @@ class LocationPermissionDialog extends StatelessWidget {
     required this.onConfirm,
   });
 
-  /// Show GPS disabled dialog
   static Future<void> showGPSDialog({
     required BuildContext context,
     required VoidCallback onOpenSettings,
@@ -36,7 +35,6 @@ class LocationPermissionDialog extends StatelessWidget {
     );
   }
 
-  /// Show permission denied dialog
   static Future<void> showPermissionDialog({
     required BuildContext context,
     required VoidCallback onOpenSettings,

@@ -31,7 +31,6 @@ class _KontakDaruratScreenState extends State<KontakDaruratScreen> {
       );
 
       final records = response['original']['records'] as Map<String, dynamic>?;
-      debugPrint("DEBUG-API-Response: $records");
       final data = records?['employee_emergency'] as List? ?? [];
 
       if (mounted) {
@@ -173,10 +172,7 @@ class _KontakDaruratScreenState extends State<KontakDaruratScreen> {
                 color: colors.textSecondary,
               ),
               SizedBox(width: 8.w),
-              Text(
-                contactPhone,
-                style: AppTextStyles.body(colors.textPrimary),
-              ),
+              Text(contactPhone, style: AppTextStyles.body(colors.textPrimary)),
             ],
           ),
         ],

@@ -32,11 +32,9 @@ class PengaturanPersonalScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Header Card dengan Gradient
             _buildHeaderCard(context),
             SizedBox(height: 24.h),
 
-            // Section: Akun & Keamanan
             _buildSectionTitle('AKUN & KEAMANAN', colors),
             SizedBox(height: 12.h),
             _buildMenuGrid(context, _akunKeamananItems),
@@ -44,7 +42,6 @@ class PengaturanPersonalScreen extends StatelessWidget {
             Divider(color: colors.divider, thickness: 1),
             SizedBox(height: 16.h),
 
-            // Section: Manajemen Fitur
             _buildSectionTitle('MANAJEMEN FITUR', colors),
             SizedBox(height: 12.h),
             _buildMenuGrid(context, _manajemenFiturItems),
@@ -62,9 +59,9 @@ class PengaturanPersonalScreen extends StatelessWidget {
       decoration: BoxDecoration(
         gradient: const LinearGradient(
           colors: [
-            Color(0xFF38BDF8), // sky-400
-            Color(0xFF0EA5E9), // sky-500
-            Color(0xFF0284C7), // sky-600
+            Color(0xFF38BDF8),
+            Color(0xFF0EA5E9),
+            Color(0xFF0284C7),
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
@@ -91,7 +88,6 @@ class PengaturanPersonalScreen extends StatelessWidget {
             style: AppTextStyles.body(Colors.white.withValues(alpha: 0.9)),
           ),
           SizedBox(height: 16.h),
-          // Quick action chips
           Row(
             children: [
               _buildQuickChip('Profil'),
@@ -189,7 +185,6 @@ class PengaturanPersonalScreen extends StatelessWidget {
     );
   }
 
-  // Data menu items
   List<_MenuItem> get _akunKeamananItems => [
     _MenuItem(
       icon: Icons.lock_outline,

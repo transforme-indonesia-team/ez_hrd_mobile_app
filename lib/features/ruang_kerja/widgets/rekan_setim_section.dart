@@ -3,7 +3,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hrd_app/core/theme/app_text_styles.dart';
 import 'package:hrd_app/core/theme/app_colors.dart';
 
-/// Section Rekan Setim hari ini
 class RekanSetimSection extends StatelessWidget {
   final List<TeamMember> members;
   final VoidCallback? onLainnyaTap;
@@ -26,7 +25,6 @@ class RekanSetimSection extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Header
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -66,7 +64,6 @@ class RekanSetimSection extends StatelessWidget {
             ],
           ),
           SizedBox(height: 16.h),
-          // Members list
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: Row(
@@ -90,7 +87,6 @@ class RekanSetimSection extends StatelessWidget {
       onTap: () => onMemberTap?.call(member),
       child: Column(
         children: [
-          // Avatar
           Container(
             width: 48.w,
             height: 48.w,
@@ -107,18 +103,13 @@ class RekanSetimSection extends StatelessWidget {
             ),
           ),
           SizedBox(height: 8.h),
-          // Name
-          Text(
-            member.name,
-            style: AppTextStyles.body(colors.textPrimary),
-          ),
+          Text(member.name, style: AppTextStyles.body(colors.textPrimary)),
         ],
       ),
     );
   }
 }
 
-/// Model untuk team member
 class TeamMember {
   final String name;
   final String initials;

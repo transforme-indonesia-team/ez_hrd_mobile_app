@@ -13,8 +13,6 @@ import 'package:hrd_app/core/utils/snackbar_utils.dart';
 import 'package:hrd_app/core/utils/location_utils.dart';
 import 'package:hrd_app/core/utils/image_url_extension.dart';
 
-/// Screen konfirmasi kehadiran dengan map dan foto.
-/// Lokasi ditampilkan real-time menggunakan blue dot Google Maps.
 class RekamWaktuConfirmScreen extends StatefulWidget {
   final File photo;
 
@@ -39,7 +37,6 @@ class _RekamWaktuConfirmScreenState extends State<RekamWaktuConfirmScreen> {
 
   Future<void> _getInitialPosition() async {
     try {
-      // Try last known position first (faster), fallback to current
       Position? position = await Geolocator.getLastKnownPosition();
       position ??= await Geolocator.getCurrentPosition(
         locationSettings: const LocationSettings(
@@ -48,19 +45,15 @@ class _RekamWaktuConfirmScreenState extends State<RekamWaktuConfirmScreen> {
         ),
       );
 
-      // Position is guaranteed non-null after getCurrentPosition
       if (mounted) {
         setState(() {
           _initialPosition = LatLng(position!.latitude, position.longitude);
         });
-        // Also move camera if map is already created
         _mapController?.animateCamera(
           CameraUpdate.newLatLng(_initialPosition!),
         );
       }
-    } catch (e) {
-      debugPrint('Error getting initial position: $e');
-    }
+    } catch (e) {}
   }
 
   @override
@@ -137,15 +130,12 @@ class _RekamWaktuConfirmScreenState extends State<RekamWaktuConfirmScreen> {
               if (mounted) {
                 setState(() => _isMapLoading = false);
               }
-              // Move camera to current location
               _moveCameraToCurrentLocation();
             },
           ),
-          // Loading overlay
           if (_isMapLoading)
             Positioned.fill(child: _buildMapLoadingOverlay(colors)),
 
-          // Center Location Button
           Positioned(
             bottom: 16.h,
             right: 16.w,
@@ -164,9 +154,7 @@ class _RekamWaktuConfirmScreenState extends State<RekamWaktuConfirmScreen> {
           CameraUpdate.newLatLng(LatLng(position.latitude, position.longitude)),
         );
       }
-    } catch (e) {
-      debugPrint('Error moving camera: $e');
-    }
+    } catch (e) {}
   }
 
   Widget _buildMapLoadingOverlay(ThemeColors colors) {
@@ -223,10 +211,7 @@ class _RekamWaktuConfirmScreenState extends State<RekamWaktuConfirmScreen> {
   }
 
   Widget _buildUserName(String userName, ThemeColors colors) {
-    return Text(
-      userName,
-      style: AppTextStyles.body(colors.textPrimary),
-    );
+    return Text(userName, style: AppTextStyles.body(colors.textPrimary));
   }
 
   Widget _buildDateTime(String dateTimeFormatted, ThemeColors colors) {
@@ -257,7 +242,6 @@ class _RekamWaktuConfirmScreenState extends State<RekamWaktuConfirmScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          // Foto Kehadiran
           Expanded(
             child: _buildPhotoCard(
               child: ClipRRect(
@@ -274,7 +258,6 @@ class _RekamWaktuConfirmScreenState extends State<RekamWaktuConfirmScreen> {
             ),
           ),
           SizedBox(width: 24.w),
-          // Foto Dasar
           Expanded(
             child: _buildPhotoCard(
               child: ClipRRect(
@@ -299,10 +282,7 @@ class _RekamWaktuConfirmScreenState extends State<RekamWaktuConfirmScreen> {
       children: [
         child,
         SizedBox(height: 8.h),
-        Text(
-          label,
-          style: AppTextStyles.caption(colors.textSecondary),
-        ),
+        Text(label, style: AppTextStyles.caption(colors.textSecondary)),
       ],
     );
   }
@@ -346,7 +326,6 @@ class _RekamWaktuConfirmScreenState extends State<RekamWaktuConfirmScreen> {
   }
 
   Widget _buildFaceIdentificationStatus(ThemeColors colors) {
-    // TODO: Implement actual face recognition
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
       child: Row(
@@ -359,14 +338,8 @@ class _RekamWaktuConfirmScreenState extends State<RekamWaktuConfirmScreen> {
             'Identifikasi Wajah : ',
             style: AppTextStyles.body(colors.textPrimary),
           ),
-          Text(
-            'Lulus',
-            style: AppTextStyles.body(Colors.green),
-          ),
-          Text(
-            ' (--% Cocok)',
-            style: AppTextStyles.body(Colors.green),
-          ),
+          Text('Lulus', style: AppTextStyles.body(Colors.green)),
+          Text(' (--% Cocok)', style: AppTextStyles.body(Colors.green)),
         ],
       ),
     );
@@ -423,7 +396,6 @@ class _RekamWaktuConfirmScreenState extends State<RekamWaktuConfirmScreen> {
     setState(() => _isLoading = true);
 
     try {
-      // Get current location when saving
       final position = await LocationUtils.getCurrentPosition();
       if (position == null) {
         if (mounted) {

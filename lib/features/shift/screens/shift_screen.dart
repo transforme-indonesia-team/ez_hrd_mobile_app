@@ -4,7 +4,6 @@ import 'package:hrd_app/core/theme/app_text_styles.dart';
 import 'package:hrd_app/core/theme/app_colors.dart';
 import 'package:hrd_app/core/utils/format_date.dart';
 
-/// Shift screen showing weekly shift schedule
 class ShiftScreen extends StatefulWidget {
   const ShiftScreen({super.key});
 
@@ -22,7 +21,6 @@ class _ShiftScreenState extends State<ShiftScreen> {
   }
 
   DateTime _getWeekStart(DateTime date) {
-    // Get Monday of the week
     return date.subtract(Duration(days: date.weekday - 1));
   }
 
@@ -46,7 +44,6 @@ class _ShiftScreenState extends State<ShiftScreen> {
   }
 
   String _getShiftForDay(DateTime date) {
-    // Weekend = Shift OFF, weekday = Office Hour
     if (date.weekday == DateTime.saturday || date.weekday == DateTime.sunday) {
       return 'Shift OFF';
     }
@@ -67,19 +64,14 @@ class _ShiftScreenState extends State<ShiftScreen> {
           icon: Icon(Icons.arrow_back, color: colors.textPrimary),
           onPressed: () => Navigator.pop(context),
         ),
-        title: Text(
-          'Shift',
-          style: AppTextStyles.h3(colors.textPrimary),
-        ),
+        title: Text('Shift', style: AppTextStyles.h3(colors.textPrimary)),
       ),
       body: SingleChildScrollView(
         child: Column(
           children: [
             SizedBox(height: 16.h),
-            // Location info card
             _buildLocationCard(colors),
             SizedBox(height: 16.h),
-            // Weekly schedule card
             _buildWeeklyScheduleCard(colors, weekEnd),
             SizedBox(height: 16.h),
           ],
@@ -105,7 +97,6 @@ class _ShiftScreenState extends State<ShiftScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Lokasi Kerja Hari Ini
           Container(
             width: double.infinity,
             padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
@@ -130,7 +121,6 @@ class _ShiftScreenState extends State<ShiftScreen> {
             ),
           ),
           Divider(height: 1, color: colors.divider),
-          // Lokasi Kehadiran Default
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
             child: Column(
@@ -170,7 +160,6 @@ class _ShiftScreenState extends State<ShiftScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Header
           Padding(
             padding: EdgeInsets.all(16.w),
             child: Text(
@@ -178,7 +167,6 @@ class _ShiftScreenState extends State<ShiftScreen> {
               style: AppTextStyles.body(colors.textPrimary),
             ),
           ),
-          // Week navigator
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 8.w),
             child: Row(
@@ -200,7 +188,6 @@ class _ShiftScreenState extends State<ShiftScreen> {
             ),
           ),
           SizedBox(height: 8.h),
-          // Daily shifts list
           ...List.generate(7, (index) {
             final date = _currentWeekStart.add(Duration(days: index));
             return _buildShiftItem(colors, date);
@@ -250,10 +237,7 @@ class _ShiftScreenState extends State<ShiftScreen> {
               style: AppTextStyles.body(colors.textSecondary),
             ),
             SizedBox(height: 4.h),
-            Text(
-              shift,
-              style: AppTextStyles.bodyMedium(colors.textPrimary),
-            ),
+            Text(shift, style: AppTextStyles.bodyMedium(colors.textPrimary)),
           ],
         ),
       ),

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:hrd_app/core/theme/app_colors.dart';
 import 'package:hrd_app/core/theme/app_text_styles.dart';
 
-/// Model untuk menu item dengan icon, title, dan callback
 class MenuItemModel {
   final IconData icon;
   final String title;
@@ -11,7 +10,6 @@ class MenuItemModel {
   const MenuItemModel({required this.icon, required this.title, this.onTap});
 }
 
-/// Reusable menu item widget dengan icon dan chevron
 class MenuItem extends StatelessWidget {
   final MenuItemModel item;
 

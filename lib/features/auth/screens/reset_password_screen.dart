@@ -146,7 +146,6 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   SizedBox(height: 20.h),
-                  // Logo
                   Center(
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(16.r),
@@ -171,7 +170,6 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                     style: AppTextStyles.body(colors.textSubtitle),
                   ),
                   SizedBox(height: 40.h),
-                  // Password Field
                   Text(
                     'Password Baru',
                     style: AppTextStyles.bodySemiBold(colors.textPrimary),
@@ -213,7 +211,6 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                     ),
                   ),
                   SizedBox(height: 20.h),
-                  // Confirm Password Field
                   Text(
                     'Konfirmasi Password',
                     style: AppTextStyles.bodySemiBold(colors.textPrimary),
@@ -262,7 +259,6 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                     ),
                   ),
                   SizedBox(height: 32.h),
-                  // Submit Button
                   Container(
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
@@ -314,7 +310,6 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                     ),
                   ),
                   SizedBox(height: 24.h),
-                  // Back to Login
                   Align(
                     alignment: Alignment.center,
                     child: TextButton(

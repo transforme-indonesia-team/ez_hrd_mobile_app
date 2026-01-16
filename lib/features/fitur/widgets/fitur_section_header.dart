@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:hrd_app/core/theme/app_colors.dart';
 import 'package:hrd_app/core/theme/app_text_styles.dart';
 
-/// Header untuk section (background abu-abu)
-/// Contoh: "Inti", "Waktu Kehadiran"
 class FiturSectionHeader extends StatelessWidget {
   final String title;
 

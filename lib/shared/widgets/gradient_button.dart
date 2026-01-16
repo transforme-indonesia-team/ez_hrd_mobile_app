@@ -2,9 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:hrd_app/core/theme/app_colors.dart';
 import 'package:hrd_app/core/theme/app_text_styles.dart';
 
-/// Reusable gradient button dengan loading state
-///
-/// Digunakan untuk tombol utama seperti Login, Submit, dll.
 class GradientButton extends StatelessWidget {
   final String label;
   final VoidCallback? onPressed;

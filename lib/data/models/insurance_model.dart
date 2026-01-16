@@ -1,4 +1,3 @@
-/// Model untuk data asuransi karyawan
 class InsuranceModel {
   final String? insuranceName;
   final String? branchName;

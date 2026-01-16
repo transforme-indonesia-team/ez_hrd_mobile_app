@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hrd_app/data/models/user_model.dart';
 
-/// Model untuk data profil karyawan
 class ProfileDetailModel {
   final String? username;
   final String name;
@@ -21,7 +20,6 @@ class ProfileDetailModel {
     this.socialMediaLinks = const [],
   });
 
-  /// Create from UserModel
   factory ProfileDetailModel.fromUser(UserModel? user) {
     if (user == null) {
       return const ProfileDetailModel(
@@ -41,7 +39,6 @@ class ProfileDetailModel {
   }
 }
 
-/// Model untuk link media sosial
 class SocialMediaLink {
   final SocialMediaType type;
   final String url;
@@ -49,10 +46,8 @@ class SocialMediaLink {
   const SocialMediaLink({required this.type, required this.url});
 }
 
-/// Tipe media sosial yang didukung
 enum SocialMediaType { facebook, twitter, instagram, whatsapp, linkedin }
 
-/// Model untuk menu item profil dengan sub-items
 class ProfileMenuItemModel {
   final IconData icon;
   final String title;
@@ -66,6 +61,5 @@ class ProfileMenuItemModel {
     this.onTap,
   });
 
-  /// Get subtitle dari sub-items (comma separated)
   String get subtitle => subItems.join(' , ');
 }

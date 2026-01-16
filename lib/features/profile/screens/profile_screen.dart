@@ -41,10 +41,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final colors = context.colors;
     final themeProvider = Provider.of<ThemeProvider>(context);
 
-    // Get user data from AuthProvider
     final authProvider = context.watch<AuthProvider>();
     final user = authProvider.user;
-    debugPrint('DataUserr: ${user?.toJson()}');
     final userName = user?.name ?? 'User';
     final userRole = user?.role ?? 'Employee';
 
@@ -60,20 +58,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
         actions: [
           IconButton(
             icon: Icon(Icons.search, color: colors.textPrimary),
-            onPressed: () {
-              // TODO: Implement search
-            },
+            onPressed: () {},
           ),
         ],
       ),
       body: SingleChildScrollView(
         child: Column(
           children: [
-            // User Header
             _buildUserHeader(colors, userName, userRole, user?.avatarUrl),
             const SizedBox(height: 16),
 
-            // Menu Items
             _buildMenuSection(colors, [
               MenuItemModel(
                 icon: Icons.person_outline,
@@ -102,18 +96,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
               MenuItemModel(
                 icon: Icons.local_parking_outlined,
                 title: 'EZ Parking',
-                onTap: () {
-                  // TODO: Navigate to parking
-                },
+                onTap: () {},
               ),
             ]),
             const SizedBox(height: 16),
             Divider(height: 1, thickness: 5, color: colors.divider),
-            // Settings Section
             _buildSettingsSection(colors, themeProvider),
             const SizedBox(height: 16),
 
-            // Logout
             _buildLogoutSection(colors, authProvider),
           ],
         ),
@@ -131,7 +121,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
       padding: const EdgeInsets.all(16),
       child: Row(
         children: [
-          // Avatar
           Container(
             width: 56,
             height: 56,
@@ -148,7 +137,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       width: 56,
                       height: 56,
                       errorBuilder: (context, error, stackTrace) {
-                        // Fallback ke initials kalau image gagal
                         return Center(
                           child: Text(
                             _getInitials(userName),
@@ -166,7 +154,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
           ),
           const SizedBox(width: 16),
-          // Name & Role
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -210,7 +197,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
       color: colors.background,
       child: Column(
         children: [
-          // Theme Toggle
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: Row(
@@ -242,7 +228,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
           ),
 
-          // Kebijakan Privasi
           ListTile(
             leading: Icon(
               Icons.privacy_tip_outlined,
@@ -253,12 +238,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
               style: AppTextStyles.h4(colors.textPrimary),
             ),
             trailing: Icon(Icons.chevron_right, color: colors.inactiveGray),
-            onTap: () {
-              // TODO: Navigate to privacy policy
-            },
+            onTap: () {},
           ),
 
-          // Bantuan & Dukungan
           ListTile(
             leading: Icon(Icons.help_outline, color: colors.textSecondary),
             title: Text(
@@ -266,9 +248,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               style: AppTextStyles.h4(colors.textPrimary),
             ),
             trailing: Icon(Icons.chevron_right, color: colors.inactiveGray),
-            onTap: () {
-              // TODO: Navigate to help
-            },
+            onTap: () {},
           ),
         ],
       ),
@@ -283,7 +263,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
         children: [
           TextButton.icon(
             onPressed: () {
-              // Show confirmation dialog
               showDialog(
                 context: context,
                 builder: (dialogContext) => AlertDialog(
@@ -297,7 +276,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     TextButton(
                       onPressed: () async {
                         Navigator.pop(dialogContext);
-                        // Logout dari AuthProvider
                         await authProvider.logout();
                         if (mounted) {
                           AppRoutes.navigateAndRemoveAll(

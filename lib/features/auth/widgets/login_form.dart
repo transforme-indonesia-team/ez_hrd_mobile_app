@@ -75,7 +75,6 @@ class _LoginFormState extends State<LoginForm> {
           _isLoading = false;
         });
 
-        // Navigate ke dashboard setelah login sukses
         AppRoutes.navigateAndRemoveAll(context, AppRoutes.dashboard);
       }
     } catch (e) {
@@ -137,7 +136,6 @@ class _LoginFormState extends State<LoginForm> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           const SizedBox(height: 20),
-          // Logo dengan shadow halus untuk dark mode
           Center(
             child: Container(
               decoration: BoxDecoration(
@@ -266,7 +264,7 @@ class _LoginFormState extends State<LoginForm> {
                   padding: EdgeInsets.zero,
                   minimumSize: Size.zero,
                   tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                  foregroundColor: colors.linkColor, // Cyan terang di dark mode
+                  foregroundColor: colors.linkColor,
                 ),
                 child: Text(
                   'Lupa Kata Sandi?',

@@ -32,11 +32,11 @@ class FiturCategoryModel {
 class FiturSectionModel {
   final String name;
   final List<FiturCategoryModel> categories;
-  final bool hasLainnya; // Flag untuk menampilkan tombol "Lainnya >"
+  final bool hasLainnya;
   final String?
-  lainnyaTitle; // Title yang ditampilkan di baris Lainnya (jika berbeda dari name)
+  lainnyaTitle;
   final List<FiturCategoryModel>
-  directCategories; // Categories yang tampil langsung di main screen (bukan di Lainnya)
+  directCategories;
 
   const FiturSectionModel({
     required this.name,

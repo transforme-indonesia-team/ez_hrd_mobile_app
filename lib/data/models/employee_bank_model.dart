@@ -1,4 +1,3 @@
-/// Model untuk data bank karyawan
 class EmployeeBankModel {
   final String? bankName;
   final String? accountName;

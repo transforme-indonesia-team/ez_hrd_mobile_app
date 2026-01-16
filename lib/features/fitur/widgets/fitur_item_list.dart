@@ -4,8 +4,6 @@ import 'package:hrd_app/core/theme/app_colors.dart';
 import 'package:hrd_app/core/theme/app_text_styles.dart';
 import 'package:hrd_app/features/fitur/models/fitur_item_model.dart';
 
-/// Item fitur dalam tampilan list
-/// Icon di kiri dengan text di kanan
 class FiturItemList extends StatelessWidget {
   final FiturItemModel item;
   final Color? categoryBackgroundColor;
@@ -30,7 +28,6 @@ class FiturItemList extends StatelessWidget {
         padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
         child: Row(
           children: [
-            // Icon container
             Container(
               width: 40.w,
               height: 40.w,
@@ -46,7 +43,6 @@ class FiturItemList extends StatelessWidget {
               ),
             ),
             SizedBox(width: 16.w),
-            // Title
             Expanded(
               child: Text(
                 item.title,

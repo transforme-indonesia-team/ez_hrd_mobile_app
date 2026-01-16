@@ -1,4 +1,3 @@
-/// Model untuk data kontak darurat karyawan
 class EmergencyContactModel {
   final String? contactName;
   final String? contactPhone;

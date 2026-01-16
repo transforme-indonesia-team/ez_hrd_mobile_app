@@ -3,7 +3,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hrd_app/core/theme/app_text_styles.dart';
 import 'package:hrd_app/core/theme/app_colors.dart';
 
-/// Section Tugasmu hari ini
 class TugasmuSection extends StatelessWidget {
   final List<dynamic>? tasks;
   final VoidCallback? onLainnyaTap;
@@ -21,7 +20,6 @@ class TugasmuSection extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Header
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -44,7 +42,6 @@ class TugasmuSection extends StatelessWidget {
             ],
           ),
           SizedBox(height: 16.h),
-          // Content or success state
           if (hasTasks) _buildTasksList(colors) else _buildSuccessState(colors),
         ],
       ),
@@ -52,7 +49,6 @@ class TugasmuSection extends StatelessWidget {
   }
 
   Widget _buildTasksList(dynamic colors) {
-    // TODO: Implement actual tasks list when data is available
     return const SizedBox.shrink();
   }
 
@@ -62,14 +58,12 @@ class TugasmuSection extends StatelessWidget {
         padding: EdgeInsets.symmetric(vertical: 10.h),
         child: Column(
           children: [
-            // Illustration - using todo.png asset
             Image.asset(
               'assets/images/todo.png',
               height: 220.h,
               fit: BoxFit.contain,
             ),
             SizedBox(height: 16.h),
-            // Success text
             Text(
               'Horeee! Semua tugas sudah beres',
               style: AppTextStyles.bodySemiBold(colors.textPrimary),

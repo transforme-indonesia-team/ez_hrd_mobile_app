@@ -1,4 +1,3 @@
-/// Model untuk data pelatihan/kursus karyawan
 class TrainingModel {
   final String? courseName;
   final String? startCourse;

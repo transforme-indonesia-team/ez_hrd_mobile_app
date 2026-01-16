@@ -3,7 +3,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hrd_app/core/theme/app_text_styles.dart';
 import 'package:hrd_app/core/theme/app_colors.dart';
 
-/// Widget untuk menampilkan tabs Polling dan Survei
 class SurveiKaryawanTabs extends StatelessWidget {
   final int selectedIndex;
   final ValueChanged<int> onTabChanged;
@@ -24,13 +23,11 @@ class SurveiKaryawanTabs extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Title
           Text(
             'Survei Karyawan',
             style: AppTextStyles.body(colors.textPrimary),
           ),
           SizedBox(height: 16.h),
-          // Tabs - menggunakan Row dengan Expanded untuk menyebar rata
           Row(
             children: [
               Expanded(
@@ -69,17 +66,17 @@ class SurveiKaryawanTabs extends StatelessWidget {
       behavior: HitTestBehavior.opaque,
       child: Column(
         children: [
-          // Tab text
           Padding(
             padding: EdgeInsets.symmetric(vertical: 8.h),
             child: Text(
               label,
               textAlign: TextAlign.center,
-              style: AppTextStyles.body(isSelected ? colors.primaryBlue : colors.textSecondary),
+              style: AppTextStyles.body(
+                isSelected ? colors.primaryBlue : colors.textSecondary,
+              ),
             ),
           ),
           SizedBox(height: 8.h),
-          // Underline indicator - full width
           Container(
             height: 2.h,
             decoration: BoxDecoration(

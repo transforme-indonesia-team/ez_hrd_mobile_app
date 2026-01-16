@@ -3,7 +3,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hrd_app/core/theme/app_text_styles.dart';
 import 'package:hrd_app/core/theme/app_colors.dart';
 
-/// Empty state widget untuk tab Polling/Survei
 class SurveiEmptyState extends StatelessWidget {
   const SurveiEmptyState({super.key});
 
@@ -18,14 +17,12 @@ class SurveiEmptyState extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // Icon illustration
             Icon(
               Icons.description_outlined,
               size: 80.sp,
               color: colors.divider,
             ),
             SizedBox(height: 16.h),
-            // Text
             Text(
               'Tidak ada data untuk ditampilkan',
               style: AppTextStyles.bodyMedium(colors.textSecondary),

@@ -122,14 +122,11 @@ class UserModel {
     );
   }
 
-  /// Legacy factory untuk backward compatibility
   factory UserModel.fromJson(Map<String, dynamic> json) {
-    // Jika ada struktur 'original', gunakan fromApiResponse
     if (json.containsKey('original')) {
       return UserModel.fromApiResponse(json);
     }
 
-    // Legacy format (untuk data dari SharedPreferences)
     return UserModel(
       id: json['id']?.toString() ?? '',
       name: json['name'] ?? '',
@@ -201,15 +198,12 @@ class UserModel {
     };
   }
 
-  /// Convert to JSON string for storage
   String toJsonString() => jsonEncode(toJson());
 
-  /// Create from JSON string (for loading from storage)
   factory UserModel.fromJsonString(String jsonString) {
     return UserModel.fromJson(jsonDecode(jsonString) as Map<String, dynamic>);
   }
 
-  /// Create a copy with updated fields
   UserModel copyWith({
     String? id,
     String? name,

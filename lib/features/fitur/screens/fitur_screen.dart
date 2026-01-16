@@ -21,7 +21,6 @@ class FiturScreen extends StatefulWidget {
 }
 
 class _FiturScreenState extends State<FiturScreen> {
-  // Default: Grid View (true)
   bool _isGridView = true;
   final _searchController = TextEditingController();
   String _searchQuery = '';
@@ -39,7 +38,6 @@ class _FiturScreenState extends State<FiturScreen> {
   }
 
   void _onItemTap(FiturItemModel item) {
-    // TODO: Navigate to feature detail
     context.showInfoSnackbar('Fitur "${item.title}" belum tersedia');
   }
 
@@ -57,12 +55,9 @@ class _FiturScreenState extends State<FiturScreen> {
               controller: _searchController,
               onChanged: _onSearchChanged,
             ),
-            // Header dengan title dan toggle buttons
             _buildHeader(colors),
 
-            // Search bar
 
-            // Content
             Expanded(
               child: filteredSections.isEmpty
                   ? const EmptyStateWidget(
@@ -80,7 +75,6 @@ class _FiturScreenState extends State<FiturScreen> {
   Widget _buildHeader(ThemeColors colors) {
     return Container(
       color: colors.background,
-      // color: Colors.red,
       child: Padding(
         padding: EdgeInsets.fromLTRB(16.w, 2.h, 16.w, 2.h),
         child: Row(
@@ -89,7 +83,6 @@ class _FiturScreenState extends State<FiturScreen> {
             Text('Fitur', style: AppTextStyles.h4(colors.textPrimary)),
             Row(
               children: [
-                // List view button
                 IconButton(
                   onPressed: () {
                     setState(() {
@@ -104,9 +97,7 @@ class _FiturScreenState extends State<FiturScreen> {
                     size: 20.sp,
                   ),
                 ),
-                // Divider
                 Container(height: 20.h, width: 1, color: colors.divider),
-                // Grid view button
                 IconButton(
                   onPressed: () {
                     setState(() {
@@ -210,7 +201,6 @@ class _FiturScreenState extends State<FiturScreen> {
                       lainnyaDisplayTitle,
                       style: AppTextStyles.bodyMedium(colors.textPrimary),
                     ),
-                    // Lainnya button
                     TextButton(
                       onPressed: () => _showLainnyaBottomSheet(section),
                       style: TextButton.styleFrom(
@@ -237,7 +227,6 @@ class _FiturScreenState extends State<FiturScreen> {
                   ],
                 ),
               ),
-              // Show only first 4 items from all categories
               const SizedBox(height: 8),
               if (_isGridView)
                 _buildGridItems(displayItems, bgColor, iconColor)
@@ -246,7 +235,6 @@ class _FiturScreenState extends State<FiturScreen> {
             ],
           ),
         ),
-        // Display directCategories (categories that show directly on main screen)
         for (final category in section.directCategories) ...[
           Container(
             margin: const EdgeInsets.symmetric(vertical: 2),
@@ -277,7 +265,6 @@ class _FiturScreenState extends State<FiturScreen> {
     );
   }
 
-  /// Show bottom sheet with all categories
   void _showLainnyaBottomSheet(FiturSectionModel section) {
     FiturBottomSheet.show(
       context,

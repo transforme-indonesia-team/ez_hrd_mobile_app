@@ -4,7 +4,6 @@ import 'package:hrd_app/core/theme/app_colors.dart';
 import 'package:hrd_app/core/theme/app_text_styles.dart';
 import 'package:hrd_app/core/widgets/empty_state_widget.dart';
 
-/// Section Informasi Perusahaan dengan empty state
 class CompanyInfoSection extends StatelessWidget {
   final List<dynamic>? data;
 
@@ -22,7 +21,6 @@ class CompanyInfoSection extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Header
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 16.w),
             child: Text(
@@ -31,7 +29,6 @@ class CompanyInfoSection extends StatelessWidget {
             ),
           ),
           SizedBox(height: 16.h),
-          // Content or empty state
           if (hasData) _buildContent(colors) else const EmptyStateWidget(),
         ],
       ),
@@ -39,7 +36,6 @@ class CompanyInfoSection extends StatelessWidget {
   }
 
   Widget _buildContent(ThemeColors colors) {
-    // TODO: Implement actual content when data is available
     return const SizedBox.shrink();
   }
 }

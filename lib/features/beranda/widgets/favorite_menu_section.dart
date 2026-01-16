@@ -6,7 +6,6 @@ import 'package:hrd_app/features/beranda/data/favorite_menu_data.dart';
 import 'package:hrd_app/features/fitur/models/fitur_item_model.dart';
 import 'package:hrd_app/features/fitur/widgets/fitur_item_grid.dart';
 
-/// Section Menu Favorit di Beranda
 class FavoriteMenuSection extends StatelessWidget {
   final Function(FiturItemModel)? onItemTap;
 
@@ -23,7 +22,6 @@ class FavoriteMenuSection extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Header
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 16.w),
             child: Text(
@@ -32,7 +30,6 @@ class FavoriteMenuSection extends StatelessWidget {
             ),
           ),
           SizedBox(height: 16.h),
-          // Grid menu items
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 16.w),
             child: GridView.builder(

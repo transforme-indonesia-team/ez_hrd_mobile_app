@@ -7,8 +7,6 @@ import 'package:hrd_app/core/theme/app_colors.dart';
 import 'package:hrd_app/core/utils/snackbar_utils.dart';
 import 'package:hrd_app/features/rekam_waktu/screens/rekam_waktu_confirm_screen.dart';
 
-/// Screen untuk mengambil foto kehadiran dengan kamera.
-/// Lokasi akan diambil real-time di confirm screen menggunakan Google Maps.
 class RekamWaktuCameraScreen extends StatefulWidget {
   const RekamWaktuCameraScreen({super.key});
 
@@ -47,7 +45,6 @@ class _RekamWaktuCameraScreenState extends State<RekamWaktuCameraScreen> {
         return;
       }
 
-      // Find front camera for selfie
       _selectedCameraIndex = _cameras!.indexWhere(
         (camera) => camera.lensDirection == CameraLensDirection.front,
       );
@@ -55,7 +52,6 @@ class _RekamWaktuCameraScreenState extends State<RekamWaktuCameraScreen> {
 
       await _setupCamera(_selectedCameraIndex);
     } catch (e) {
-      debugPrint('Error initializing camera: $e');
       if (mounted) {
         context.showErrorSnackbar('Gagal mengakses kamera');
         Navigator.pop(context);
@@ -83,7 +79,6 @@ class _RekamWaktuCameraScreenState extends State<RekamWaktuCameraScreen> {
         });
       }
     } catch (e) {
-      debugPrint('Error setting up camera: $e');
       if (mounted) {
         context.showErrorSnackbar('Gagal mengaktifkan kamera');
       }
@@ -114,9 +109,7 @@ class _RekamWaktuCameraScreenState extends State<RekamWaktuCameraScreen> {
         await _controller!.setFlashMode(FlashMode.torch);
       }
       setState(() => _isFlashOn = !_isFlashOn);
-    } catch (e) {
-      debugPrint('Error toggling flash: $e');
-    }
+    } catch (e) {}
   }
 
   Future<void> _capturePhoto() async {
@@ -132,7 +125,6 @@ class _RekamWaktuCameraScreenState extends State<RekamWaktuCameraScreen> {
 
       final XFile photo = await _controller!.takePicture();
 
-      // Stop camera before navigating - update state FIRST to prevent render attempts
       final controllerToDispose = _controller;
       setState(() {
         _isCameraReady = false;
@@ -152,13 +144,11 @@ class _RekamWaktuCameraScreenState extends State<RekamWaktuCameraScreen> {
         if (result == true && mounted) {
           Navigator.pop(context);
         } else if (mounted) {
-          // Re-initialize camera if user comes back
           setState(() => _isCapturing = false);
           await _initCamera();
         }
       }
     } catch (e) {
-      debugPrint('Error capturing photo: $e');
       if (mounted) {
         context.showErrorSnackbar('Gagal mengambil foto');
         setState(() => _isCapturing = false);
@@ -175,13 +165,11 @@ class _RekamWaktuCameraScreenState extends State<RekamWaktuCameraScreen> {
       body: SafeArea(
         child: Stack(
           children: [
-            // Camera Preview
             if (_isCameraReady && _controller != null)
               Positioned.fill(child: _buildCameraPreview())
             else
               _buildLoadingState(colors),
 
-            // Face Silhouette Overlay
             if (_isCameraReady)
               Positioned.fill(
                 child: Image.asset(
@@ -190,10 +178,8 @@ class _RekamWaktuCameraScreenState extends State<RekamWaktuCameraScreen> {
                 ),
               ),
 
-            // Top Bar
             _buildTopBar(colors),
 
-            // Bottom Bar
             _buildBottomBar(colors),
           ],
         ),
@@ -227,10 +213,7 @@ class _RekamWaktuCameraScreenState extends State<RekamWaktuCameraScreen> {
         children: [
           CircularProgressIndicator(color: colors.primaryBlue),
           SizedBox(height: 16.h),
-          Text(
-            'Memuat kamera...',
-            style: AppTextStyles.body(Colors.white),
-          ),
+          Text('Memuat kamera...', style: AppTextStyles.body(Colors.white)),
         ],
       ),
     );
@@ -263,10 +246,7 @@ class _RekamWaktuCameraScreenState extends State<RekamWaktuCameraScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    'Rekam Waktu',
-                    style: AppTextStyles.h4(Colors.white),
-                  ),
+                  Text('Rekam Waktu', style: AppTextStyles.h4(Colors.white)),
                   Text(
                     'Posisikan wajah dalam bingkai',
                     style: AppTextStyles.caption(Colors.white70),
@@ -308,7 +288,6 @@ class _RekamWaktuCameraScreenState extends State<RekamWaktuCameraScreen> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            // Flash Toggle
             IconButton(
               onPressed: _isCameraReady ? _toggleFlash : null,
               icon: Icon(
@@ -318,7 +297,6 @@ class _RekamWaktuCameraScreenState extends State<RekamWaktuCameraScreen> {
               ),
             ),
 
-            // Capture Button
             GestureDetector(
               onTap: (_isCapturing || !_isCameraReady) ? null : _capturePhoto,
               child: Container(
@@ -354,7 +332,6 @@ class _RekamWaktuCameraScreenState extends State<RekamWaktuCameraScreen> {
               ),
             ),
 
-            // Placeholder for balance
             SizedBox(width: 48.w),
           ],
         ),

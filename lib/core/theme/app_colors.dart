@@ -4,9 +4,6 @@ import 'package:hrd_app/core/theme/color_palette.dart';
 class AppColors {
   AppColors._();
 
-  // ============================================
-  // LIGHT MODE COLORS
-  // ============================================
   static const Color primaryBlueLight = Color(0xFF2563EB);
   static const Color primaryBlueDarkVariant = Color(0xFF1D4ED8);
   static const Color primaryBlueLightVariant = Color(0xFF3B82F6);
@@ -26,10 +23,6 @@ class AppColors {
   static const Color dividerLight = ColorPalette.gray200;
 
   static const Color inactiveGrayLight = ColorPalette.gray400;
-
-  // ============================================
-  // DARK MODE COLORS
-  // ============================================
 
   static const Color primaryBlueDark = Color(0xFF60A5FA);
   static const Color primaryBlueDarkDark = Color(0xFF3B82F6);

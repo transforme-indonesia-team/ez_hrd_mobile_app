@@ -1,4 +1,3 @@
-/// Model untuk data disiplin karyawan
 class DisciplineModel {
   final String? typeName;
   final String? referenceNumber;

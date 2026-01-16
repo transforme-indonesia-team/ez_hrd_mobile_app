@@ -50,7 +50,6 @@ class _ForgotPasswordFormState extends State<ForgotPasswordForm> {
           _isLoading = false;
         });
 
-        // Get expired_at from response
         final original = response['original'] as Map<String, dynamic>?;
         final records = original?['records'] as Map<String, dynamic>?;
         final expiredAt = records?['expired_at'] as String?;

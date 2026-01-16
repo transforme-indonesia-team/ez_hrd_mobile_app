@@ -1,9 +1,7 @@
 import 'package:dio/dio.dart';
-import 'package:flutter/foundation.dart';
 import 'package:hrd_app/core/config/env_config.dart';
 import 'package:hrd_app/core/utils/crypto_utils.dart';
 
-/// Callback type for handling unauthorized (401) responses
 typedef UnauthorizedCallback = void Function();
 
 class BaseApiService {
@@ -27,13 +25,11 @@ class BaseApiService {
 
   final CryptoUtils _crypto = CryptoUtils();
 
-  /// Callback to be invoked when 401 Unauthorized is received
   UnauthorizedCallback? _onUnauthorized;
 
   Dio get dio => _dio;
   CryptoUtils get crypto => _crypto;
 
-  /// Set callback for handling 401 Unauthorized responses
   void setUnauthorizedCallback(UnauthorizedCallback callback) {
     _onUnauthorized = callback;
   }
@@ -42,9 +38,7 @@ class BaseApiService {
     _dio.interceptors.add(
       InterceptorsWrapper(
         onError: (DioException error, ErrorInterceptorHandler handler) {
-          // Check for 401 Unauthorized - only trigger logout if user has token
           if (error.response?.statusCode == 401 && _hasAuthToken()) {
-            debugPrint('API: 401 Unauthorized - triggering logout');
             _onUnauthorized?.call();
           }
           handler.next(error);
@@ -53,7 +47,6 @@ class BaseApiService {
     );
   }
 
-  /// Check if auth token exists (user is logged in)
   bool _hasAuthToken() {
     return _dio.options.headers['Authorization'] != null;
   }
@@ -64,7 +57,6 @@ class BaseApiService {
     String? errorMessage,
   }) async {
     try {
-      debugPrint('DEBUG-API-Request: ${payload.toString()}');
       final encryptedPayload = _crypto.encryptPayload(payload);
 
       final response = await _dio.post(
@@ -86,10 +78,6 @@ class BaseApiService {
     String? errorMessage,
   }) async {
     try {
-      // debugPrint('DEBUG-API-FormData: Sending to $endpoint');
-      // debugPrint('DEBUG-API-FormData: Fields count: ${formData.fields.length}');
-      // debugPrint('DEBUG-API-FormData: Files count: ${formData.files.length}');
-
       final response = await _dio.post(
         endpoint,
         data: formData,
@@ -194,17 +182,11 @@ class BaseApiService {
 
     final original = decryptedData['original'] as Map<String, dynamic>?;
 
-    if (kDebugMode) {
-      debugPrint('DEBUG-API-Response: ${original.toString()}');
-    }
-
     if (original == null) {
       throw Exception('Response tidak valid');
     }
 
-    // Check for 401 in decrypted response code - only trigger logout if user has token
     if (original['code'] == 401 && _hasAuthToken()) {
-      debugPrint('API: Decrypted 401 Unauthorized - triggering logout');
       _onUnauthorized?.call();
       throw Exception(original['message'] ?? 'Sesi Anda telah berakhir');
     }
@@ -227,7 +209,6 @@ class BaseApiService {
     }
 
     if (e.response != null) {
-      // Check for 401 in error response - only show session expired if user has token
       if (e.response?.statusCode == 401 && _hasAuthToken()) {
         return Exception('Sesi Anda telah berakhir. Silakan login kembali.');
       }
