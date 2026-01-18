@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:hrd_app/core/constants/app_constants.dart';
 import 'package:hrd_app/core/theme/app_text_styles.dart';
 import 'package:hrd_app/core/theme/app_colors.dart';
 import 'package:provider/provider.dart';
@@ -349,7 +350,9 @@ class _GantiPasswordScreenState extends State<GantiPasswordScreen> {
           borderRadius: BorderRadius.circular(4.r),
           child: TweenAnimationBuilder<double>(
             tween: Tween(begin: 0, end: strength.value),
-            duration: const Duration(milliseconds: 300),
+            duration: const Duration(
+              milliseconds: AppConstants.animationNormalMs,
+            ),
             curve: Curves.easeOutCubic,
             builder: (context, value, child) {
               return LinearProgressIndicator(

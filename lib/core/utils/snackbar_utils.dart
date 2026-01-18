@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:hrd_app/core/constants/app_constants.dart';
 import 'package:hrd_app/core/theme/app_text_styles.dart';
 
 enum SnackbarType { success, error, warning, info }
@@ -72,25 +73,25 @@ class AppSnackbar {
         return _SnackbarConfig(
           icon: Icons.check_circle_rounded,
           backgroundColor: const Color(0xFF10B981),
-          duration: const Duration(seconds: 3),
+          duration: const Duration(seconds: AppConstants.snackbarNormalSeconds),
         );
       case SnackbarType.error:
         return _SnackbarConfig(
           icon: Icons.error_rounded,
           backgroundColor: const Color(0xFFEF4444),
-          duration: const Duration(seconds: 4),
+          duration: const Duration(seconds: AppConstants.snackbarLongSeconds),
         );
       case SnackbarType.warning:
         return _SnackbarConfig(
           icon: Icons.warning_rounded,
           backgroundColor: const Color(0xFFF59E0B),
-          duration: const Duration(seconds: 3),
+          duration: const Duration(seconds: AppConstants.snackbarNormalSeconds),
         );
       case SnackbarType.info:
         return _SnackbarConfig(
           icon: Icons.info_rounded,
           backgroundColor: const Color(0xFF3B82F6),
-          duration: const Duration(seconds: 2),
+          duration: const Duration(seconds: AppConstants.snackbarShortSeconds),
         );
     }
   }

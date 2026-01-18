@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hrd_app/core/constants/app_constants.dart';
 import 'package:hrd_app/core/theme/app_colors.dart';
 import 'package:hrd_app/core/theme/app_text_styles.dart';
 import 'package:hrd_app/features/fitur/models/fitur_item_model.dart';
@@ -174,7 +175,7 @@ class _FiturBottomSheetState extends State<FiturBottomSheet> {
           crossFadeState: isExpanded
               ? CrossFadeState.showSecond
               : CrossFadeState.showFirst,
-          duration: const Duration(milliseconds: 200),
+          duration: const Duration(milliseconds: AppConstants.animationFastMs),
         ),
       ],
     );

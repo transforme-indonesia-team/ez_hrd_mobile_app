@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:hrd_app/core/constants/app_constants.dart';
 
 class LocationUtils {
   LocationUtils._();
@@ -36,9 +37,9 @@ class LocationUtils {
 
     try {
       return await Geolocator.getCurrentPosition(
-        locationSettings: const LocationSettings(
+        locationSettings: LocationSettings(
           accuracy: LocationAccuracy.low,
-          timeLimit: Duration(seconds: 15),
+          timeLimit: Duration(seconds: AppConstants.locationTimeoutSeconds),
         ),
       );
     } catch (e) {

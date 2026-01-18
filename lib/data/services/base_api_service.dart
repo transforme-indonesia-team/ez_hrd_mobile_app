@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:hrd_app/core/config/env_config.dart';
+import 'package:hrd_app/core/constants/app_constants.dart';
 import 'package:hrd_app/core/utils/crypto_utils.dart';
 
 typedef UnauthorizedCallback = void Function();
@@ -15,8 +16,12 @@ class BaseApiService {
   final Dio _dio = Dio(
     BaseOptions(
       baseUrl: EnvConfig.baseUrl,
-      connectTimeout: const Duration(seconds: 15),
-      receiveTimeout: const Duration(seconds: 15),
+      connectTimeout: const Duration(
+        seconds: AppConstants.apiConnectTimeoutSeconds,
+      ),
+      receiveTimeout: const Duration(
+        seconds: AppConstants.apiReceiveTimeoutSeconds,
+      ),
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',

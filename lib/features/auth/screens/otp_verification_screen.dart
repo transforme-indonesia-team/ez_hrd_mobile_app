@@ -277,9 +277,11 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                             _canResend
                                 ? 'Kirim Ulang OTP'
                                 : 'Kirim ulang dalam ${_formatTime(_remainingSeconds)}',
-                            style: AppTextStyles.body(_canResend
+                            style: AppTextStyles.body(
+                              _canResend
                                   ? colors.linkColor
-                                  : colors.textSubtitle),
+                                  : colors.textSubtitle,
+                            ),
                           ),
                         ),
                 ),
@@ -323,7 +325,8 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                                 )
                               : Text(
                                   'Verifikasi',
-                                  style: AppTextStyles.h4(_isOtpComplete
+                                  style: AppTextStyles.h4(
+                                    _isOtpComplete
                                         ? Colors.white
                                         : Colors.white.withValues(alpha: 0.7),
                                   ),

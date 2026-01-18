@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:hrd_app/core/constants/app_constants.dart';
 import 'package:hrd_app/core/providers/auth_provider.dart';
 import 'package:hrd_app/core/theme/app_colors.dart';
 import 'package:hrd_app/core/utils/format_date.dart';
@@ -127,9 +128,12 @@ class _BerandaScreenState extends State<BerandaScreen>
       if (_waitingForLocationSettings || _waitingForAppSettings) {
         _waitingForLocationSettings = false;
         _waitingForAppSettings = false;
-        Future.delayed(const Duration(milliseconds: 300), () {
-          if (mounted) _onRekamWaktuTap();
-        });
+        Future.delayed(
+          const Duration(milliseconds: AppConstants.lifecycleDelayMs),
+          () {
+            if (mounted) _onRekamWaktuTap();
+          },
+        );
       }
     }
   }

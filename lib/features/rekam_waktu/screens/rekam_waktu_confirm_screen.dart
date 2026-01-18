@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:hrd_app/core/constants/app_constants.dart';
 import 'package:hrd_app/core/theme/app_text_styles.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
@@ -39,9 +40,9 @@ class _RekamWaktuConfirmScreenState extends State<RekamWaktuConfirmScreen> {
     try {
       Position? position = await Geolocator.getLastKnownPosition();
       position ??= await Geolocator.getCurrentPosition(
-        locationSettings: const LocationSettings(
+        locationSettings: LocationSettings(
           accuracy: LocationAccuracy.low,
-          timeLimit: Duration(seconds: 5),
+          timeLimit: Duration(seconds: AppConstants.geocodingTimeoutSeconds),
         ),
       );
 

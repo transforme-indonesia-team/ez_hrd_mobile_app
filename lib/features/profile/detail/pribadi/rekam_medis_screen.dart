@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:hrd_app/core/constants/app_constants.dart';
 import 'package:hrd_app/core/theme/app_text_styles.dart';
 import 'package:hrd_app/core/theme/app_colors.dart';
 import 'package:shimmer/shimmer.dart';
@@ -22,7 +23,9 @@ class _RekamMedisScreenState extends State<RekamMedisScreen> {
   }
 
   Future<void> _fetchData() async {
-    await Future.delayed(const Duration(seconds: 2));
+    await Future.delayed(
+      const Duration(seconds: AppConstants.simulatedDelaySeconds),
+    );
 
     if (mounted) {
       setState(() {
@@ -58,10 +61,7 @@ class _RekamMedisScreenState extends State<RekamMedisScreen> {
           icon: Icon(Icons.arrow_back, color: colors.textPrimary),
           onPressed: () => Navigator.pop(context),
         ),
-        title: Text(
-          'Rekam Medis',
-          style: AppTextStyles.h3(colors.textPrimary),
-        ),
+        title: Text('Rekam Medis', style: AppTextStyles.h3(colors.textPrimary)),
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(16.w),
@@ -146,15 +146,9 @@ class _RekamMedisScreenState extends State<RekamMedisScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            title,
-            style: AppTextStyles.bodySemiBold(colors.textPrimary),
-          ),
+          Text(title, style: AppTextStyles.bodySemiBold(colors.textPrimary)),
           SizedBox(height: 4.h),
-          Text(
-            subtitle,
-            style: AppTextStyles.caption(colors.textPrimary),
-          ),
+          Text(subtitle, style: AppTextStyles.caption(colors.textPrimary)),
           SizedBox(height: 8.h),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -175,26 +169,16 @@ class _RekamMedisScreenState extends State<RekamMedisScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          label,
-          style: AppTextStyles.bodyMedium(colors.textPrimary),
-        ),
+        Text(label, style: AppTextStyles.bodyMedium(colors.textPrimary)),
         SizedBox(height: 4.h),
-        Text(
-          value ?? '-',
-          style: AppTextStyles.body(colors.textPrimary),
-        ),
+        Text(value ?? '-', style: AppTextStyles.body(colors.textPrimary)),
         if (note != null) ...[
           SizedBox(height: 4.h),
-          Text(
-            note,
-            style: AppTextStyles.caption(colors.textSecondary),
-          ),
+          Text(note, style: AppTextStyles.caption(colors.textSecondary)),
         ],
       ],
     );
   }
-
 
   Widget _buildSkeletonLoading() {
     return Column(
