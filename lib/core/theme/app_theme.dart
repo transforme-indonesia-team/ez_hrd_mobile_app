@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:hrd_app/core/theme/app_colors.dart';
+import 'package:hrd_app/core/theme/color_palette.dart';
 
 class AppTheme {
-  static const Color primaryColor = Color(0xFF2196F3);
-  static const Color primaryDark = Color(0xFF1565C0);
-  static const Color primaryLight = Color(0xFF42A5F5);
+  // Use colors from AppColors - single source of truth
+  static const Color primaryColor = AppColors.primaryBlueLight;
+  static const Color primaryDark = AppColors.primaryBlueDarkVariant;
+  static const Color primaryLight = AppColors.primaryBlueLightVariant;
 
   static const double borderRadiusSmall = 8.0;
   static const double borderRadiusMedium = 12.0;
@@ -19,18 +22,18 @@ class AppTheme {
 
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: Colors.grey[50],
+        fillColor: ColorPalette.gray50,
         contentPadding: const EdgeInsets.symmetric(
           horizontal: 20,
           vertical: 16,
         ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(borderRadiusMedium),
-          borderSide: BorderSide(color: Colors.grey[300]!),
+          borderSide: BorderSide(color: ColorPalette.gray300),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(borderRadiusMedium),
-          borderSide: BorderSide(color: Colors.grey[300]!),
+          borderSide: BorderSide(color: ColorPalette.gray300),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(borderRadiusMedium),
@@ -38,11 +41,11 @@ class AppTheme {
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(borderRadiusMedium),
-          borderSide: const BorderSide(color: Colors.red, width: 1),
+          borderSide: BorderSide(color: ColorPalette.red500, width: 1),
         ),
         focusedErrorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(borderRadiusMedium),
-          borderSide: const BorderSide(color: Colors.red, width: 2),
+          borderSide: BorderSide(color: ColorPalette.red500, width: 2),
         ),
       ),
 
@@ -69,40 +72,35 @@ class AppTheme {
   }
 
   static ThemeData get darkTheme {
-    const darkBackground = Color(0xFF0F172A);
-    const darkSurface = Color(0xFF1E293B);
-    const darkInputFill = Color(0xFF1F2937);
-    const darkBorder = Color(0xFF4B5563);
-
     return ThemeData(
       colorScheme: ColorScheme.fromSeed(
         seedColor: primaryColor,
         brightness: Brightness.dark,
-        surface: darkSurface,
+        surface: AppColors.surfaceDark,
       ),
-      scaffoldBackgroundColor: darkBackground,
+      scaffoldBackgroundColor: AppColors.backgroundDark,
       useMaterial3: true,
 
       appBarTheme: AppBarTheme(
-        backgroundColor: darkBackground,
+        backgroundColor: AppColors.backgroundDark,
         surfaceTintColor: Colors.transparent,
         elevation: 0,
       ),
 
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: darkInputFill,
+        fillColor: AppColors.inputFillDark,
         contentPadding: const EdgeInsets.symmetric(
           horizontal: 20,
           vertical: 16,
         ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(borderRadiusMedium),
-          borderSide: BorderSide(color: darkBorder),
+          borderSide: BorderSide(color: AppColors.inputBorderDark),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(borderRadiusMedium),
-          borderSide: BorderSide(color: darkBorder),
+          borderSide: BorderSide(color: AppColors.inputBorderDark),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(borderRadiusMedium),
@@ -124,7 +122,7 @@ class AppTheme {
 
       cardTheme: CardThemeData(
         elevation: 4,
-        color: darkSurface,
+        color: AppColors.surfaceDark,
         shadowColor: Colors.black.withValues(alpha: 0.4),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(borderRadiusLarge),
@@ -132,9 +130,9 @@ class AppTheme {
       ),
 
       bottomNavigationBarTheme: BottomNavigationBarThemeData(
-        backgroundColor: darkBackground,
+        backgroundColor: AppColors.backgroundDark,
         selectedItemColor: primaryLight,
-        unselectedItemColor: const Color(0xFF64748B),
+        unselectedItemColor: ColorPalette.slate500,
       ),
     );
   }

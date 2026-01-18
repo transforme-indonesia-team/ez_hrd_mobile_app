@@ -21,7 +21,9 @@ void main() async {
 
   try {
     CryptoUtils().initialize();
-  } catch (_) {}
+  } catch (e) {
+    debugPrint('Main: Failed to initialize crypto: $e');
+  }
 
   final themeProvider = ThemeProvider();
   await themeProvider.initialize();

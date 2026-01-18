@@ -109,7 +109,9 @@ class _RekamWaktuCameraScreenState extends State<RekamWaktuCameraScreen> {
         await _controller!.setFlashMode(FlashMode.torch);
       }
       setState(() => _isFlashOn = !_isFlashOn);
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('RekamWaktuCameraScreen: Failed to toggle flash: $e');
+    }
   }
 
   Future<void> _capturePhoto() async {

@@ -53,7 +53,9 @@ class _RekamWaktuConfirmScreenState extends State<RekamWaktuConfirmScreen> {
           CameraUpdate.newLatLng(_initialPosition!),
         );
       }
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('RekamWaktuConfirmScreen: Failed to get initial position: $e');
+    }
   }
 
   @override
@@ -154,7 +156,9 @@ class _RekamWaktuConfirmScreenState extends State<RekamWaktuConfirmScreen> {
           CameraUpdate.newLatLng(LatLng(position.latitude, position.longitude)),
         );
       }
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('RekamWaktuConfirmScreen: Failed to move camera: $e');
+    }
   }
 
   Widget _buildMapLoadingOverlay(ThemeColors colors) {

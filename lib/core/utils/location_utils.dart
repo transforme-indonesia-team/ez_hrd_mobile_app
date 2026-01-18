@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:geolocator/geolocator.dart';
 
 class LocationUtils {
@@ -29,7 +30,9 @@ class LocationUtils {
       if (lastPosition != null) {
         return lastPosition;
       }
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('LocationUtils: Failed to get last known position: $e');
+    }
 
     try {
       return await Geolocator.getCurrentPosition(
@@ -39,18 +42,8 @@ class LocationUtils {
         ),
       );
     } catch (e) {
-      return Position(
-        latitude: -6.2088,
-        longitude: 106.8456,
-        timestamp: DateTime.now(),
-        accuracy: 0,
-        altitude: 0,
-        altitudeAccuracy: 0,
-        heading: 0,
-        headingAccuracy: 0,
-        speed: 0,
-        speedAccuracy: 0,
-      );
+      debugPrint('LocationUtils: Failed to get current position: $e');
+      return null;
     }
   }
 

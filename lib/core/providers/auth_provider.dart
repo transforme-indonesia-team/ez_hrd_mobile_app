@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:hrd_app/data/models/user_model.dart';
@@ -37,7 +38,9 @@ class AuthProvider extends ChangeNotifier {
           await prefs.remove(_userKey);
         }
       }
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('AuthProvider: Failed to load user from storage: $e');
+    }
 
     _isInitialized = true;
     notifyListeners();
@@ -101,7 +104,9 @@ class AuthProvider extends ChangeNotifier {
     try {
       final prefs = await SharedPreferences.getInstance();
       await prefs.remove(_userKey);
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('AuthProvider: Failed to clear user from storage: $e');
+    }
 
     notifyListeners();
   }
@@ -112,7 +117,9 @@ class AuthProvider extends ChangeNotifier {
     try {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString(_userKey, _user!.toJsonString());
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('AuthProvider: Failed to save user to storage: $e');
+    }
   }
 
   void updateUser(UserModel updatedUser) {
