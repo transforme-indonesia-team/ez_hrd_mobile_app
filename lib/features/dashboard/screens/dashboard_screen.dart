@@ -33,19 +33,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
     return Scaffold(
       backgroundColor: colors.background,
       body: _pages[_currentIndex],
-      bottomNavigationBar: SafeArea(
-        top: false,
-        child: Container(
-          decoration: BoxDecoration(
-            color: colors.background,
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.1),
-                blurRadius: 10,
-                offset: const Offset(0, -2),
-              ),
-            ],
-          ),
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(color: colors.background),
+        child: SafeArea(
+          top: false,
           child: BottomNavigationBar(
             currentIndex: _currentIndex,
             onTap: (index) {
@@ -62,6 +53,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             iconSize: 24.sp,
             selectedFontSize: 10.sp,
             unselectedFontSize: 10.sp,
+            elevation: 0,
             items: const [
               BottomNavigationBarItem(
                 icon: Icon(Icons.home_outlined),
