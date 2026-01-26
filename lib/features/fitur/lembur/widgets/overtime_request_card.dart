@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hrd_app/core/theme/app_colors.dart';
 import 'package:hrd_app/core/theme/app_text_styles.dart';
-import 'package:hrd_app/data/models/overtime_request_model.dart';
+import 'package:hrd_app/data/models/overtime_employee_model.dart';
 
 class OvertimeRequestCard extends StatelessWidget {
-  final OvertimeRequestModel request;
+  final OvertimeEmployeeModel request;
   final VoidCallback? onTap;
 
   const OvertimeRequestCard({super.key, required this.request, this.onTap});
@@ -41,20 +41,26 @@ class OvertimeRequestCard extends StatelessWidget {
             ),
             SizedBox(height: 2.h),
             Text(
-              request.displayRequestNumber,
+              request.displayOvertimeRequestNo,
               style: AppTextStyles.body(colors.textPrimary),
             ),
             SizedBox(height: 12.h),
-
-            _buildInlineRow(colors, 'Keterangan', request.displayDescription),
+            _buildInlineRow(colors, 'Karyawan', request.displayEmployeeName),
             SizedBox(height: 8.h),
-            _buildInlineRow(colors, 'Tanggal Mulai', request.displayStartDate),
+            _buildInlineRow(colors, 'Tanggal', request.displayDateOvertime),
             SizedBox(height: 8.h),
-            _buildInlineRow(colors, 'Tanggal Berakhir', request.displayEndDate),
+            _buildInlineRow(colors, 'Waktu', request.displayTimeRange),
             SizedBox(height: 8.h),
             _buildStatusRow(colors),
-            SizedBox(height: 8.h),
-            _buildInlineRow(colors, 'Pembatalan', request.displayCancellation),
+            if (request.remarkOvertime != null &&
+                request.remarkOvertime!.isNotEmpty) ...[
+              SizedBox(height: 8.h),
+              _buildInlineRow(
+                colors,
+                'Keterangan',
+                request.remarkOvertime ?? '-',
+              ),
+            ],
           ],
         ),
       ),
@@ -92,20 +98,21 @@ class _StatusBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
-    final statusLower = status.toLowerCase();
+    final statusUpper = status.toUpperCase();
 
     Color backgroundColor;
     Color textColor;
 
-    if (statusLower.contains('belum') || statusLower.contains('pending')) {
+    if (statusUpper == 'DRAFT') {
+      backgroundColor = const Color(0xFFE0E7FF);
+      textColor = const Color(0xFF4338CA);
+    } else if (statusUpper == 'PENDING' || statusUpper.contains('WAITING')) {
       backgroundColor = const Color(0xFFFFF3CD);
       textColor = const Color(0xFFD68910);
-    } else if (statusLower.contains('setuju') ||
-        statusLower.contains('approved')) {
+    } else if (statusUpper == 'APPROVED' || statusUpper.contains('APPROVE')) {
       backgroundColor = const Color(0xFFD4EDDA);
       textColor = const Color(0xFF28A745);
-    } else if (statusLower.contains('tolak') ||
-        statusLower.contains('rejected')) {
+    } else if (statusUpper == 'REJECTED' || statusUpper.contains('REJECT')) {
       backgroundColor = const Color(0xFFF8D7DA);
       textColor = const Color(0xFFDC3545);
     } else {

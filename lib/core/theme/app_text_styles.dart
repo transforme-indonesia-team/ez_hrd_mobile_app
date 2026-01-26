@@ -5,7 +5,6 @@ import 'package:google_fonts/google_fonts.dart';
 class AppTextStyles {
   AppTextStyles._();
 
-
   static TextStyle h1(Color color) => GoogleFonts.inter(
     fontSize: 24.sp,
     fontWeight: FontWeight.w700,
@@ -30,7 +29,6 @@ class AppTextStyles {
     color: color,
   );
 
-
   static TextStyle bodyLarge(Color color) => GoogleFonts.inter(
     fontSize: 16.sp,
     fontWeight: FontWeight.w500,
@@ -49,12 +47,15 @@ class AppTextStyles {
     color: color,
   );
 
-  static TextStyle bodySemiBold(Color color) => GoogleFonts.inter(
-    fontSize: 14.sp,
-    fontWeight: FontWeight.w600,
+  static TextStyle bodySemiBold(
+    Color color, {
+    double? fontSize,
+    FontWeight? fontWeight,
+  }) => GoogleFonts.inter(
+    fontSize: fontSize ?? 14.sp,
+    fontWeight: fontWeight ?? FontWeight.w600,
     color: color,
   );
-
 
   static TextStyle small(Color color) => GoogleFonts.inter(
     fontSize: 13.sp,
@@ -80,7 +81,6 @@ class AppTextStyles {
     color: color,
   );
 
-
   static TextStyle xSmall(Color color) => GoogleFonts.inter(
     fontSize: 11.sp,
     fontWeight: FontWeight.w400,
@@ -98,7 +98,6 @@ class AppTextStyles {
     fontWeight: FontWeight.w500,
     color: color,
   );
-
 
   static TextStyle button(Color color) => GoogleFonts.inter(
     fontSize: 14.sp,

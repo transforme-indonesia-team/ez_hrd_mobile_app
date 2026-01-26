@@ -8,15 +8,15 @@ class OvertimeService {
   final _api = BaseApiService();
 
   Future<Map<String, dynamic>> getOvertimeEmployee({
-    int? pages,
-    int? sizes,
+    int? page,
+    int? limit,
     String? search,
   }) async {
     return _api.get(
       '/overtime',
       queryParameters: {
-        if (pages != null) 'pages': pages,
-        if (sizes != null) 'sizes': sizes,
+        if (page != null) 'page': page,
+        if (limit != null) 'limit': limit,
         if (search != null) 'search': search,
       },
     );

@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hrd_app/core/theme/app_colors.dart';
 import 'package:hrd_app/core/theme/app_text_styles.dart';
-import 'package:hrd_app/data/models/overtime_request_model.dart';
+import 'package:hrd_app/data/models/overtime_employee_model.dart';
+import 'package:hrd_app/data/services/overtime_service.dart';
 import 'package:hrd_app/features/fitur/lembur/screens/form_lembur_screen.dart';
 import 'package:hrd_app/features/fitur/lembur/widgets/lembur_filter_bottom_sheet.dart';
 import 'package:hrd_app/features/fitur/lembur/widgets/overtime_request_card.dart';
@@ -16,8 +17,10 @@ class DaftarLemburScreen extends StatefulWidget {
 }
 
 class _DaftarLemburScreenState extends State<DaftarLemburScreen> {
-  final bool _isLoading = false;
-  List<OvertimeRequestModel> _requests = [];
+  bool _isLoading = false;
+  String? _errorMessage;
+
+  List<OvertimeEmployeeModel> _requests = [];
   int _currentPage = 1;
   int _totalPages = 1;
   int _totalItems = 0;
@@ -28,27 +31,49 @@ class _DaftarLemburScreenState extends State<DaftarLemburScreen> {
   @override
   void initState() {
     super.initState();
-    _loadDummyData();
+    _fetchData();
   }
 
-  void _loadDummyData() {
-    // Dummy data untuk testing UI
-    setState(() {
-      _requests = [
-        const OvertimeRequestModel(
-          id: '1',
-          requestNumber: 'CO4-OVR-202601-016478',
-          description: 'rest',
-          startDate: '14 Jan 2026',
-          endDate: '14 Jan 2026',
-          status: 'Belum diverifikasi',
-          cancellation: '-',
-          overtimeType: 'Jam Lembur',
-        ),
-      ];
-      _totalItems = 1;
-      _totalPages = 1;
-    });
+  Future<void> _fetchData() async {
+    setState(() => _isLoading = true);
+    try {
+      final response = await OvertimeService().getOvertimeEmployee(
+        page: _currentPage,
+        limit: 10,
+      );
+
+      final records = response['original']['records'] as Map<String, dynamic>?;
+
+      if (records == null) {
+        setState(() {
+          _isLoading = false;
+          _requests = [];
+        });
+        return;
+      }
+
+      final items = records['items'] as List<dynamic>? ?? [];
+      final pagination = records['pagination'] as Map<String, dynamic>?;
+
+      setState(() {
+        _requests = items
+            .map(
+              (e) => OvertimeEmployeeModel.fromJson(e as Map<String, dynamic>),
+            )
+            .toList();
+        _totalItems = pagination?['total_data'] as int? ?? 0;
+        _totalPages = pagination?['total_pages'] as int? ?? 1;
+        _isLoading = false;
+        _errorMessage = null;
+      });
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+          _errorMessage = e.toString();
+        });
+      }
+    }
   }
 
   void _showFilterBottomSheet() {
@@ -72,6 +97,9 @@ class _DaftarLemburScreenState extends State<DaftarLemburScreen> {
       MaterialPageRoute(builder: (context) => const FormLemburScreen()),
     );
   }
+
+  bool get _hasActiveFilter =>
+      _filterStartDate != null || _filterEndDate != null;
 
   @override
   Widget build(BuildContext context) {
@@ -100,44 +128,56 @@ class _DaftarLemburScreenState extends State<DaftarLemburScreen> {
           ),
         ],
       ),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : Column(
-              children: [
-                Expanded(
-                  child: _requests.isEmpty
-                      ? _buildEmptyState(colors)
-                      : ListView.builder(
-                          padding: EdgeInsets.only(top: 8.h),
-                          itemCount: _requests.length,
-                          itemBuilder: (context, index) {
-                            return OvertimeRequestCard(
-                              request: _requests[index],
-                              onTap: () {
-                                // TODO: Navigate to detail
-                              },
-                            );
-                          },
-                        ),
-                ),
-                if (_requests.isNotEmpty)
-                  PaginationWidget(
-                    currentPage: _currentPage,
-                    totalPages: _totalPages,
-                    totalItems: _totalItems,
-                    onPageChanged: (page) {
-                      setState(() => _currentPage = page);
-                      // TODO: Load page data
-                    },
-                  ),
-              ],
-            ),
+      body: _buildBody(colors),
       bottomNavigationBar: _buildBottomButton(colors),
     );
   }
 
-  bool get _hasActiveFilter =>
-      _filterStartDate != null || _filterEndDate != null;
+  Widget _buildBody(ThemeColors colors) {
+    if (_isLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    if (_errorMessage != null) {
+      return Center(
+        child: Text(
+          _errorMessage!,
+          style: AppTextStyles.body(colors.textSecondary),
+        ),
+      );
+    }
+
+    return Column(
+      children: [
+        Expanded(
+          child: _requests.isEmpty
+              ? _buildEmptyState(colors)
+              : ListView.builder(
+                  padding: EdgeInsets.only(top: 8.h),
+                  itemCount: _requests.length,
+                  itemBuilder: (context, index) {
+                    return OvertimeRequestCard(
+                      request: _requests[index],
+                      onTap: () {
+                        // TODO: Navigate to detail
+                      },
+                    );
+                  },
+                ),
+        ),
+        if (_requests.isNotEmpty)
+          PaginationWidget(
+            currentPage: _currentPage,
+            totalPages: _totalPages,
+            totalItems: _totalItems,
+            onPageChanged: (page) {
+              setState(() => _currentPage = page);
+              _fetchData();
+            },
+          ),
+      ],
+    );
+  }
 
   Widget _buildEmptyState(ThemeColors colors) {
     return Center(
