@@ -149,6 +149,7 @@ class _AttendanceCardState extends State<AttendanceCard> {
             ),
           ),
           Container(height: 40.h, width: 1, color: colors.divider),
+          SizedBox(width: 15.w),
           Expanded(
             child: _buildTimeColumn(
               colors: colors,

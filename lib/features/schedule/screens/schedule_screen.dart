@@ -1,23 +1,76 @@
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:hrd_app/core/providers/auth_provider.dart';
 import 'package:hrd_app/core/theme/app_text_styles.dart';
 import 'package:hrd_app/core/theme/app_colors.dart';
 import 'package:hrd_app/core/utils/format_date.dart';
+import 'package:hrd_app/core/widgets/skeleton_widget.dart';
+import 'package:hrd_app/data/models/schedule_shift_model.dart';
+import 'package:hrd_app/data/services/attendance_service.dart';
+import 'package:provider/provider.dart';
 
-class ShiftScreen extends StatefulWidget {
-  const ShiftScreen({super.key});
+class ScheduleScreen extends StatefulWidget {
+  const ScheduleScreen({super.key});
 
   @override
-  State<ShiftScreen> createState() => _ShiftScreenState();
+  State<ScheduleScreen> createState() => _ScheduleScreenState();
 }
 
-class _ShiftScreenState extends State<ShiftScreen> {
+class _ScheduleScreenState extends State<ScheduleScreen> {
   late DateTime _currentWeekStart;
+  bool _isLoading = true;
+  List<ScheduleShiftModel> _shifts = [];
 
   @override
   void initState() {
     super.initState();
     _currentWeekStart = _getWeekStart(DateTime.now());
+    _fetchSchedule();
+  }
+
+  Future<void> _fetchSchedule() async {
+    final authProvider = context.read<AuthProvider>();
+    final employeeId = authProvider.user?.employeeId ?? '';
+
+    if (employeeId.isEmpty) {
+      setState(() => _isLoading = false);
+      return;
+    }
+
+    final startDate = _currentWeekStart;
+    final endDate = _currentWeekStart.add(const Duration(days: 6));
+    try {
+      setState(() {
+        _isLoading = true;
+      });
+      final response = await AttendanceService().getSchedule(
+        employeeId: employeeId,
+        startDate: startDate,
+        endDate: endDate,
+      );
+
+      final original = response['original'] as Map<String, dynamic>?;
+      if (original?['status'] == true && original?['records'] != null) {
+        final records = original!['records'] as Map<String, dynamic>;
+        final shiftsJson = records['shifts'] as List<dynamic>? ?? [];
+        setState(() {
+          _shifts = shiftsJson
+              .map(
+                (e) => ScheduleShiftModel.fromJson(e as Map<String, dynamic>),
+              )
+              .toList();
+          _isLoading = false;
+        });
+      } else {
+        setState(() => _isLoading = false);
+      }
+    } catch (e) {
+      debugPrint('Schedule Error: $e');
+      setState(() {
+        _isLoading = false;
+      });
+    }
   }
 
   DateTime _getWeekStart(DateTime date) {
@@ -28,12 +81,14 @@ class _ShiftScreenState extends State<ShiftScreen> {
     setState(() {
       _currentWeekStart = _currentWeekStart.subtract(const Duration(days: 7));
     });
+    _fetchSchedule();
   }
 
   void _nextWeek() {
     setState(() {
       _currentWeekStart = _currentWeekStart.add(const Duration(days: 7));
     });
+    _fetchSchedule();
   }
 
   bool _isToday(DateTime date) {
@@ -43,11 +98,9 @@ class _ShiftScreenState extends State<ShiftScreen> {
         date.day == now.day;
   }
 
-  String _getShiftForDay(DateTime date) {
-    if (date.weekday == DateTime.saturday || date.weekday == DateTime.sunday) {
-      return 'Shift OFF';
-    }
-    return 'Shift Office Hour';
+  ScheduleShiftModel? _getShiftForDay(DateTime date) {
+    final dateStr = FormatDate.apiFormat(date);
+    return _shifts.firstWhereOrNull((shift) => shift.date == dateStr);
   }
 
   @override
@@ -121,23 +174,6 @@ class _ShiftScreenState extends State<ShiftScreen> {
             ),
           ),
           Divider(height: 1, color: colors.divider),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              spacing: 2.h,
-              children: [
-                Text(
-                  'Lokasi Kehadiran Default',
-                  style: AppTextStyles.bodyMedium(colors.textPrimary),
-                ),
-                Text(
-                  '0 Lokasi',
-                  style: AppTextStyles.body(colors.textSecondary),
-                ),
-              ],
-            ),
-          ),
         ],
       ),
     );
@@ -164,7 +200,7 @@ class _ShiftScreenState extends State<ShiftScreen> {
             padding: EdgeInsets.all(16.w),
             child: Text(
               'Jadwal shift mingguan',
-              style: AppTextStyles.body(colors.textPrimary),
+              style: AppTextStyles.bodyLarge(colors.textPrimary),
             ),
           ),
           Padding(
@@ -188,10 +224,13 @@ class _ShiftScreenState extends State<ShiftScreen> {
             ),
           ),
           SizedBox(height: 8.h),
-          ...List.generate(7, (index) {
-            final date = _currentWeekStart.add(Duration(days: index));
-            return _buildShiftItem(colors, date);
-          }),
+          if (_isLoading)
+            ...List.generate(7, (index) => _buildShiftItemSkeleton(colors))
+          else
+            ...List.generate(7, (index) {
+              final date = _currentWeekStart.add(Duration(days: index));
+              return _buildShiftItem(colors, date);
+            }),
           SizedBox(height: 8.h),
         ],
       ),
@@ -200,7 +239,10 @@ class _ShiftScreenState extends State<ShiftScreen> {
 
   Widget _buildShiftItem(dynamic colors, DateTime date) {
     final isToday = _isToday(date);
-    final shift = _getShiftForDay(date);
+    final schedule = _getShiftForDay(date);
+
+    final shiftName = schedule?.displayShiftName ?? 'Tidak ada jadwal';
+    final shiftTime = schedule?.displayTime ?? '-';
 
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 2.h),
@@ -236,9 +278,48 @@ class _ShiftScreenState extends State<ShiftScreen> {
               FormatDate.dayWithFullDate(date),
               style: AppTextStyles.body(colors.textSecondary),
             ),
-            SizedBox(height: 4.h),
-            Text(shift, style: AppTextStyles.bodyMedium(colors.textPrimary)),
+            SizedBox(height: 5.h),
+            Row(
+              spacing: 8.w,
+              children: [
+                Text(
+                  shiftName,
+                  style: AppTextStyles.bodyMedium(colors.textPrimary),
+                ),
+                Text(
+                  "[$shiftTime]",
+                  style: AppTextStyles.bodyMedium(colors.textPrimary),
+                ),
+              ],
+            ),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildShiftItemSkeleton(dynamic colors) {
+    return Container(
+      margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 2.h),
+      child: Container(
+        width: double.infinity,
+        padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
+        decoration: BoxDecoration(
+          color: colors.background,
+          border: Border.all(color: colors.divider),
+          borderRadius: BorderRadius.circular(8.r),
+        ),
+        child: SkeletonContainer(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SkeletonBox(width: 150.w, height: 14.h),
+              SizedBox(height: 4.h),
+              SkeletonBox(width: 100.w, height: 12.h),
+              SizedBox(height: 2.h),
+              SkeletonBox(width: 80.w, height: 10.h),
+            ],
+          ),
         ),
       ),
     );

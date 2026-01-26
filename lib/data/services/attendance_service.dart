@@ -54,4 +54,21 @@ class AttendanceService {
 
     return _api.postFormData('/attendance/absent', formData);
   }
+
+  Future<Map<String, dynamic>> getSchedule({
+    String? employeeId,
+    DateTime? startDate,
+    DateTime? endDate,
+  }) async {
+    final dateFormat = DateFormat('yyyy-MM-dd');
+
+    return _api.get(
+      '/attendance/schedule-by-employee',
+      queryParameters: {
+        'employee_id': employeeId,
+        'start_date': startDate != null ? dateFormat.format(startDate) : null,
+        'end_date': endDate != null ? dateFormat.format(endDate) : null,
+      },
+    );
+  }
 }

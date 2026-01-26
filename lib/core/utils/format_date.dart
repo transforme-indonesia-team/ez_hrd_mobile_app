@@ -30,4 +30,8 @@ class FormatDate {
   static String dateRange(DateTime start, DateTime end) {
     return '${shortDateWithYear(start)} - ${shortDateWithYear(end)}';
   }
+
+  static String apiFormat(DateTime date) {
+    return DateFormat('yyyy-MM-dd').format(date);
+  }
 }

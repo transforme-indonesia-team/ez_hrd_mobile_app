@@ -125,12 +125,12 @@ class BaseApiService {
     Map<String, dynamic>? queryParameters,
     String? errorMessage,
   }) async {
+    debugPrint('DEBUG-API: Query Parameters: ${queryParameters.toString()}');
     try {
       final response = await _dio.get(
         endpoint,
         queryParameters: queryParameters,
       );
-
       return _decryptResponse(response, errorMessage: errorMessage);
     } on DioException catch (e) {
       throw _handleDioError(e, errorMessage);
@@ -184,7 +184,7 @@ class BaseApiService {
 
     final original = decryptedData['original'] as Map<String, dynamic>?;
 
-    debugPrint('DEBUG-API: ${original.toString()}');
+    debugPrint('DEBUG-API: Response: ${original.toString()}');
 
     if (original == null) {
       throw Exception('Response tidak valid');

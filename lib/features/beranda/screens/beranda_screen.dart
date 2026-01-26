@@ -19,7 +19,7 @@ import 'package:hrd_app/features/beranda/widgets/favorite_menu_section.dart';
 import 'package:hrd_app/features/beranda/widgets/company_info_section.dart';
 import 'package:hrd_app/features/fitur/models/fitur_item_model.dart';
 import 'package:hrd_app/features/notification/screens/notification_screen.dart';
-import 'package:hrd_app/features/shift/screens/shift_screen.dart';
+import 'package:hrd_app/features/schedule/screens/schedule_screen.dart';
 import 'package:hrd_app/features/beranda/widgets/riwayat_kehadiran_bottom_sheet.dart';
 import 'package:hrd_app/features/rekam_waktu/screens/rekam_waktu_camera_screen.dart';
 
@@ -241,7 +241,9 @@ class _BerandaScreenState extends State<BerandaScreen>
               onShiftTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const ShiftScreen()),
+                  MaterialPageRoute(
+                    builder: (context) => const ScheduleScreen(),
+                  ),
                 );
               },
             ),
