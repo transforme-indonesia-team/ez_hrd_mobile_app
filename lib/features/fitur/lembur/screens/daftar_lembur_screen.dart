@@ -3,10 +3,10 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hrd_app/core/theme/app_colors.dart';
 import 'package:hrd_app/core/theme/app_text_styles.dart';
 import 'package:hrd_app/data/models/overtime_request_model.dart';
-import 'package:hrd_app/features/lembur/screens/form_lembur_screen.dart';
-import 'package:hrd_app/features/lembur/widgets/lembur_filter_bottom_sheet.dart';
-import 'package:hrd_app/features/lembur/widgets/overtime_request_card.dart';
-import 'package:hrd_app/features/lembur/widgets/pagination_widget.dart';
+import 'package:hrd_app/features/fitur/lembur/screens/form_lembur_screen.dart';
+import 'package:hrd_app/features/fitur/lembur/widgets/lembur_filter_bottom_sheet.dart';
+import 'package:hrd_app/features/fitur/lembur/widgets/overtime_request_card.dart';
+import 'package:hrd_app/features/fitur/lembur/widgets/pagination_widget.dart';
 
 class DaftarLemburScreen extends StatefulWidget {
   const DaftarLemburScreen({super.key});

@@ -6,7 +6,7 @@ import 'package:hrd_app/core/theme/app_text_styles.dart';
 import 'package:hrd_app/core/utils/format_date.dart';
 import 'package:hrd_app/core/utils/snackbar_utils.dart';
 import 'package:hrd_app/data/models/overtime_type_model.dart';
-import 'package:hrd_app/features/lembur/widgets/overtime_type_bottom_sheet.dart';
+import 'package:hrd_app/features/fitur/lembur/widgets/overtime_type_bottom_sheet.dart';
 import 'package:provider/provider.dart';
 
 class FormLemburScreen extends StatefulWidget {

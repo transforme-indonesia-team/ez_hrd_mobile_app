@@ -12,7 +12,7 @@ import 'package:hrd_app/features/fitur/widgets/fitur_category_header.dart';
 import 'package:hrd_app/features/fitur/widgets/fitur_item_grid.dart';
 import 'package:hrd_app/features/fitur/widgets/fitur_item_list.dart';
 import 'package:hrd_app/features/fitur/widgets/fitur_bottom_sheet.dart';
-import 'package:hrd_app/features/lembur/screens/daftar_lembur_screen.dart';
+import 'package:hrd_app/features/fitur/lembur/screens/daftar_lembur_screen.dart';
 
 class FiturScreen extends StatefulWidget {
   const FiturScreen({super.key});

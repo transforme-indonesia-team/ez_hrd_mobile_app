@@ -22,7 +22,7 @@ import 'package:hrd_app/features/notification/screens/notification_screen.dart';
 import 'package:hrd_app/features/schedule/screens/schedule_screen.dart';
 import 'package:hrd_app/features/beranda/widgets/riwayat_kehadiran_bottom_sheet.dart';
 import 'package:hrd_app/features/rekam_waktu/screens/rekam_waktu_camera_screen.dart';
-import 'package:hrd_app/features/lembur/screens/daftar_lembur_screen.dart';
+import 'package:hrd_app/features/fitur/lembur/screens/daftar_lembur_screen.dart';
 
 class BerandaScreen extends StatefulWidget {
   const BerandaScreen({super.key});
