@@ -22,6 +22,7 @@ import 'package:hrd_app/features/notification/screens/notification_screen.dart';
 import 'package:hrd_app/features/schedule/screens/schedule_screen.dart';
 import 'package:hrd_app/features/beranda/widgets/riwayat_kehadiran_bottom_sheet.dart';
 import 'package:hrd_app/features/rekam_waktu/screens/rekam_waktu_camera_screen.dart';
+import 'package:hrd_app/features/lembur/screens/daftar_lembur_screen.dart';
 
 class BerandaScreen extends StatefulWidget {
   const BerandaScreen({super.key});
@@ -249,9 +250,20 @@ class _BerandaScreenState extends State<BerandaScreen>
             ),
             FavoriteMenuSection(
               onItemTap: (FiturItemModel item) {
-                context.showInfoSnackbar(
-                  'Fitur "${item.title}" belum tersedia',
-                );
+                switch (item.id) {
+                  case 'permintaan_lembur':
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const DaftarLemburScreen(),
+                      ),
+                    );
+                    break;
+                  default:
+                    context.showInfoSnackbar(
+                      'Fitur "${item.title}" belum tersedia',
+                    );
+                }
               },
             ),
             const CompanyInfoSection(),
