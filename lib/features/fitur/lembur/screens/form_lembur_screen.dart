@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hrd_app/core/providers/auth_provider.dart';
@@ -6,8 +8,13 @@ import 'package:hrd_app/core/theme/app_text_styles.dart';
 import 'package:hrd_app/core/utils/format_date.dart';
 import 'package:hrd_app/core/utils/snackbar_utils.dart';
 import 'package:hrd_app/data/models/overtime_type_model.dart';
+import 'package:hrd_app/data/services/overtime_service.dart';
 import 'package:hrd_app/features/fitur/lembur/widgets/overtime_type_bottom_sheet.dart';
+import 'package:hrd_app/features/fitur/lembur/widgets/file_picker_bottom_sheet.dart';
 import 'package:provider/provider.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:intl/intl.dart';
 
 class FormLemburScreen extends StatefulWidget {
   const FormLemburScreen({super.key});
@@ -18,11 +25,18 @@ class FormLemburScreen extends StatefulWidget {
 
 class _FormLemburScreenState extends State<FormLemburScreen> {
   final TextEditingController _descriptionController = TextEditingController();
+  final ImagePicker _imagePicker = ImagePicker();
 
-  DateTime? _startDate;
-  DateTime? _endDate;
+  DateTime? _overtimeDate;
+  TimeOfDay? _startTime;
+  TimeOfDay? _endTime;
   OvertimeTypeModel? _selectedOvertimeType;
-  final List<String> _attachments = [];
+
+  // Store actual file, not just name
+  File? _attachmentFile;
+  String? _attachmentFileName;
+
+  bool _isSubmitting = false;
 
   // Dummy overtime types
   final List<OvertimeTypeModel> _overtimeTypes = const [
@@ -33,8 +47,11 @@ class _FormLemburScreenState extends State<FormLemburScreen> {
   @override
   void initState() {
     super.initState();
-    _startDate = DateTime.now();
-    _endDate = DateTime.now();
+    _overtimeDate = DateTime.now();
+    _startTime = const TimeOfDay(hour: 17, minute: 0);
+    _endTime = const TimeOfDay(hour: 20, minute: 0);
+    // Default tipe lembur = Jam Lembur
+    _selectedOvertimeType = _overtimeTypes.first;
   }
 
   @override
@@ -43,14 +60,10 @@ class _FormLemburScreenState extends State<FormLemburScreen> {
     super.dispose();
   }
 
-  Future<void> _selectDate(bool isStart) async {
-    final initialDate = isStart
-        ? (_startDate ?? DateTime.now())
-        : (_endDate ?? DateTime.now());
-
+  Future<void> _selectDate() async {
     final picked = await showDatePicker(
       context: context,
-      initialDate: initialDate,
+      initialDate: _overtimeDate ?? DateTime.now(),
       firstDate: DateTime(2020),
       lastDate: DateTime(2030),
       builder: (context, child) {
@@ -70,14 +83,40 @@ class _FormLemburScreenState extends State<FormLemburScreen> {
     );
 
     if (picked != null) {
+      setState(() => _overtimeDate = picked);
+    }
+  }
+
+  Future<void> _selectTime(bool isStart) async {
+    final initialTime = isStart
+        ? (_startTime ?? const TimeOfDay(hour: 17, minute: 0))
+        : (_endTime ?? const TimeOfDay(hour: 20, minute: 0));
+
+    final picked = await showTimePicker(
+      context: context,
+      initialTime: initialTime,
+      builder: (context, child) {
+        final colors = context.colors;
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: ColorScheme.light(
+              primary: colors.primaryBlue,
+              onPrimary: Colors.white,
+              surface: colors.background,
+              onSurface: colors.textPrimary,
+            ),
+          ),
+          child: child!,
+        );
+      },
+    );
+
+    if (picked != null) {
       setState(() {
         if (isStart) {
-          _startDate = picked;
-          if (_endDate != null && _endDate!.isBefore(picked)) {
-            _endDate = picked;
-          }
+          _startTime = picked;
         } else {
-          _endDate = picked;
+          _endTime = picked;
         }
       });
     }
@@ -95,25 +134,93 @@ class _FormLemburScreenState extends State<FormLemburScreen> {
     }
   }
 
-  void _pickFile() {
-    // TODO: Implement file picker when file_picker package is added
-    context.showInfoSnackbar('Fitur lampiran belum tersedia');
+  Future<void> _pickFile() async {
+    final type = await FilePickerBottomSheet.show(context);
+
+    if (type == null || !mounted) return;
+
+    try {
+      switch (type) {
+        case FilePickerType.camera:
+          final XFile? image = await _imagePicker.pickImage(
+            source: ImageSource.camera,
+            imageQuality: 80,
+          );
+          if (image != null) {
+            _setAttachment(File(image.path), image.name);
+          }
+          break;
+        case FilePickerType.gallery:
+          final XFile? image = await _imagePicker.pickImage(
+            source: ImageSource.gallery,
+            imageQuality: 80,
+          );
+          if (image != null) {
+            _setAttachment(File(image.path), image.name);
+          }
+          break;
+        case FilePickerType.file:
+          final result = await FilePicker.platform.pickFiles(
+            type: FileType.custom,
+            allowedExtensions: [
+              'txt',
+              'doc',
+              'docx',
+              'jpg',
+              'png',
+              'gif',
+              'xls',
+              'xlsx',
+              'pdf',
+            ],
+          );
+          if (result != null && result.files.isNotEmpty) {
+            final file = result.files.first;
+            if (file.path != null) {
+              _setAttachment(File(file.path!), file.name);
+            }
+          }
+          break;
+      }
+    } catch (e) {
+      if (mounted) {
+        context.showErrorSnackbar('Gagal memilih file: ${e.toString()}');
+      }
+    }
   }
 
-  void _removeAttachment(int index) {
+  void _setAttachment(File file, String fileName) {
     setState(() {
-      _attachments.removeAt(index);
+      _attachmentFile = file;
+      _attachmentFileName = fileName;
+    });
+    if (mounted) {
+      context.showSuccessSnackbar('File "$fileName" berhasil dipilih');
+    }
+  }
+
+  void _removeAttachment() {
+    setState(() {
+      _attachmentFile = null;
+      _attachmentFileName = null;
     });
   }
 
-  void _submit() {
-    if (_startDate == null || _endDate == null) {
-      context.showErrorSnackbar('Silakan pilih tanggal');
+  String _formatTimeOfDay(TimeOfDay? time) {
+    if (time == null) return '';
+    final hour = time.hour.toString().padLeft(2, '0');
+    final minute = time.minute.toString().padLeft(2, '0');
+    return '$hour:$minute';
+  }
+
+  Future<void> _submit() async {
+    if (_overtimeDate == null) {
+      context.showErrorSnackbar('Silakan pilih tanggal lembur');
       return;
     }
 
-    if (_selectedOvertimeType == null) {
-      context.showErrorSnackbar('Silakan pilih tipe lembur');
+    if (_startTime == null || _endTime == null) {
+      context.showErrorSnackbar('Silakan pilih jam mulai dan jam berakhir');
       return;
     }
 
@@ -122,9 +229,61 @@ class _FormLemburScreenState extends State<FormLemburScreen> {
       return;
     }
 
-    // TODO: Submit to API
-    context.showSuccessSnackbar('Permintaan lembur berhasil diajukan');
-    Navigator.pop(context);
+    final user = context.read<AuthProvider>().user;
+    if (user == null) {
+      context.showErrorSnackbar('User tidak ditemukan');
+      return;
+    }
+
+    setState(() => _isSubmitting = true);
+
+    try {
+      // Get company_id from user's companies (index 0)
+      final companyId = user.companies?.isNotEmpty == true
+          ? user.companies!.first.companyId
+          : '';
+
+      if (companyId.isEmpty) {
+        throw Exception('Company tidak ditemukan');
+      }
+
+      // Step 1: Get reservation number from API
+      final reservationResponse = await OvertimeService().getReservationNumber(
+        reservationType: 'OVERTIME',
+        companyId: companyId,
+      );
+      final records =
+          reservationResponse['original']?['records'] as Map<String, dynamic>?;
+      final requestNumber = records?['request_number'] as String?;
+
+      if (requestNumber == null || requestNumber.isEmpty) {
+        throw Exception('Gagal mendapatkan nomor permintaan');
+      }
+
+      // Step 2: Submit overtime request with request number and employee_id
+      await OvertimeService().createOvertime(
+        overtimeRequestNo: requestNumber,
+        dateOvertime: DateFormat('yyyy-MM-dd').format(_overtimeDate!),
+        startOvertime: _formatTimeOfDay(_startTime),
+        endOvertime: _formatTimeOfDay(_endTime),
+        remarkOvertime: _descriptionController.text.trim(),
+        employeeId: user.id,
+        fileAttachment: _attachmentFile,
+      );
+
+      if (mounted) {
+        context.showSuccessSnackbar('Permintaan lembur berhasil diajukan');
+        Navigator.pop(context, true);
+      }
+    } catch (e) {
+      if (mounted) {
+        context.showErrorSnackbar('Gagal mengajukan lembur: ${e.toString()}');
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isSubmitting = false);
+      }
+    }
   }
 
   @override
@@ -156,18 +315,26 @@ class _FormLemburScreenState extends State<FormLemburScreen> {
               icon: Icons.person_outline,
             ),
             SizedBox(height: 16.h),
+
+            // Tanggal Lembur (single date)
+            _buildLabel(colors, 'Tanggal Lembur'),
+            SizedBox(height: 8.h),
+            _buildDateField(colors, date: _overtimeDate, onTap: _selectDate),
+            SizedBox(height: 16.h),
+
+            // Jam Mulai & Jam Berakhir
             Row(
               children: [
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _buildLabel(colors, 'Tanggal Mulai'),
+                      _buildLabel(colors, 'Jam Mulai'),
                       SizedBox(height: 8.h),
-                      _buildDateField(
+                      _buildTimeField(
                         colors,
-                        date: _startDate,
-                        onTap: () => _selectDate(true),
+                        time: _startTime,
+                        onTap: () => _selectTime(true),
                       ),
                     ],
                   ),
@@ -177,12 +344,12 @@ class _FormLemburScreenState extends State<FormLemburScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _buildLabel(colors, 'Tanggal Berakhir'),
+                      _buildLabel(colors, 'Jam Berakhir'),
                       SizedBox(height: 8.h),
-                      _buildDateField(
+                      _buildTimeField(
                         colors,
-                        date: _endDate,
-                        onTap: () => _selectDate(false),
+                        time: _endTime,
+                        onTap: () => _selectTime(false),
                       ),
                     ],
                   ),
@@ -190,6 +357,8 @@ class _FormLemburScreenState extends State<FormLemburScreen> {
               ],
             ),
             SizedBox(height: 16.h),
+
+            // Tipe Lembur
             _buildLabel(colors, 'Tipe Lembur'),
             SizedBox(height: 8.h),
             _buildDropdownField(
@@ -202,10 +371,12 @@ class _FormLemburScreenState extends State<FormLemburScreen> {
                   : null,
             ),
             SizedBox(height: 16.h),
+
             _buildLabel(colors, 'Keterangan'),
             SizedBox(height: 8.h),
             _buildTextField(colors),
             SizedBox(height: 16.h),
+
             _buildLabel(colors, 'Lampiran'),
             SizedBox(height: 8.h),
             _buildAttachmentSection(colors),
@@ -267,8 +438,12 @@ class _FormLemburScreenState extends State<FormLemburScreen> {
           children: [
             Expanded(
               child: Text(
-                date != null ? FormatDate.shortDateWithYear(date) : '',
-                style: AppTextStyles.body(colors.textPrimary),
+                date != null
+                    ? FormatDate.shortDateWithYear(date)
+                    : 'Pilih tanggal',
+                style: AppTextStyles.body(
+                  date != null ? colors.textPrimary : colors.textSecondary,
+                ),
               ),
             ),
             Icon(
@@ -330,12 +505,47 @@ class _FormLemburScreenState extends State<FormLemburScreen> {
     );
   }
 
+  Widget _buildTimeField(
+    ThemeColors colors, {
+    required TimeOfDay? time,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 14.h),
+        decoration: BoxDecoration(
+          color: colors.background,
+          borderRadius: BorderRadius.circular(8.r),
+          border: Border.all(color: colors.divider),
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: Text(
+                time != null ? _formatTimeOfDay(time) : 'Pilih jam',
+                style: AppTextStyles.body(
+                  time != null ? colors.textPrimary : colors.textSecondary,
+                ),
+              ),
+            ),
+            Icon(
+              Icons.access_time_outlined,
+              color: colors.textSecondary,
+              size: 18.sp,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildTextField(ThemeColors colors) {
     return TextField(
       controller: _descriptionController,
       maxLines: 3,
       decoration: InputDecoration(
-        hintText: 'Tulis alasan',
+        hintText: 'Tulis alasan lembur',
         hintStyle: AppTextStyles.body(colors.textSecondary),
         filled: true,
         fillColor: colors.background,
@@ -360,64 +570,62 @@ class _FormLemburScreenState extends State<FormLemburScreen> {
   Widget _buildAttachmentSection(ThemeColors colors) {
     return Column(
       children: [
-        if (_attachments.isNotEmpty) ...[
-          ...List.generate(_attachments.length, (index) {
-            final fileName = _attachments[index];
-            return Container(
-              margin: EdgeInsets.only(bottom: 8.h),
-              padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 10.h),
-              decoration: BoxDecoration(
-                color: colors.background,
-                borderRadius: BorderRadius.circular(8.r),
-                border: Border.all(color: colors.divider),
-              ),
-              child: Row(
-                children: [
-                  Icon(
-                    Icons.attachment,
-                    color: colors.textSecondary,
-                    size: 18.sp,
-                  ),
-                  SizedBox(width: 8.w),
-                  Expanded(
-                    child: Text(
-                      fileName,
-                      style: AppTextStyles.body(colors.textPrimary),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: () => _removeAttachment(index),
-                    child: Icon(Icons.close, color: colors.error, size: 18.sp),
-                  ),
-                ],
-              ),
-            );
-          }),
-          SizedBox(height: 8.h),
-        ],
-        GestureDetector(
-          onTap: _pickFile,
-          child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+        if (_attachmentFileName != null) ...[
+          Container(
+            margin: EdgeInsets.only(bottom: 8.h),
+            padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 10.h),
             decoration: BoxDecoration(
               color: colors.background,
               borderRadius: BorderRadius.circular(8.r),
               border: Border.all(color: colors.divider),
             ),
             child: Row(
-              mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(Icons.add, color: colors.primaryBlue, size: 20.sp),
+                Icon(
+                  Icons.attachment,
+                  color: colors.textSecondary,
+                  size: 18.sp,
+                ),
                 SizedBox(width: 8.w),
-                Text(
-                  'Pilih File',
-                  style: AppTextStyles.bodyMedium(colors.primaryBlue),
+                Expanded(
+                  child: Text(
+                    _attachmentFileName!,
+                    style: AppTextStyles.body(colors.textPrimary),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                GestureDetector(
+                  onTap: _removeAttachment,
+                  child: Icon(Icons.close, color: colors.error, size: 18.sp),
                 ),
               ],
             ),
           ),
-        ),
+          SizedBox(height: 8.h),
+        ],
+        if (_attachmentFileName == null)
+          GestureDetector(
+            onTap: _pickFile,
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+              decoration: BoxDecoration(
+                color: colors.background,
+                borderRadius: BorderRadius.circular(8.r),
+                border: Border.all(color: colors.divider),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.add, color: colors.primaryBlue, size: 20.sp),
+                  SizedBox(width: 8.w),
+                  Text(
+                    'Pilih File',
+                    style: AppTextStyles.bodyMedium(colors.primaryBlue),
+                  ),
+                ],
+              ),
+            ),
+          ),
       ],
     );
   }
@@ -438,16 +646,29 @@ class _FormLemburScreenState extends State<FormLemburScreen> {
       child: SizedBox(
         width: double.infinity,
         child: ElevatedButton(
-          onPressed: _submit,
+          onPressed: _isSubmitting ? null : _submit,
           style: ElevatedButton.styleFrom(
             backgroundColor: colors.primaryBlue,
             foregroundColor: Colors.white,
+            disabledBackgroundColor: colors.primaryBlue.withValues(alpha: 0.5),
             padding: EdgeInsets.symmetric(vertical: 14.h),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(8.r),
             ),
           ),
-          child: Text('Lanjut', style: AppTextStyles.button(Colors.white)),
+          child: _isSubmitting
+              ? SizedBox(
+                  height: 20.h,
+                  width: 20.h,
+                  child: const CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: Colors.white,
+                  ),
+                )
+              : Text(
+                  'Ajukan Lembur',
+                  style: AppTextStyles.button(Colors.white),
+                ),
         ),
       ),
     );

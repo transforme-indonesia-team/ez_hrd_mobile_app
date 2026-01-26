@@ -1,4 +1,8 @@
+import 'dart:io';
+
+import 'package:dio/dio.dart';
 import 'package:hrd_app/data/services/base_api_service.dart';
+import 'package:path/path.dart' as path;
 
 class OvertimeService {
   static final OvertimeService _instance = OvertimeService._internal();
@@ -20,5 +24,54 @@ class OvertimeService {
         if (search != null) 'search': search,
       },
     );
+  }
+
+  Future<Map<String, dynamic>> getReservationNumber({
+    required String reservationType,
+    required String companyId,
+  }) async {
+    return _api.post(
+      '/get-reservation-number',
+      {'reservation_type': reservationType},
+      extraHeaders: {'company_id': companyId},
+    );
+  }
+
+  Future<Map<String, dynamic>> createOvertime({
+    required String overtimeRequestNo,
+    required String dateOvertime,
+    required String startOvertime,
+    required String endOvertime,
+    required String remarkOvertime,
+    required String employeeId,
+    File? fileAttachment,
+  }) async {
+    final Map<String, dynamic> formMap = {
+      'overtime_request_no': overtimeRequestNo,
+      'date_overtime': dateOvertime,
+      'start_overtime': startOvertime,
+      'end_overtime': endOvertime,
+      'remark_overtime': remarkOvertime,
+      'employee_id': employeeId,
+    };
+
+    if (fileAttachment != null) {
+      final fileExists = await fileAttachment.exists();
+      if (fileExists) {
+        final fileName = path.basename(fileAttachment.path);
+        final extension = path
+            .extension(fileAttachment.path)
+            .replaceAll('.', '');
+
+        formMap['file_attachment_overtime'] = await MultipartFile.fromFile(
+          fileAttachment.path,
+          filename: fileName,
+          contentType: DioMediaType('application', extension),
+        );
+      }
+    }
+
+    final formData = FormData.fromMap(formMap);
+    return _api.postFormData('/overtime', formData);
   }
 }

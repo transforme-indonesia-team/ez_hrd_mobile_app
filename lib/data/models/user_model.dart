@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:hrd_app/data/models/company_model.dart';
+
 class UserModel {
   final String id;
   final String name;
@@ -9,6 +11,7 @@ class UserModel {
   final String? token;
   final String? role;
   final String? company;
+  final List<CompanyModel>? companies;
   final String? position;
   final String? organization;
   final String? employeeId;
@@ -44,6 +47,7 @@ class UserModel {
     this.token,
     this.role,
     this.company,
+    this.companies,
     this.position,
     this.organization,
     this.employeeId,
@@ -87,6 +91,12 @@ class UserModel {
     final token = records['token'] as String?;
     final expiresAt = records['expires_at'] as String?;
 
+    // Parse company list
+    final companyList = records['company'] as List<dynamic>?;
+    final companies = companyList
+        ?.map((c) => CompanyModel.fromJson(c as Map<String, dynamic>))
+        .toList();
+
     return UserModel(
       id: user['user_id']?.toString() ?? '',
       name: user['name'] ?? employee['employee_name'] ?? '',
@@ -96,6 +106,7 @@ class UserModel {
       token: token,
       role: user['role'],
       company: employee['company_name'],
+      companies: companies,
       position: employee['position_organization_name'],
       organization: employee['organization_name'],
       employeeId: employee['employee_id']?.toString(),
@@ -136,6 +147,9 @@ class UserModel {
       token: json['token'],
       role: json['role'],
       company: json['company'],
+      companies: (json['companies'] as List<dynamic>?)
+          ?.map((c) => CompanyModel.fromJson(c as Map<String, dynamic>))
+          .toList(),
       position: json['position'],
       organization: json['organization'],
       employeeId: json['employee_id']?.toString(),
@@ -172,6 +186,7 @@ class UserModel {
       'token': token,
       'role': role,
       'company': company,
+      'companies': companies?.map((c) => c.toJson()).toList(),
       'position': position,
       'organization': organization,
       'employee_id': employeeId,
@@ -213,6 +228,7 @@ class UserModel {
     String? token,
     String? role,
     String? company,
+    List<CompanyModel>? companies,
     String? position,
     String? organization,
     String? employeeId,
@@ -246,6 +262,7 @@ class UserModel {
       token: token ?? this.token,
       role: role ?? this.role,
       company: company ?? this.company,
+      companies: companies ?? this.companies,
       position: position ?? this.position,
       organization: organization ?? this.organization,
       employeeId: employeeId ?? this.employeeId,

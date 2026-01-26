@@ -124,7 +124,7 @@ class _OvertimeTypeBottomSheetState extends State<OvertimeTypeBottomSheet> {
           SizedBox(height: 8.h),
           Divider(height: 1, color: colors.divider),
           ConstrainedBox(
-            constraints: BoxConstraints(maxHeight: 300.h),
+            constraints: BoxConstraints(minHeight: 400.h),
             child: ListView.separated(
               shrinkWrap: true,
               itemCount: _filteredTypes.length,

@@ -61,6 +61,7 @@ class BaseApiService {
     String endpoint,
     Map<String, dynamic> payload, {
     String? errorMessage,
+    Map<String, dynamic>? extraHeaders,
   }) async {
     try {
       final encryptedPayload = _crypto.encryptPayload(payload);
@@ -68,6 +69,7 @@ class BaseApiService {
       final response = await _dio.post(
         endpoint,
         data: {'payload': encryptedPayload},
+        options: extraHeaders != null ? Options(headers: extraHeaders) : null,
       );
 
       return _decryptResponse(response, errorMessage: errorMessage);
