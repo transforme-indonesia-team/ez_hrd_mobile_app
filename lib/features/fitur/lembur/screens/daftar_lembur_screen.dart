@@ -91,11 +91,31 @@ class _DaftarLemburScreenState extends State<DaftarLemburScreen> {
     );
   }
 
-  void _navigateToForm() {
-    Navigator.push(
+  Future<void> _navigateToForm() async {
+    final result = await Navigator.push<bool>(
       context,
       MaterialPageRoute(builder: (context) => const FormLemburScreen()),
     );
+
+    // Refresh data if form was submitted successfully
+    if (result == true && mounted) {
+      _currentPage = 1; // Reset to first page
+      _fetchData();
+    }
+  }
+
+  Future<void> _navigateToEdit(OvertimeEmployeeModel request) async {
+    final result = await Navigator.push<bool>(
+      context,
+      MaterialPageRoute(
+        builder: (context) => FormLemburScreen(existingOvertime: request),
+      ),
+    );
+
+    // Refresh data if overtime was updated successfully
+    if (result == true && mounted) {
+      _fetchData();
+    }
   }
 
   bool get _hasActiveFilter =>
@@ -161,6 +181,9 @@ class _DaftarLemburScreenState extends State<DaftarLemburScreen> {
                       onTap: () {
                         // TODO: Navigate to detail
                       },
+                      onEdit: _requests[index].isDraft
+                          ? () => _navigateToEdit(_requests[index])
+                          : null,
                     );
                   },
                 ),

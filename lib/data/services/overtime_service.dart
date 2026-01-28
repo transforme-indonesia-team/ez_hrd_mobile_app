@@ -20,7 +20,7 @@ class OvertimeService {
       '/overtime',
       queryParameters: {
         if (page != null) 'page': page,
-        if (limit != null) 'limit': limit,
+        if (limit != null) 'sizes': limit,
         if (search != null) 'search': search,
       },
     );
@@ -33,7 +33,7 @@ class OvertimeService {
     return _api.post(
       '/get-reservation-number',
       {'reservation_type': reservationType},
-      extraHeaders: {'company_id': companyId},
+      extraHeaders: {'company-id': companyId},
     );
   }
 
@@ -73,5 +73,44 @@ class OvertimeService {
 
     final formData = FormData.fromMap(formMap);
     return _api.postFormData('/overtime', formData);
+  }
+
+  Future<Map<String, dynamic>> updateOvertime({
+    required String overtimeId,
+    required String overtimeRequestNo,
+    required String dateOvertime,
+    required String startOvertime,
+    required String endOvertime,
+    required String remarkOvertime,
+    required String employeeId,
+    File? fileAttachment,
+  }) async {
+    final Map<String, dynamic> formMap = {
+      'overtime_request_no': overtimeRequestNo,
+      'date_overtime': dateOvertime,
+      'start_overtime': startOvertime,
+      'end_overtime': endOvertime,
+      'remark_overtime': remarkOvertime,
+      'employee_id': employeeId,
+    };
+
+    if (fileAttachment != null) {
+      final fileExists = await fileAttachment.exists();
+      if (fileExists) {
+        final fileName = path.basename(fileAttachment.path);
+        final extension = path
+            .extension(fileAttachment.path)
+            .replaceAll('.', '');
+
+        formMap['file_attachment_overtime'] = await MultipartFile.fromFile(
+          fileAttachment.path,
+          filename: fileName,
+          contentType: DioMediaType('application', extension),
+        );
+      }
+    }
+
+    final formData = FormData.fromMap(formMap);
+    return _api.postFormData('/overtime/$overtimeId?method=_PUT', formData);
   }
 }

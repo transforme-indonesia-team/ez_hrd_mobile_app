@@ -7,6 +7,7 @@ import 'package:hrd_app/core/theme/app_colors.dart';
 import 'package:hrd_app/core/theme/app_text_styles.dart';
 import 'package:hrd_app/core/utils/format_date.dart';
 import 'package:hrd_app/core/utils/snackbar_utils.dart';
+import 'package:hrd_app/data/models/overtime_employee_model.dart';
 import 'package:hrd_app/data/models/overtime_type_model.dart';
 import 'package:hrd_app/data/services/overtime_service.dart';
 import 'package:hrd_app/features/fitur/lembur/widgets/overtime_type_bottom_sheet.dart';
@@ -17,7 +18,9 @@ import 'package:file_picker/file_picker.dart';
 import 'package:intl/intl.dart';
 
 class FormLemburScreen extends StatefulWidget {
-  const FormLemburScreen({super.key});
+  final OvertimeEmployeeModel? existingOvertime;
+
+  const FormLemburScreen({super.key, this.existingOvertime});
 
   @override
   State<FormLemburScreen> createState() => _FormLemburScreenState();
@@ -47,10 +50,60 @@ class _FormLemburScreenState extends State<FormLemburScreen> {
   @override
   void initState() {
     super.initState();
-    _overtimeDate = DateTime.now();
-    _startTime = const TimeOfDay(hour: 17, minute: 0);
-    _endTime = const TimeOfDay(hour: 20, minute: 0);
-    // Default tipe lembur = Jam Lembur
+
+    // Check if editing existing overtime
+    if (widget.existingOvertime != null) {
+      _populateExistingData();
+    } else {
+      _overtimeDate = DateTime.now();
+      _selectedOvertimeType = _overtimeTypes.first;
+    }
+  }
+
+  void _populateExistingData() {
+    final overtime = widget.existingOvertime!;
+
+    // Parse date
+    if (overtime.dateOvertime != null) {
+      try {
+        _overtimeDate = DateFormat('yyyy-MM-dd').parse(overtime.dateOvertime!);
+      } catch (e) {
+        _overtimeDate = DateTime.now();
+      }
+    }
+
+    // Parse times
+    if (overtime.startOvertime != null) {
+      final parts = overtime.startOvertime!.split(':');
+      if (parts.length >= 2) {
+        _startTime = TimeOfDay(
+          hour: int.tryParse(parts[0]) ?? 8,
+          minute: int.tryParse(parts[1]) ?? 0,
+        );
+      }
+    }
+
+    if (overtime.endOvertime != null) {
+      final parts = overtime.endOvertime!.split(':');
+      if (parts.length >= 2) {
+        _endTime = TimeOfDay(
+          hour: int.tryParse(parts[0]) ?? 17,
+          minute: int.tryParse(parts[1]) ?? 0,
+        );
+      }
+    }
+
+    // Set description
+    if (overtime.remarkOvertime != null) {
+      _descriptionController.text = overtime.remarkOvertime!;
+    }
+
+    // Set file name if exists
+    if (overtime.hasAttachment) {
+      _attachmentFileName = overtime.fileNameOvertime ?? 'File terlampir';
+    }
+
+    // Default overtime type
     _selectedOvertimeType = _overtimeTypes.first;
   }
 
@@ -89,8 +142,8 @@ class _FormLemburScreenState extends State<FormLemburScreen> {
 
   Future<void> _selectTime(bool isStart) async {
     final initialTime = isStart
-        ? (_startTime ?? const TimeOfDay(hour: 17, minute: 0))
-        : (_endTime ?? const TimeOfDay(hour: 20, minute: 0));
+        ? (_startTime ?? const TimeOfDay(hour: 8, minute: 0))
+        : (_endTime ?? const TimeOfDay(hour: 17, minute: 0));
 
     final picked = await showTimePicker(
       context: context,
@@ -106,7 +159,10 @@ class _FormLemburScreenState extends State<FormLemburScreen> {
               onSurface: colors.textPrimary,
             ),
           ),
-          child: child!,
+          child: MediaQuery(
+            data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
+            child: child!,
+          ),
         );
       },
     );
@@ -235,49 +291,76 @@ class _FormLemburScreenState extends State<FormLemburScreen> {
       return;
     }
 
+    final companyId = user.companies?.isNotEmpty == true
+        ? user.companies!.first.companyId
+        : '';
+
+    if (user.employeeId == null || user.employeeId!.isEmpty) {
+      throw Exception('Employee ID tidak ditemukan');
+    }
+
+    if (companyId.isEmpty) {
+      throw Exception('Company tidak ditemukan');
+    }
+
     setState(() => _isSubmitting = true);
 
     try {
-      // Get company_id from user's companies (index 0)
-      final companyId = user.companies?.isNotEmpty == true
-          ? user.companies!.first.companyId
-          : '';
+      final isEditMode = widget.existingOvertime != null;
 
-      if (companyId.isEmpty) {
-        throw Exception('Company tidak ditemukan');
-      }
+      if (isEditMode) {
+        await OvertimeService().updateOvertime(
+          overtimeId: widget.existingOvertime!.id,
+          overtimeRequestNo: widget.existingOvertime!.displayOvertimeRequestNo,
+          dateOvertime: DateFormat('yyyy-MM-dd').format(_overtimeDate!),
+          startOvertime: _formatTimeOfDay(_startTime),
+          endOvertime: _formatTimeOfDay(_endTime),
+          remarkOvertime: _descriptionController.text.trim(),
+          fileAttachment: _attachmentFile,
+          employeeId: user.employeeId!,
+        );
 
-      // Step 1: Get reservation number from API
-      final reservationResponse = await OvertimeService().getReservationNumber(
-        reservationType: 'OVERTIME',
-        companyId: companyId,
-      );
-      final records =
-          reservationResponse['original']?['records'] as Map<String, dynamic>?;
-      final requestNumber = records?['request_number'] as String?;
+        if (mounted) {
+          context.showSuccessSnackbar('Perubahan berhasil disimpan');
+          Navigator.pop(context, true);
+        }
+      } else {
+        // Step 1: Get reservation number from API
+        final reservationResponse = await OvertimeService()
+            .getReservationNumber(
+              reservationType: 'OVERTIME',
+              companyId: companyId,
+            );
+        final records =
+            reservationResponse['original']?['records']
+                as Map<String, dynamic>?;
+        final requestNumber = records?['request_number'] as String?;
 
-      if (requestNumber == null || requestNumber.isEmpty) {
-        throw Exception('Gagal mendapatkan nomor permintaan');
-      }
+        if (requestNumber == null || requestNumber.isEmpty) {
+          throw Exception('Gagal mendapatkan nomor permintaan');
+        }
 
-      // Step 2: Submit overtime request with request number and employee_id
-      await OvertimeService().createOvertime(
-        overtimeRequestNo: requestNumber,
-        dateOvertime: DateFormat('yyyy-MM-dd').format(_overtimeDate!),
-        startOvertime: _formatTimeOfDay(_startTime),
-        endOvertime: _formatTimeOfDay(_endTime),
-        remarkOvertime: _descriptionController.text.trim(),
-        employeeId: user.id,
-        fileAttachment: _attachmentFile,
-      );
+        // Step 2: Submit overtime request with request number and employee_id
+        await OvertimeService().createOvertime(
+          overtimeRequestNo: requestNumber,
+          dateOvertime: DateFormat('yyyy-MM-dd').format(_overtimeDate!),
+          startOvertime: _formatTimeOfDay(_startTime),
+          endOvertime: _formatTimeOfDay(_endTime),
+          remarkOvertime: _descriptionController.text.trim(),
+          employeeId: user.employeeId!,
+          fileAttachment: _attachmentFile,
+        );
 
-      if (mounted) {
-        context.showSuccessSnackbar('Permintaan lembur berhasil diajukan');
-        Navigator.pop(context, true);
+        if (mounted) {
+          context.showSuccessSnackbar('Permintaan lembur berhasil diajukan');
+          Navigator.pop(context, true);
+        }
       }
     } catch (e) {
       if (mounted) {
-        context.showErrorSnackbar('Gagal mengajukan lembur: ${e.toString()}');
+        context.showErrorSnackbar(
+          'Gagal ${widget.existingOvertime != null ? 'menyimpan perubahan' : 'mengajukan lembur'}: ${e.toString()}',
+        );
       }
     } finally {
       if (mounted) {
@@ -300,7 +383,10 @@ class _FormLemburScreenState extends State<FormLemburScreen> {
           icon: Icon(Icons.arrow_back, color: colors.textPrimary),
           onPressed: () => Navigator.pop(context),
         ),
-        title: Text('Form Lembur', style: AppTextStyles.h3(colors.textPrimary)),
+        title: Text(
+          widget.existingOvertime != null ? 'Edit Lembur' : 'Form Lembur',
+          style: AppTextStyles.h3(colors.textPrimary),
+        ),
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(16.w),
@@ -666,7 +752,9 @@ class _FormLemburScreenState extends State<FormLemburScreen> {
                   ),
                 )
               : Text(
-                  'Ajukan Lembur',
+                  widget.existingOvertime != null
+                      ? 'Simpan Perubahan'
+                      : 'Ajukan Lembur',
                   style: AppTextStyles.button(Colors.white),
                 ),
         ),

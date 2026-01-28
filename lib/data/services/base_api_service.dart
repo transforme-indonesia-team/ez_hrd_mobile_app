@@ -43,6 +43,15 @@ class BaseApiService {
   void _setupInterceptors() {
     _dio.interceptors.add(
       InterceptorsWrapper(
+        onRequest: (options, handler) {
+          // Ensure all header values are plain strings, not Lists
+          options.headers.forEach((key, value) {
+            if (value is List && value.isNotEmpty) {
+              options.headers[key] = value.first.toString();
+            }
+          });
+          handler.next(options);
+        },
         onError: (DioException error, ErrorInterceptorHandler handler) {
           if (error.response?.statusCode == 401 && _hasAuthToken()) {
             _onUnauthorized?.call();
@@ -61,15 +70,29 @@ class BaseApiService {
     String endpoint,
     Map<String, dynamic> payload, {
     String? errorMessage,
-    Map<String, dynamic>? extraHeaders,
+    Map<String, String>? extraHeaders,
   }) async {
     try {
       final encryptedPayload = _crypto.encryptPayload(payload);
 
+      Options? options;
+      if (extraHeaders != null && extraHeaders.isNotEmpty) {
+        // Ensure header values are plain strings, not arrays
+        final Map<String, dynamic> cleanHeaders = {};
+        extraHeaders.forEach((key, value) {
+          cleanHeaders[key] = value;
+        });
+        options = Options(
+          headers: cleanHeaders,
+          // Prevent Dio from wrapping header values in lists
+          listFormat: ListFormat.csv,
+        );
+      }
+
       final response = await _dio.post(
         endpoint,
         data: {'payload': encryptedPayload},
-        options: extraHeaders != null ? Options(headers: extraHeaders) : null,
+        options: options,
       );
 
       return _decryptResponse(response, errorMessage: errorMessage);
@@ -197,7 +220,11 @@ class BaseApiService {
       throw Exception(original['message'] ?? 'Sesi Anda telah berakhir');
     }
 
-    if (original['status'] != true || original['code'] != 200) {
+    final code = original['code'] as int?;
+    if (original['status'] != true ||
+        code == null ||
+        code < 200 ||
+        code >= 300) {
       throw Exception(original['message'] ?? errorMessage ?? 'Request gagal');
     }
 

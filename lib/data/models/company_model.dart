@@ -11,7 +11,11 @@ class CompanyModel {
 
   factory CompanyModel.fromJson(Map<String, dynamic> json) {
     return CompanyModel(
-      companyId: json['company_id']?.toString() ?? '',
+      companyId: (json['company_id'] is List)
+          ? ((json['company_id'] as List).isNotEmpty
+                ? (json['company_id'] as List).first.toString()
+                : '')
+          : json['company_id']?.toString() ?? '',
       companyName: json['company_name']?.toString() ?? '',
       companyCode: json['company_code']?.toString() ?? '',
     );

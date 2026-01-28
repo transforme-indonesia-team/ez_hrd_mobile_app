@@ -7,8 +7,14 @@ import 'package:hrd_app/data/models/overtime_employee_model.dart';
 class OvertimeRequestCard extends StatelessWidget {
   final OvertimeEmployeeModel request;
   final VoidCallback? onTap;
+  final VoidCallback? onEdit;
 
-  const OvertimeRequestCard({super.key, required this.request, this.onTap});
+  const OvertimeRequestCard({
+    super.key,
+    required this.request,
+    this.onTap,
+    this.onEdit,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -35,9 +41,28 @@ class OvertimeRequestCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           spacing: 3.h,
           children: [
-            Text(
-              'Nomor Permintaan',
-              style: AppTextStyles.bodySemiBold(colors.textPrimary),
+            // Header with title and edit button (if DRAFT)
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    'Nomor Permintaan',
+                    style: AppTextStyles.bodySemiBold(colors.textPrimary),
+                  ),
+                ),
+                if (request.isDraft && onEdit != null)
+                  IconButton(
+                    onPressed: onEdit,
+                    icon: Icon(
+                      Icons.edit,
+                      color: colors.primaryBlue,
+                      size: 20.sp,
+                    ),
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                    tooltip: 'Edit',
+                  ),
+              ],
             ),
             SizedBox(height: 2.h),
             Text(
