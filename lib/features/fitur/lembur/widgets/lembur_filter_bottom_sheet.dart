@@ -93,7 +93,7 @@ class _LemburFilterBottomSheetState extends State<LemburFilterBottomSheet> {
         color: colors.background,
         borderRadius: BorderRadius.vertical(top: Radius.circular(16.r)),
       ),
-      padding: EdgeInsets.all(16.w),
+      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -150,14 +150,14 @@ class _LemburFilterBottomSheetState extends State<LemburFilterBottomSheet> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: colors.primaryBlue,
                 foregroundColor: Colors.white,
-                padding: EdgeInsets.symmetric(vertical: 14.h),
+                padding: EdgeInsets.symmetric(vertical: 10.h),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8.r),
                 ),
               ),
               child: Text(
                 'Terapkan',
-                style: AppTextStyles.button(Colors.white),
+                style: AppTextStyles.button(Colors.white, fontSize: 14.sp),
               ),
             ),
           ),
@@ -176,7 +176,7 @@ class _LemburFilterBottomSheetState extends State<LemburFilterBottomSheet> {
       onTap: onTap,
       child: Container(
         width: double.infinity,
-        padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 14.h),
+        padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 10.h),
         decoration: BoxDecoration(
           color: colors.surface,
           borderRadius: BorderRadius.circular(8.r),
@@ -192,7 +192,7 @@ class _LemburFilterBottomSheetState extends State<LemburFilterBottomSheet> {
             Icon(
               Icons.calendar_today_outlined,
               color: colors.textSecondary,
-              size: 20.sp,
+              size: 16.sp,
             ),
           ],
         ),

@@ -99,8 +99,8 @@ class AppTextStyles {
     color: color,
   );
 
-  static TextStyle button(Color color) => GoogleFonts.inter(
-    fontSize: 14.sp,
+  static TextStyle button(Color color, {double? fontSize}) => GoogleFonts.inter(
+    fontSize: fontSize ?? 14.sp,
     fontWeight: FontWeight.w600,
     color: color,
   );
