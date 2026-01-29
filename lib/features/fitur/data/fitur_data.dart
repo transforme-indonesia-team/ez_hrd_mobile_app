@@ -267,4 +267,57 @@ class FiturData {
 
     return result;
   }
+
+  /// Mencari item berdasarkan ID dari semua sections dan categories
+  /// Returns null jika tidak ditemukan
+  static FiturItemModel? findItemById(String id) {
+    for (final section in sections) {
+      // Cari di categories
+      for (final category in section.categories) {
+        for (final item in category.items) {
+          if (item.id == id) return item;
+        }
+      }
+      // Cari di directCategories
+      for (final category in section.directCategories) {
+        for (final item in category.items) {
+          if (item.id == id) return item;
+        }
+      }
+    }
+    return null;
+  }
+
+  /// Mencari category yang berisi item dengan ID tertentu
+  /// Returns null jika tidak ditemukan
+  static FiturCategoryModel? findCategoryByItemId(String id) {
+    for (final section in sections) {
+      // Cari di categories
+      for (final category in section.categories) {
+        for (final item in category.items) {
+          if (item.id == id) return category;
+        }
+      }
+      // Cari di directCategories
+      for (final category in section.directCategories) {
+        for (final item in category.items) {
+          if (item.id == id) return category;
+        }
+      }
+    }
+    return null;
+  }
+
+  /// Mengambil list items berdasarkan list ID
+  /// Item yang tidak ditemukan akan di-skip
+  static List<FiturItemModel> getItemsByIds(List<String> ids) {
+    final result = <FiturItemModel>[];
+    for (final id in ids) {
+      final item = findItemById(id);
+      if (item != null) {
+        result.add(item);
+      }
+    }
+    return result;
+  }
 }

@@ -23,8 +23,8 @@ class AppTextStyles {
     color: color,
   );
 
-  static TextStyle h4(Color color) => GoogleFonts.inter(
-    fontSize: 16.sp,
+  static TextStyle h4(Color color, {double? fontSize}) => GoogleFonts.inter(
+    fontSize: fontSize ?? 16.sp,
     fontWeight: FontWeight.w600,
     color: color,
   );
@@ -35,8 +35,8 @@ class AppTextStyles {
     color: color,
   );
 
-  static TextStyle body(Color color) => GoogleFonts.inter(
-    fontSize: 14.sp,
+  static TextStyle body(Color color, {double? fontSize}) => GoogleFonts.inter(
+    fontSize: fontSize ?? 14.sp,
     fontWeight: FontWeight.w400,
     color: color,
   );

@@ -3,12 +3,12 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hrd_app/core/theme/app_colors.dart';
 import 'package:hrd_app/core/theme/app_text_styles.dart';
 
-class LemburFilterBottomSheet extends StatefulWidget {
+class PermintaanCutiFilterBottomSheet extends StatefulWidget {
   final DateTime? startDate;
   final DateTime? endDate;
   final void Function(DateTime? startDate, DateTime? endDate) onApply;
 
-  const LemburFilterBottomSheet({
+  const PermintaanCutiFilterBottomSheet({
     super.key,
     this.startDate,
     this.endDate,
@@ -25,7 +25,7 @@ class LemburFilterBottomSheet extends StatefulWidget {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) => LemburFilterBottomSheet(
+      builder: (context) => PermintaanCutiFilterBottomSheet(
         startDate: startDate,
         endDate: endDate,
         onApply: onApply,
@@ -34,11 +34,12 @@ class LemburFilterBottomSheet extends StatefulWidget {
   }
 
   @override
-  State<LemburFilterBottomSheet> createState() =>
-      _LemburFilterBottomSheetState();
+  State<PermintaanCutiFilterBottomSheet> createState() =>
+      _PermintaanCutiFilterBottomSheetState();
 }
 
-class _LemburFilterBottomSheetState extends State<LemburFilterBottomSheet> {
+class _PermintaanCutiFilterBottomSheetState
+    extends State<PermintaanCutiFilterBottomSheet> {
   DateTime? _startDate;
   DateTime? _endDate;
 
@@ -108,7 +109,7 @@ class _LemburFilterBottomSheetState extends State<LemburFilterBottomSheet> {
               ),
             ),
           ),
-          SizedBox(height: 5.h),
+          SizedBox(height: 16.h),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -122,7 +123,7 @@ class _LemburFilterBottomSheetState extends State<LemburFilterBottomSheet> {
               ),
             ],
           ),
-          SizedBox(height: 16.h),
+          SizedBox(height: 5.h),
           Text(
             'Rentang Tanggal',
             style: AppTextStyles.body(colors.textSecondary),
