@@ -46,6 +46,11 @@ class _FiturScreenState extends State<FiturScreen> {
           MaterialPageRoute(builder: (context) => const DaftarLemburScreen()),
         );
         break;
+      case 'permintaan_cuti':
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const DaftarLemburScreen()),
+        );
       default:
         context.showInfoSnackbar('Fitur "${item.title}" belum tersedia');
     }

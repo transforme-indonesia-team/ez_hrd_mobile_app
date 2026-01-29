@@ -82,14 +82,19 @@ class FiturData {
           iconColor: const Color.fromARGB(255, 101, 191, 244),
           items: [
             FiturItemModel(
-              id: 'pengajuan_cuti',
-              title: 'Pengajuan Cuti',
+              id: 'permintaan_cuti',
+              title: 'Permintaan Cuti',
               icon: Icons.calendar_month_outlined,
             ),
             FiturItemModel(
-              id: 'saldo_cuti',
-              title: 'Saldo Cuti',
+              id: 'jatah_cuti',
+              title: 'Jatah Cuti',
               icon: Icons.event_available_outlined,
+            ),
+            FiturItemModel(
+              id: 'kalender_cuti',
+              title: 'Kalender Cuti',
+              icon: Icons.event_note_outlined,
             ),
           ],
         ),

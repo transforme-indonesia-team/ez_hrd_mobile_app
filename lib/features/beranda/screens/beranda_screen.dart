@@ -259,6 +259,13 @@ class _BerandaScreenState extends State<BerandaScreen>
                       ),
                     );
                     break;
+                  case 'permintaan_cuti':
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const DaftarLemburScreen(),
+                      ),
+                    );
                   default:
                     context.showInfoSnackbar(
                       'Fitur "${item.title}" belum tersedia',
