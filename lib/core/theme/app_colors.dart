@@ -112,7 +112,7 @@ class ThemeColors {
       isDark ? AppColors.inactiveGrayDark : AppColors.inactiveGrayLight;
 
   Color get backgroundDetail =>
-      isDark ? AppColors.dividerDark : AppColors.backgroundLight;
+      isDark ? AppColors.surfaceDark : AppColors.backgroundDetailLight;
 
   Color get appBar =>
       isDark ? AppColors.surfaceDark : AppColors.backgroundDetailLight;

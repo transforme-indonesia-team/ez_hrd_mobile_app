@@ -26,6 +26,12 @@ class OvertimeService {
     );
   }
 
+  Future<Map<String, dynamic>> getDetailOvertime({
+    required String overtimeId,
+  }) async {
+    return _api.get('/overtime/$overtimeId');
+  }
+
   Future<Map<String, dynamic>> getReservationNumber({
     required String reservationType,
     required String companyId,
@@ -112,5 +118,11 @@ class OvertimeService {
 
     final formData = FormData.fromMap(formMap);
     return _api.postFormData('/overtime/$overtimeId?method=_PUT', formData);
+  }
+
+  Future<Map<String, dynamic>> cancellationOVertime({
+    required String overtimeId,
+  }) async {
+    return _api.post('/overtime/cancellation/$overtimeId', {});
   }
 }

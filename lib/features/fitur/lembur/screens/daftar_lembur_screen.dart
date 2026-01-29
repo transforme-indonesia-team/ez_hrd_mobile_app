@@ -4,6 +4,7 @@ import 'package:hrd_app/core/theme/app_colors.dart';
 import 'package:hrd_app/core/theme/app_text_styles.dart';
 import 'package:hrd_app/data/models/overtime_employee_model.dart';
 import 'package:hrd_app/data/services/overtime_service.dart';
+import 'package:hrd_app/features/fitur/lembur/screens/detail_lembur_screen.dart';
 import 'package:hrd_app/features/fitur/lembur/screens/form_lembur_screen.dart';
 import 'package:hrd_app/features/fitur/lembur/widgets/lembur_filter_bottom_sheet.dart';
 import 'package:hrd_app/features/fitur/lembur/widgets/overtime_request_card.dart';
@@ -42,16 +43,21 @@ class _DaftarLemburScreenState extends State<DaftarLemburScreen> {
         limit: 10,
       );
 
-      final records = response['original']['records'] as Map<String, dynamic>?;
+      final recordsRaw = response['original']['records'];
 
-      if (records == null) {
+      // Handle case where records is empty list [] instead of Map
+      if (recordsRaw == null || recordsRaw is List) {
         setState(() {
           _isLoading = false;
           _requests = [];
+          _totalItems = 0;
+          _totalPages = 1;
+          _errorMessage = null;
         });
         return;
       }
 
+      final records = recordsRaw as Map<String, dynamic>;
       final items = records['items'] as List<dynamic>? ?? [];
       final pagination = records['pagination'] as Map<String, dynamic>?;
 
@@ -67,10 +73,11 @@ class _DaftarLemburScreenState extends State<DaftarLemburScreen> {
         _errorMessage = null;
       });
     } catch (e) {
+      debugPrint('Error fetching overtime list: $e');
       if (mounted) {
         setState(() {
           _isLoading = false;
-          _errorMessage = e.toString();
+          _errorMessage = 'Terjadi kesalahan saat memuat data';
         });
       }
     }
@@ -118,6 +125,18 @@ class _DaftarLemburScreenState extends State<DaftarLemburScreen> {
     }
   }
 
+  Future<void> _navigateToDetail(OvertimeEmployeeModel request) async {
+    final result = await Navigator.push<bool>(
+      context,
+      MaterialPageRoute(
+        builder: (contect) => DetailLemburScreen(detailOvertime: request),
+      ),
+    );
+    if (result == true && mounted) {
+      _fetchData();
+    }
+  }
+
   bool get _hasActiveFilter =>
       _filterStartDate != null || _filterEndDate != null;
 
@@ -129,7 +148,7 @@ class _DaftarLemburScreenState extends State<DaftarLemburScreen> {
       backgroundColor: colors.surface,
       appBar: AppBar(
         backgroundColor: colors.background,
-        elevation: 0,
+        elevation: 2,
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: colors.textPrimary),
           onPressed: () => Navigator.pop(context),
@@ -179,7 +198,7 @@ class _DaftarLemburScreenState extends State<DaftarLemburScreen> {
                     return OvertimeRequestCard(
                       request: _requests[index],
                       onTap: () {
-                        // TODO: Navigate to detail
+                        _navigateToDetail(_requests[index]);
                       },
                       onEdit: _requests[index].isDraft
                           ? () => _navigateToEdit(_requests[index])
