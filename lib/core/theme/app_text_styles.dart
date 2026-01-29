@@ -35,9 +35,13 @@ class AppTextStyles {
     color: color,
   );
 
-  static TextStyle body(Color color, {double? fontSize}) => GoogleFonts.inter(
+  static TextStyle body(
+    Color color, {
+    double? fontSize,
+    FontWeight? fontWeight,
+  }) => GoogleFonts.inter(
     fontSize: fontSize ?? 14.sp,
-    fontWeight: FontWeight.w400,
+    fontWeight: fontWeight ?? FontWeight.w400,
     color: color,
   );
 

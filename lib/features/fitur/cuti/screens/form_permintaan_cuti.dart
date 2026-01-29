@@ -18,16 +18,17 @@ import 'package:image_picker/image_picker.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:intl/intl.dart';
 
-class FormLemburScreen extends StatefulWidget {
+class FormPermintaanCutiScreeen extends StatefulWidget {
   final OvertimeEmployeeModel? existingOvertime;
 
-  const FormLemburScreen({super.key, this.existingOvertime});
+  const FormPermintaanCutiScreeen({super.key, this.existingOvertime});
 
   @override
-  State<FormLemburScreen> createState() => _FormLemburScreenState();
+  State<FormPermintaanCutiScreeen> createState() =>
+      _FormPermintaanCutiScreeenState();
 }
 
-class _FormLemburScreenState extends State<FormLemburScreen> {
+class _FormPermintaanCutiScreeenState extends State<FormPermintaanCutiScreeen> {
   final TextEditingController _descriptionController = TextEditingController();
   final ImagePicker _imagePicker = ImagePicker();
 
@@ -385,7 +386,9 @@ class _FormLemburScreenState extends State<FormLemburScreen> {
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
-          widget.existingOvertime != null ? 'Edit Lembur' : 'Form Lembur',
+          widget.existingOvertime != null
+              ? 'Edit permintaan Cuti'
+              : 'Permintaan Cuti',
           style: AppTextStyles.h3(colors.textPrimary),
         ),
       ),
@@ -394,59 +397,17 @@ class _FormLemburScreenState extends State<FormLemburScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildLabel(colors, 'Permintaan Untuk'),
+            _buildLabel(colors, 'Diminta Untuk'),
             SizedBox(height: 8.h),
             _buildReadOnlyField(
               colors,
               value: user?.name ?? 'User',
               icon: Icons.person_outline,
             ),
-            SizedBox(height: 16.h),
+            SizedBox(height: 12.h),
 
-            // Tanggal Lembur (single date)
-            _buildLabel(colors, 'Tanggal Lembur'),
-            SizedBox(height: 8.h),
-            _buildDateField(colors, date: _overtimeDate, onTap: _selectDate),
-            SizedBox(height: 16.h),
-
-            // Jam Mulai & Jam Berakhir
-            Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _buildLabel(colors, 'Jam Mulai'),
-                      SizedBox(height: 8.h),
-                      _buildTimeField(
-                        colors,
-                        time: _startTime,
-                        onTap: () => _selectTime(true),
-                      ),
-                    ],
-                  ),
-                ),
-                SizedBox(width: 16.w),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _buildLabel(colors, 'Jam Berakhir'),
-                      SizedBox(height: 8.h),
-                      _buildTimeField(
-                        colors,
-                        time: _endTime,
-                        onTap: () => _selectTime(false),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(height: 16.h),
-
-            // Tipe Lembur
-            _buildLabel(colors, 'Tipe Lembur'),
+            // Jenis Cuti
+            _buildLabel(colors, 'Jenis Cuti'),
             SizedBox(height: 8.h),
             _buildDropdownField(
               colors,
@@ -457,12 +418,22 @@ class _FormLemburScreenState extends State<FormLemburScreen> {
                   ? () => setState(() => _selectedOvertimeType = null)
                   : null,
             ),
-            SizedBox(height: 16.h),
+            SizedBox(height: 12.h),
+            // Tanggal Mulai (single date)
+            _buildLabel(colors, 'Tanggal Mulai'),
+            SizedBox(height: 8.h),
+            _buildDateField(colors, date: _overtimeDate, onTap: _selectDate),
+            SizedBox(height: 12.h),
+            // Tanggal Berakhir (single date)
+            _buildLabel(colors, 'Tanggal Berakhir'),
+            SizedBox(height: 8.h),
+            _buildDateField(colors, date: _overtimeDate, onTap: _selectDate),
+            SizedBox(height: 12.h),
 
             _buildLabel(colors, 'Keterangan'),
             SizedBox(height: 8.h),
             _buildTextField(colors),
-            SizedBox(height: 16.h),
+            SizedBox(height: 12.h),
 
             _buildLabel(colors, 'Lampiran'),
             SizedBox(height: 8.h),
@@ -481,7 +452,14 @@ class _FormLemburScreenState extends State<FormLemburScreen> {
   }
 
   Widget _buildLabel(ThemeColors colors, String text) {
-    return Text(text, style: AppTextStyles.body(colors.textSecondary));
+    return Text(
+      text,
+      style: AppTextStyles.body(
+        colors.textPrimary,
+        fontSize: 13.sp,
+        fontWeight: FontWeight.w500,
+      ),
+    );
   }
 
   Widget _buildReadOnlyField(
@@ -490,7 +468,7 @@ class _FormLemburScreenState extends State<FormLemburScreen> {
     required IconData icon,
   }) {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 14.h),
+      padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 10.h),
       decoration: BoxDecoration(
         color: colors.background,
         borderRadius: BorderRadius.circular(8.r),
@@ -499,7 +477,10 @@ class _FormLemburScreenState extends State<FormLemburScreen> {
       child: Row(
         children: [
           Expanded(
-            child: Text(value, style: AppTextStyles.body(colors.textPrimary)),
+            child: Text(
+              value,
+              style: AppTextStyles.body(colors.textPrimary, fontSize: 13.sp),
+            ),
           ),
           Icon(icon, color: colors.textSecondary, size: 20.sp),
         ],
@@ -515,7 +496,7 @@ class _FormLemburScreenState extends State<FormLemburScreen> {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 14.h),
+        padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 10.h),
         decoration: BoxDecoration(
           color: colors.background,
           borderRadius: BorderRadius.circular(8.r),
@@ -530,13 +511,14 @@ class _FormLemburScreenState extends State<FormLemburScreen> {
                     : 'Pilih tanggal',
                 style: AppTextStyles.body(
                   date != null ? colors.textPrimary : colors.textSecondary,
+                  fontSize: 13.sp,
                 ),
               ),
             ),
             Icon(
               Icons.calendar_today_outlined,
               color: colors.textSecondary,
-              size: 18.sp,
+              size: 15.sp,
             ),
           ],
         ),
@@ -554,7 +536,7 @@ class _FormLemburScreenState extends State<FormLemburScreen> {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 14.h),
+        padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 10.h),
         decoration: BoxDecoration(
           color: colors.background,
           borderRadius: BorderRadius.circular(8.r),
@@ -567,6 +549,7 @@ class _FormLemburScreenState extends State<FormLemburScreen> {
                 value ?? hint,
                 style: AppTextStyles.body(
                   value != null ? colors.textPrimary : colors.textSecondary,
+                  fontSize: 13.sp,
                 ),
               ),
             ),
@@ -576,7 +559,7 @@ class _FormLemburScreenState extends State<FormLemburScreen> {
                 child: Icon(
                   Icons.close,
                   color: colors.textSecondary,
-                  size: 18.sp,
+                  size: 16.sp,
                 ),
               ),
               SizedBox(width: 8.w),

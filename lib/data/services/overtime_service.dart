@@ -32,17 +32,6 @@ class OvertimeService {
     return _api.get('/overtime/$overtimeId');
   }
 
-  Future<Map<String, dynamic>> getReservationNumber({
-    required String reservationType,
-    required String companyId,
-  }) async {
-    return _api.post(
-      '/get-reservation-number',
-      {'reservation_type': reservationType},
-      extraHeaders: {'company-id': companyId},
-    );
-  }
-
   Future<Map<String, dynamic>> createOvertime({
     required String overtimeRequestNo,
     required String dateOvertime,

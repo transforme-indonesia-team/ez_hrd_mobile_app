@@ -5,6 +5,7 @@ import 'package:hrd_app/core/theme/app_text_styles.dart';
 import 'package:hrd_app/core/widgets/empty_state_widget.dart';
 import 'package:hrd_app/data/models/leave_employee_model.dart';
 import 'package:hrd_app/data/services/leave_service.dart';
+import 'package:hrd_app/features/fitur/cuti/screens/form_permintaan_cuti.dart';
 import 'package:hrd_app/features/fitur/cuti/widgets/leave_request_card.dart';
 import 'package:hrd_app/features/fitur/cuti/widgets/permintaan_cuti_filter_bottom_sheet.dart';
 import 'package:hrd_app/features/fitur/lembur/widgets/pagination_widget.dart';
@@ -86,16 +87,17 @@ class _PermintaanCutiScreenState extends State<PermintaanCutiScreen> {
   }
 
   Future<void> _navigateToForm() async {
-    // TODO: Navigate to form cuti screen
-    // final result = await Navigator.push<bool>(
-    //   context,
-    //   MaterialPageRoute(builder: (context) => const FormCutiScreen()),
-    // );
+    final result = await Navigator.push<bool>(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const FormPermintaanCutiScreeen(),
+      ),
+    );
 
-    // if (result == true && mounted) {
-    //   _currentPage = 1;
-    //   _fetchData();
-    // }
+    if (result == true && mounted) {
+      _currentPage = 1;
+      _fetchData();
+    }
   }
 
   Future<void> _navigateToEdit(LeaveEmployeeModel request) async {
