@@ -40,10 +40,29 @@ class LeaveRequestCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Header: Nama Karyawan
-            Text(
-              request.displayEmployeeName,
-              style: AppTextStyles.h4(colors.textPrimary, fontSize: 15.sp),
+            // Header: Nama Karyawan with edit button
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Expanded(
+                  child: Text(
+                    request.displayEmployeeName,
+                    style: AppTextStyles.h4(
+                      colors.textPrimary,
+                      fontSize: 15.sp,
+                    ),
+                  ),
+                ),
+                if (request.isDraft && onEdit != null)
+                  GestureDetector(
+                    onTap: onEdit,
+                    child: Icon(
+                      Icons.edit,
+                      color: colors.primaryBlue,
+                      size: 18.sp,
+                    ),
+                  ),
+              ],
             ),
             Divider(height: 12.h, color: colors.divider),
 
@@ -114,6 +133,17 @@ class LeaveRequestCard extends StatelessWidget {
                 ),
               ],
             ),
+            Divider(height: 12.h, color: colors.divider),
+            SizedBox(height: 5.h),
+            Text(
+              'Keterangan',
+              style: AppTextStyles.caption(colors.textSecondary),
+            ),
+            SizedBox(height: 4.h),
+            Text(
+              request.displayRemark,
+              style: AppTextStyles.body(colors.textPrimary, fontSize: 12.sp),
+            ),
           ],
         ),
       ),
@@ -167,7 +197,7 @@ class _StatusBadge extends StatelessWidget {
     }
 
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+      padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 2.h),
       decoration: BoxDecoration(
         color: backgroundColor,
         borderRadius: BorderRadius.circular(5.r),

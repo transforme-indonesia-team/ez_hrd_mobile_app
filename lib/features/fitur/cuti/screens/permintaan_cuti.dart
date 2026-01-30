@@ -101,17 +101,16 @@ class _PermintaanCutiScreenState extends State<PermintaanCutiScreen> {
   }
 
   Future<void> _navigateToEdit(LeaveEmployeeModel request) async {
-    // TODO: Navigate to edit cuti screen
-    // final result = await Navigator.push<bool>(
-    //   context,
-    //   MaterialPageRoute(
-    //     builder: (context) => FormCutiScreen(existingLeave: request),
-    //   ),
-    // );
+    final result = await Navigator.push<bool>(
+      context,
+      MaterialPageRoute(
+        builder: (context) => FormPermintaanCutiScreeen(existingLeave: request),
+      ),
+    );
 
-    // if (result == true && mounted) {
-    //   _fetchData();
-    // }
+    if (result == true && mounted) {
+      _fetchData();
+    }
   }
 
   Future<void> _navigateToDetail(LeaveEmployeeModel request) async {

@@ -7,11 +7,13 @@ import 'package:hrd_app/core/theme/app_colors.dart';
 import 'package:hrd_app/core/theme/app_text_styles.dart';
 import 'package:hrd_app/core/utils/format_date.dart';
 import 'package:hrd_app/core/utils/snackbar_utils.dart';
-import 'package:hrd_app/data/models/overtime_employee_model.dart';
-import 'package:hrd_app/data/models/overtime_type_model.dart';
-import 'package:hrd_app/data/services/overtime_service.dart';
+import 'package:hrd_app/data/models/employee_leave_balance_model.dart';
+import 'package:hrd_app/data/models/employee_leave_relation_response.dart';
+import 'package:hrd_app/data/models/leave_employee_model.dart';
+import 'package:hrd_app/data/services/employee_service.dart';
+import 'package:hrd_app/data/services/leave_service.dart';
 import 'package:hrd_app/data/services/reservation_service.dart';
-import 'package:hrd_app/features/fitur/lembur/widgets/overtime_type_bottom_sheet.dart';
+import 'package:hrd_app/features/fitur/cuti/widgets/leave_type_bottom_sheet.dart';
 import 'package:hrd_app/features/fitur/lembur/widgets/file_picker_bottom_sheet.dart';
 import 'package:provider/provider.dart';
 import 'package:image_picker/image_picker.dart';
@@ -19,9 +21,9 @@ import 'package:file_picker/file_picker.dart';
 import 'package:intl/intl.dart';
 
 class FormPermintaanCutiScreeen extends StatefulWidget {
-  final OvertimeEmployeeModel? existingOvertime;
+  final LeaveEmployeeModel? existingLeave;
 
-  const FormPermintaanCutiScreeen({super.key, this.existingOvertime});
+  const FormPermintaanCutiScreeen({super.key, this.existingLeave});
 
   @override
   State<FormPermintaanCutiScreeen> createState() =>
@@ -29,84 +31,107 @@ class FormPermintaanCutiScreeen extends StatefulWidget {
 }
 
 class _FormPermintaanCutiScreeenState extends State<FormPermintaanCutiScreeen> {
+  bool _isLoadingLeaveTypes = true;
+  String? _errorMessage;
+
   final TextEditingController _descriptionController = TextEditingController();
   final ImagePicker _imagePicker = ImagePicker();
 
-  DateTime? _overtimeDate;
-  TimeOfDay? _startTime;
-  TimeOfDay? _endTime;
-  OvertimeTypeModel? _selectedOvertimeType;
+  DateTime? _startDate;
+  DateTime? _endDate;
 
-  // Store actual file, not just name
+  List<EmployeeLeaveBalanceModel> _leaveTypes = [];
+  EmployeeLeaveBalanceModel? _selectedLeaveType;
+
   File? _attachmentFile;
   String? _attachmentFileName;
 
   bool _isSubmitting = false;
 
-  // Dummy overtime types
-  final List<OvertimeTypeModel> _overtimeTypes = const [
-    OvertimeTypeModel(id: '1', name: 'Jam Lembur'),
-    OvertimeTypeModel(id: '2', name: 'Cuti Tambahan'),
-  ];
-
   @override
   void initState() {
     super.initState();
-
-    // Check if editing existing overtime
-    if (widget.existingOvertime != null) {
+    _fetchData();
+    if (widget.existingLeave != null) {
       _populateExistingData();
     } else {
-      _overtimeDate = DateTime.now();
-      _selectedOvertimeType = _overtimeTypes.first;
+      _startDate = DateTime.now();
+      _endDate = DateTime.now();
+    }
+  }
+
+  Future<void> _fetchData() async {
+    setState(() {
+      _isLoadingLeaveTypes = true;
+      _errorMessage = null; // Reset error saat fetch ulang
+    });
+    try {
+      final response = await EmployeeService().getRelation(relation: 'LEAVE');
+      final parsedResponse = EmployeeLeaveRelationResponse.fromJson(response);
+
+      if (mounted) {
+        setState(() {
+          _isLoadingLeaveTypes = false;
+          _leaveTypes = parsedResponse.leaveBalances;
+          if (!parsedResponse.isSuccess) {
+            _errorMessage = parsedResponse.message ?? 'Gagal memuat data cuti';
+          }
+
+          // Auto-select leave type jika edit mode
+          if (widget.existingLeave != null && _leaveTypes.isNotEmpty) {
+            final existingLeaveTypeId = widget.existingLeave!.leaveTypeId;
+            if (existingLeaveTypeId != null) {
+              _selectedLeaveType = _leaveTypes.firstWhere(
+                (type) =>
+                    type.leaveTypeId?.toLowerCase() ==
+                        existingLeaveTypeId.toLowerCase() ||
+                    type.id.toLowerCase() == existingLeaveTypeId.toLowerCase(),
+                orElse: () => _leaveTypes.first,
+              );
+            }
+          }
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isLoadingLeaveTypes = false;
+          _errorMessage = e.toString();
+        });
+      }
     }
   }
 
   void _populateExistingData() {
-    final overtime = widget.existingOvertime!;
+    final leave = widget.existingLeave!;
 
-    // Parse date
-    if (overtime.dateOvertime != null) {
+    // Parse start date
+    if (leave.startLeave != null) {
       try {
-        _overtimeDate = DateFormat('yyyy-MM-dd').parse(overtime.dateOvertime!);
+        _startDate = DateFormat('yyyy-MM-dd').parse(leave.startLeave!);
       } catch (e) {
-        _overtimeDate = DateTime.now();
+        _startDate = DateTime.now();
       }
     }
 
-    // Parse times
-    if (overtime.startOvertime != null) {
-      final parts = overtime.startOvertime!.split(':');
-      if (parts.length >= 2) {
-        _startTime = TimeOfDay(
-          hour: int.tryParse(parts[0]) ?? 8,
-          minute: int.tryParse(parts[1]) ?? 0,
-        );
-      }
-    }
-
-    if (overtime.endOvertime != null) {
-      final parts = overtime.endOvertime!.split(':');
-      if (parts.length >= 2) {
-        _endTime = TimeOfDay(
-          hour: int.tryParse(parts[0]) ?? 17,
-          minute: int.tryParse(parts[1]) ?? 0,
-        );
+    // Parse end date
+    if (leave.endLeave != null) {
+      try {
+        _endDate = DateFormat('yyyy-MM-dd').parse(leave.endLeave!);
+      } catch (e) {
+        _endDate = DateTime.now();
       }
     }
 
     // Set description
-    if (overtime.remarkOvertime != null) {
-      _descriptionController.text = overtime.remarkOvertime!;
+    if (leave.remarkLeave != null) {
+      _descriptionController.text = leave.remarkLeave!;
     }
 
     // Set file name if exists
-    if (overtime.hasAttachment) {
-      _attachmentFileName = overtime.fileNameOvertime ?? 'File terlampir';
+    if (leave.hasAttachment) {
+      _attachmentFileName = leave.fileAttachmentLeave ?? 'File terlampir';
     }
-
-    // Default overtime type
-    _selectedOvertimeType = _overtimeTypes.first;
   }
 
   @override
@@ -115,10 +140,10 @@ class _FormPermintaanCutiScreeenState extends State<FormPermintaanCutiScreeen> {
     super.dispose();
   }
 
-  Future<void> _selectDate() async {
+  Future<void> _selectStartDate() async {
     final picked = await showDatePicker(
       context: context,
-      initialDate: _overtimeDate ?? DateTime.now(),
+      initialDate: _startDate ?? DateTime.now(),
       firstDate: DateTime(2020),
       lastDate: DateTime(2030),
       builder: (context, child) {
@@ -138,18 +163,21 @@ class _FormPermintaanCutiScreeenState extends State<FormPermintaanCutiScreeen> {
     );
 
     if (picked != null) {
-      setState(() => _overtimeDate = picked);
+      setState(() {
+        _startDate = picked;
+        if (_endDate != null && _endDate!.isBefore(picked)) {
+          _endDate = picked;
+        }
+      });
     }
   }
 
-  Future<void> _selectTime(bool isStart) async {
-    final initialTime = isStart
-        ? (_startTime ?? const TimeOfDay(hour: 8, minute: 0))
-        : (_endTime ?? const TimeOfDay(hour: 17, minute: 0));
-
-    final picked = await showTimePicker(
+  Future<void> _selectEndDate() async {
+    final picked = await showDatePicker(
       context: context,
-      initialTime: initialTime,
+      initialDate: _endDate ?? _startDate ?? DateTime.now(),
+      firstDate: _startDate ?? DateTime(2020),
+      lastDate: DateTime(2030),
       builder: (context, child) {
         final colors = context.colors;
         return Theme(
@@ -161,34 +189,26 @@ class _FormPermintaanCutiScreeenState extends State<FormPermintaanCutiScreeen> {
               onSurface: colors.textPrimary,
             ),
           ),
-          child: MediaQuery(
-            data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
-            child: child!,
-          ),
+          child: child!,
         );
       },
     );
 
     if (picked != null) {
-      setState(() {
-        if (isStart) {
-          _startTime = picked;
-        } else {
-          _endTime = picked;
-        }
-      });
+      setState(() => _endDate = picked);
     }
   }
 
-  Future<void> _selectOvertimeType() async {
-    final selected = await OvertimeTypeBottomSheet.show(
+  Future<void> _selectLeaveType() async {
+    final selected = await LeaveTypeBottomSheet.show(
       context,
-      types: _overtimeTypes,
-      selectedType: _selectedOvertimeType,
+      types: _leaveTypes,
+      selectedType: _selectedLeaveType,
+      isLoading: _isLoadingLeaveTypes,
     );
 
     if (selected != null) {
-      setState(() => _selectedOvertimeType = selected);
+      setState(() => _selectedLeaveType = selected);
     }
   }
 
@@ -205,7 +225,7 @@ class _FormPermintaanCutiScreeenState extends State<FormPermintaanCutiScreeen> {
             imageQuality: 80,
           );
           if (image != null) {
-            _setAttachment(File(image.path), image.name);
+            await _setAttachment(File(image.path), image.name);
           }
           break;
         case FilePickerType.gallery:
@@ -214,7 +234,7 @@ class _FormPermintaanCutiScreeenState extends State<FormPermintaanCutiScreeen> {
             imageQuality: 80,
           );
           if (image != null) {
-            _setAttachment(File(image.path), image.name);
+            await _setAttachment(File(image.path), image.name);
           }
           break;
         case FilePickerType.file:
@@ -235,7 +255,7 @@ class _FormPermintaanCutiScreeenState extends State<FormPermintaanCutiScreeen> {
           if (result != null && result.files.isNotEmpty) {
             final file = result.files.first;
             if (file.path != null) {
-              _setAttachment(File(file.path!), file.name);
+              await _setAttachment(File(file.path!), file.name);
             }
           }
           break;
@@ -247,7 +267,22 @@ class _FormPermintaanCutiScreeenState extends State<FormPermintaanCutiScreeen> {
     }
   }
 
-  void _setAttachment(File file, String fileName) {
+  /// Maksimal ukuran file 1MB
+  static const int _maxFileSizeBytes = 1 * 1024 * 1024; // 1MB
+
+  Future<void> _setAttachment(File file, String fileName) async {
+    // Validasi ukuran file
+    final fileSize = await file.length();
+    if (fileSize > _maxFileSizeBytes) {
+      if (mounted) {
+        final fileSizeMB = (fileSize / (1024 * 1024)).toStringAsFixed(2);
+        context.showErrorSnackbar(
+          'Ukuran file "$fileName" ($fileSizeMB MB) melebihi batas maksimal 1 MB',
+        );
+      }
+      return;
+    }
+
     setState(() {
       _attachmentFile = file;
       _attachmentFileName = fileName;
@@ -264,26 +299,14 @@ class _FormPermintaanCutiScreeenState extends State<FormPermintaanCutiScreeen> {
     });
   }
 
-  String _formatTimeOfDay(TimeOfDay? time) {
-    if (time == null) return '';
-    final hour = time.hour.toString().padLeft(2, '0');
-    final minute = time.minute.toString().padLeft(2, '0');
-    return '$hour:$minute';
-  }
-
   Future<void> _submit() async {
-    if (_overtimeDate == null) {
-      context.showErrorSnackbar('Silakan pilih tanggal lembur');
+    if (_selectedLeaveType == null) {
+      context.showErrorSnackbar('Silakan pilih jenis cuti');
       return;
     }
 
-    if (_startTime == null || _endTime == null) {
-      context.showErrorSnackbar('Silakan pilih jam mulai dan jam berakhir');
-      return;
-    }
-
-    if (_descriptionController.text.trim().isEmpty) {
-      context.showErrorSnackbar('Silakan isi keterangan');
+    if (_startDate == null || _endDate == null) {
+      context.showErrorSnackbar('Silakan pilih tanggal mulai dan berakhir');
       return;
     }
 
@@ -298,28 +321,30 @@ class _FormPermintaanCutiScreeenState extends State<FormPermintaanCutiScreeen> {
         : '';
 
     if (user.employeeId == null || user.employeeId!.isEmpty) {
-      throw Exception('Employee ID tidak ditemukan');
+      context.showErrorSnackbar('Employee ID tidak ditemukan');
+      return;
     }
 
     if (companyId.isEmpty) {
-      throw Exception('Company tidak ditemukan');
+      context.showErrorSnackbar('Company tidak ditemukan');
+      return;
     }
 
     setState(() => _isSubmitting = true);
 
     try {
-      final isEditMode = widget.existingOvertime != null;
+      final isEditMode = widget.existingLeave != null;
 
       if (isEditMode) {
-        await OvertimeService().updateOvertime(
-          overtimeId: widget.existingOvertime!.id,
-          overtimeRequestNo: widget.existingOvertime!.displayOvertimeRequestNo,
-          dateOvertime: DateFormat('yyyy-MM-dd').format(_overtimeDate!),
-          startOvertime: _formatTimeOfDay(_startTime),
-          endOvertime: _formatTimeOfDay(_endTime),
-          remarkOvertime: _descriptionController.text.trim(),
-          fileAttachment: _attachmentFile,
+        // Update existing leave
+        await LeaveService().updateLeaveEmployee(
+          leaveId: widget.existingLeave!.id,
+          leaveRequestNo: widget.existingLeave!.displayRequestNo,
+          startLeave: DateFormat('yyyy-MM-dd').format(_startDate!),
+          endLeave: DateFormat('yyyy-MM-dd').format(_endDate!),
+          remarkLeave: _descriptionController.text.trim(),
           employeeId: user.employeeId!,
+          fileAttachment: _attachmentFile,
         );
 
         if (mounted) {
@@ -327,42 +352,51 @@ class _FormPermintaanCutiScreeenState extends State<FormPermintaanCutiScreeen> {
           Navigator.pop(context, true);
         }
       } else {
+        // Create new leave
         // Step 1: Get reservation number from API
         final reservationResponse = await ReservationService()
             .getReservationNumber(
-              reservationType: 'OVERTIME',
+              reservationType: 'LEAVE',
               companyId: companyId,
             );
+
         final records =
             reservationResponse['original']?['records']
                 as Map<String, dynamic>?;
         final requestNumber = records?['request_number'] as String?;
 
         if (requestNumber == null || requestNumber.isEmpty) {
-          throw Exception('Gagal mendapatkan nomor permintaan');
+          throw Exception('Gagal mendapatkan nomor permintaan cuti');
         }
 
-        // Step 2: Submit overtime request with request number and employee_id
-        await OvertimeService().createOvertime(
-          overtimeRequestNo: requestNumber,
-          dateOvertime: DateFormat('yyyy-MM-dd').format(_overtimeDate!),
-          startOvertime: _formatTimeOfDay(_startTime),
-          endOvertime: _formatTimeOfDay(_endTime),
-          remarkOvertime: _descriptionController.text.trim(),
+        // Step 2: Submit leave request with request number
+        await LeaveService().createLeaveEmployee(
+          leaveRequestNo: requestNumber,
+          startLeave: DateFormat('yyyy-MM-dd').format(_startDate!),
+          endLeave: DateFormat('yyyy-MM-dd').format(_endDate!),
+          leaveTypeId:
+              _selectedLeaveType!.leaveTypeId ?? _selectedLeaveType!.id,
+          remarkLeave: _descriptionController.text.trim(),
           employeeId: user.employeeId!,
           fileAttachment: _attachmentFile,
         );
 
         if (mounted) {
-          context.showSuccessSnackbar('Permintaan lembur berhasil diajukan');
+          context.showSuccessSnackbar('Permintaan cuti berhasil diajukan');
           Navigator.pop(context, true);
         }
       }
     } catch (e) {
       if (mounted) {
-        context.showErrorSnackbar(
-          'Gagal ${widget.existingOvertime != null ? 'menyimpan perubahan' : 'mengajukan lembur'}: ${e.toString()}',
-        );
+        // Clean up error message
+        String errorMsg = e.toString();
+        if (errorMsg.startsWith('Exception: ')) {
+          errorMsg = errorMsg.replaceFirst('Exception: ', '');
+        }
+        final action = widget.existingLeave != null
+            ? 'menyimpan perubahan'
+            : 'mengajukan cuti';
+        context.showErrorSnackbar('Gagal $action: $errorMsg');
       }
     } finally {
       if (mounted) {
@@ -386,64 +420,59 @@ class _FormPermintaanCutiScreeenState extends State<FormPermintaanCutiScreeen> {
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
-          widget.existingOvertime != null
-              ? 'Edit permintaan Cuti'
+          widget.existingLeave != null
+              ? 'Edit Permintaan Cuti'
               : 'Permintaan Cuti',
           style: AppTextStyles.h3(colors.textPrimary),
         ),
       ),
       body: SingleChildScrollView(
-        padding: EdgeInsets.all(16.w),
+        padding: EdgeInsets.all(14.w),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildLabel(colors, 'Diminta Untuk'),
-            SizedBox(height: 8.h),
+            _buildLabel(colors, 'Diminta untuk'),
+            SizedBox(height: 6.h),
             _buildReadOnlyField(
               colors,
               value: user?.name ?? 'User',
               icon: Icons.person_outline,
             ),
-            SizedBox(height: 12.h),
+            SizedBox(height: 10.h),
 
-            // Jenis Cuti
             _buildLabel(colors, 'Jenis Cuti'),
-            SizedBox(height: 8.h),
-            _buildDropdownField(
-              colors,
-              value: _selectedOvertimeType?.displayName,
-              hint: 'Pilih tipe lembur',
-              onTap: _selectOvertimeType,
-              onClear: _selectedOvertimeType != null
-                  ? () => setState(() => _selectedOvertimeType = null)
-                  : null,
-            ),
-            SizedBox(height: 12.h),
-            // Tanggal Mulai (single date)
+            SizedBox(height: 6.h),
+            _buildLeaveTypeDropdown(colors),
+            if (_selectedLeaveType != null) ...[
+              SizedBox(height: 6.h),
+              _buildValidityInfo(colors, _selectedLeaveType!),
+            ],
+            SizedBox(height: 10.h),
+
             _buildLabel(colors, 'Tanggal Mulai'),
-            SizedBox(height: 8.h),
-            _buildDateField(colors, date: _overtimeDate, onTap: _selectDate),
-            SizedBox(height: 12.h),
-            // Tanggal Berakhir (single date)
+            SizedBox(height: 6.h),
+            _buildDateField(colors, date: _startDate, onTap: _selectStartDate),
+            SizedBox(height: 10.h),
+
             _buildLabel(colors, 'Tanggal Berakhir'),
-            SizedBox(height: 8.h),
-            _buildDateField(colors, date: _overtimeDate, onTap: _selectDate),
-            SizedBox(height: 12.h),
+            SizedBox(height: 6.h),
+            _buildDateField(colors, date: _endDate, onTap: _selectEndDate),
+            SizedBox(height: 10.h),
 
             _buildLabel(colors, 'Keterangan'),
-            SizedBox(height: 8.h),
+            SizedBox(height: 6.h),
             _buildTextField(colors),
-            SizedBox(height: 12.h),
+            SizedBox(height: 10.h),
 
             _buildLabel(colors, 'Lampiran'),
-            SizedBox(height: 8.h),
+            SizedBox(height: 6.h),
             _buildAttachmentSection(colors),
-            SizedBox(height: 8.h),
+            SizedBox(height: 6.h),
             Text(
-              'Berkas yang Didukung: txt,doc,docx,jpg,png,gif,xls,pdf',
+              'Berkas yang Didukung: doc,jpg,ods,png,txt,doc,pdf',
               style: AppTextStyles.caption(colors.textSecondary),
             ),
-            SizedBox(height: 80.h),
+            SizedBox(height: 60.h),
           ],
         ),
       ),
@@ -468,7 +497,7 @@ class _FormPermintaanCutiScreeenState extends State<FormPermintaanCutiScreeen> {
     required IconData icon,
   }) {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 10.h),
+      padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 8.h),
       decoration: BoxDecoration(
         color: colors.background,
         borderRadius: BorderRadius.circular(8.r),
@@ -482,7 +511,7 @@ class _FormPermintaanCutiScreeenState extends State<FormPermintaanCutiScreeen> {
               style: AppTextStyles.body(colors.textPrimary, fontSize: 13.sp),
             ),
           ),
-          Icon(icon, color: colors.textSecondary, size: 20.sp),
+          Icon(icon, color: colors.textSecondary, size: 18.sp),
         ],
       ),
     );
@@ -496,7 +525,7 @@ class _FormPermintaanCutiScreeenState extends State<FormPermintaanCutiScreeen> {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 10.h),
+        padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 8.h),
         decoration: BoxDecoration(
           color: colors.background,
           borderRadius: BorderRadius.circular(8.r),
@@ -518,7 +547,7 @@ class _FormPermintaanCutiScreeenState extends State<FormPermintaanCutiScreeen> {
             Icon(
               Icons.calendar_today_outlined,
               color: colors.textSecondary,
-              size: 15.sp,
+              size: 14.sp,
             ),
           ],
         ),
@@ -536,7 +565,7 @@ class _FormPermintaanCutiScreeenState extends State<FormPermintaanCutiScreeen> {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 10.h),
+        padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 8.h),
         decoration: BoxDecoration(
           color: colors.background,
           borderRadius: BorderRadius.circular(8.r),
@@ -559,48 +588,13 @@ class _FormPermintaanCutiScreeenState extends State<FormPermintaanCutiScreeen> {
                 child: Icon(
                   Icons.close,
                   color: colors.textSecondary,
-                  size: 16.sp,
+                  size: 14.sp,
                 ),
               ),
-              SizedBox(width: 8.w),
+              SizedBox(width: 6.w),
             ],
             Icon(
               Icons.keyboard_arrow_down,
-              color: colors.textSecondary,
-              size: 20.sp,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildTimeField(
-    ThemeColors colors, {
-    required TimeOfDay? time,
-    required VoidCallback onTap,
-  }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 14.h),
-        decoration: BoxDecoration(
-          color: colors.background,
-          borderRadius: BorderRadius.circular(8.r),
-          border: Border.all(color: colors.divider),
-        ),
-        child: Row(
-          children: [
-            Expanded(
-              child: Text(
-                time != null ? _formatTimeOfDay(time) : 'Pilih jam',
-                style: AppTextStyles.body(
-                  time != null ? colors.textPrimary : colors.textSecondary,
-                ),
-              ),
-            ),
-            Icon(
-              Icons.access_time_outlined,
               color: colors.textSecondary,
               size: 18.sp,
             ),
@@ -615,8 +609,8 @@ class _FormPermintaanCutiScreeenState extends State<FormPermintaanCutiScreeen> {
       controller: _descriptionController,
       maxLines: 3,
       decoration: InputDecoration(
-        hintText: 'Tulis alasan lembur',
-        hintStyle: AppTextStyles.body(colors.textSecondary),
+        hintText: 'Tulis Alasan Cuti...',
+        hintStyle: AppTextStyles.body(colors.textSecondary, fontSize: 13.sp),
         filled: true,
         fillColor: colors.background,
         border: OutlineInputBorder(
@@ -631,9 +625,9 @@ class _FormPermintaanCutiScreeenState extends State<FormPermintaanCutiScreeen> {
           borderRadius: BorderRadius.circular(8.r),
           borderSide: BorderSide(color: colors.primaryBlue),
         ),
-        contentPadding: EdgeInsets.all(12.w),
+        contentPadding: EdgeInsets.all(10.w),
       ),
-      style: AppTextStyles.body(colors.textPrimary),
+      style: AppTextStyles.body(colors.textPrimary, fontSize: 13.sp),
     );
   }
 
@@ -642,8 +636,8 @@ class _FormPermintaanCutiScreeenState extends State<FormPermintaanCutiScreeen> {
       children: [
         if (_attachmentFileName != null) ...[
           Container(
-            margin: EdgeInsets.only(bottom: 8.h),
-            padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 10.h),
+            margin: EdgeInsets.only(bottom: 6.h),
+            padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 8.h),
             decoration: BoxDecoration(
               color: colors.background,
               borderRadius: BorderRadius.circular(8.r),
@@ -654,30 +648,32 @@ class _FormPermintaanCutiScreeenState extends State<FormPermintaanCutiScreeen> {
                 Icon(
                   Icons.attachment,
                   color: colors.textSecondary,
-                  size: 18.sp,
+                  size: 16.sp,
                 ),
-                SizedBox(width: 8.w),
+                SizedBox(width: 6.w),
                 Expanded(
                   child: Text(
                     _attachmentFileName!,
-                    style: AppTextStyles.body(colors.textPrimary),
+                    style: AppTextStyles.body(
+                      colors.textPrimary,
+                      fontSize: 13.sp,
+                    ),
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
                 GestureDetector(
                   onTap: _removeAttachment,
-                  child: Icon(Icons.close, color: colors.error, size: 18.sp),
+                  child: Icon(Icons.close, color: colors.error, size: 16.sp),
                 ),
               ],
             ),
           ),
-          SizedBox(height: 8.h),
         ],
         if (_attachmentFileName == null)
           GestureDetector(
             onTap: _pickFile,
             child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+              padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 10.h),
               decoration: BoxDecoration(
                 color: colors.background,
                 borderRadius: BorderRadius.circular(8.r),
@@ -686,11 +682,14 @@ class _FormPermintaanCutiScreeenState extends State<FormPermintaanCutiScreeen> {
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(Icons.add, color: colors.primaryBlue, size: 20.sp),
-                  SizedBox(width: 8.w),
+                  Icon(Icons.add, color: colors.primaryBlue, size: 18.sp),
+                  SizedBox(width: 6.w),
                   Text(
                     'Pilih File',
-                    style: AppTextStyles.bodyMedium(colors.primaryBlue),
+                    style: AppTextStyles.body(
+                      colors.primaryBlue,
+                      fontSize: 13.sp,
+                    ),
                   ),
                 ],
               ),
@@ -702,12 +701,12 @@ class _FormPermintaanCutiScreeenState extends State<FormPermintaanCutiScreeen> {
 
   Widget _buildBottomButton(ThemeColors colors) {
     return Container(
-      padding: EdgeInsets.fromLTRB(16.w, 12.h, 16.w, 24.h),
+      padding: EdgeInsets.fromLTRB(16.w, 10.h, 16.w, 20.h),
       decoration: BoxDecoration(
         color: colors.background,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
+            color: Colors.black.withOpacity(0.05),
             blurRadius: 8,
             offset: const Offset(0, -2),
           ),
@@ -720,8 +719,8 @@ class _FormPermintaanCutiScreeenState extends State<FormPermintaanCutiScreeen> {
           style: ElevatedButton.styleFrom(
             backgroundColor: colors.primaryBlue,
             foregroundColor: Colors.white,
-            disabledBackgroundColor: colors.primaryBlue.withValues(alpha: 0.5),
-            padding: EdgeInsets.symmetric(vertical: 14.h),
+            disabledBackgroundColor: colors.primaryBlue.withOpacity(0.5),
+            padding: EdgeInsets.symmetric(vertical: 12.h),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(8.r),
             ),
@@ -736,12 +735,161 @@ class _FormPermintaanCutiScreeenState extends State<FormPermintaanCutiScreeen> {
                   ),
                 )
               : Text(
-                  widget.existingOvertime != null
+                  widget.existingLeave != null
                       ? 'Simpan Perubahan'
-                      : 'Ajukan Lembur',
+                      : 'Ajukan Cuti',
                   style: AppTextStyles.button(Colors.white),
                 ),
         ),
+      ),
+    );
+  }
+
+  /// Widget dropdown untuk memilih jenis cuti dengan loading state
+  Widget _buildLeaveTypeDropdown(ThemeColors colors) {
+    // Tampilkan loading jika masih memuat
+    if (_isLoadingLeaveTypes) {
+      return Container(
+        padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 8.h),
+        decoration: BoxDecoration(
+          color: colors.background,
+          borderRadius: BorderRadius.circular(8.r),
+          border: Border.all(color: colors.divider),
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: Text(
+                'Memuat jenis cuti...',
+                style: AppTextStyles.body(
+                  colors.textSecondary,
+                  fontSize: 13.sp,
+                ),
+              ),
+            ),
+            SizedBox(
+              width: 14.w,
+              height: 14.w,
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                color: colors.primaryBlue,
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    // Tampilkan error jika ada masalah saat memuat
+    if (_errorMessage != null) {
+      return GestureDetector(
+        onTap: _fetchData, // Tap untuk retry
+        child: Container(
+          padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 8.h),
+          decoration: BoxDecoration(
+            color: colors.background,
+            borderRadius: BorderRadius.circular(8.r),
+            border: Border.all(color: colors.error),
+          ),
+          child: Row(
+            children: [
+              Expanded(
+                child: Text(
+                  'Gagal memuat jenis cuti',
+                  style: AppTextStyles.body(colors.error, fontSize: 13.sp),
+                ),
+              ),
+              Icon(Icons.refresh, color: colors.error, size: 18.sp),
+            ],
+          ),
+        ),
+      );
+    }
+
+    return _buildDropdownField(
+      colors,
+      value: _selectedLeaveType?.displayLeaveTypeName,
+      hint: 'Pilih jenis cuti',
+      onTap: _selectLeaveType,
+      onClear: _selectedLeaveType != null
+          ? () => setState(() => _selectedLeaveType = null)
+          : null,
+    );
+  }
+
+  Widget _buildValidityInfo(
+    ThemeColors colors,
+    EmployeeLeaveBalanceModel leaveType,
+  ) {
+    // Gunakan helper dari model untuk parse date
+    final startDate = leaveType.parsedStartValidDate;
+    final endDate = leaveType.parsedEndValidDate;
+
+    // Format dates using FormatDate helper
+    String formattedDateRange = '-';
+
+    if (startDate != null && endDate != null) {
+      formattedDateRange = FormatDate.dateRange(startDate, endDate);
+    } else {
+      // Fallback ke string mentah jika parsing gagal
+      final startStr = leaveType.startValidDateLeave ?? '';
+      final endStr = leaveType.endValidDateLeave ?? '';
+      if (startStr.isNotEmpty && endStr.isNotEmpty) {
+        formattedDateRange = '$startStr - $endStr';
+      }
+    }
+
+    return Container(
+      padding: EdgeInsets.all(10.w),
+      decoration: BoxDecoration(
+        color: colors.background,
+        borderRadius: BorderRadius.circular(8.r),
+        border: Border.all(color: colors.divider),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Validitas',
+                  style: AppTextStyles.body(
+                    colors.textPrimary,
+                    fontSize: 13.sp,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                SizedBox(height: 2.h),
+                Text(
+                  formattedDateRange,
+                  style: AppTextStyles.body(
+                    colors.primaryBlue,
+                    fontSize: 13.sp,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Text(
+                'Sisa',
+                style: AppTextStyles.body(
+                  colors.textPrimary,
+                  fontSize: 13.sp,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              SizedBox(height: 2.h),
+              Text(
+                leaveType.displayRemainingLeave,
+                style: AppTextStyles.body(colors.primaryBlue, fontSize: 13.sp),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }

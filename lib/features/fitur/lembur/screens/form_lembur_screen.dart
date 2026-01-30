@@ -204,7 +204,7 @@ class _FormLemburScreenState extends State<FormLemburScreen> {
             imageQuality: 80,
           );
           if (image != null) {
-            _setAttachment(File(image.path), image.name);
+            await _setAttachment(File(image.path), image.name);
           }
           break;
         case FilePickerType.gallery:
@@ -213,7 +213,7 @@ class _FormLemburScreenState extends State<FormLemburScreen> {
             imageQuality: 80,
           );
           if (image != null) {
-            _setAttachment(File(image.path), image.name);
+            await _setAttachment(File(image.path), image.name);
           }
           break;
         case FilePickerType.file:
@@ -234,7 +234,7 @@ class _FormLemburScreenState extends State<FormLemburScreen> {
           if (result != null && result.files.isNotEmpty) {
             final file = result.files.first;
             if (file.path != null) {
-              _setAttachment(File(file.path!), file.name);
+              await _setAttachment(File(file.path!), file.name);
             }
           }
           break;
@@ -246,7 +246,22 @@ class _FormLemburScreenState extends State<FormLemburScreen> {
     }
   }
 
-  void _setAttachment(File file, String fileName) {
+  /// Maksimal ukuran file 1MB
+  static const int _maxFileSizeBytes = 1 * 1024 * 1024; // 1MB
+
+  Future<void> _setAttachment(File file, String fileName) async {
+    // Validasi ukuran file
+    final fileSize = await file.length();
+    if (fileSize > _maxFileSizeBytes) {
+      if (mounted) {
+        final fileSizeMB = (fileSize / (1024 * 1024)).toStringAsFixed(2);
+        context.showErrorSnackbar(
+          'Ukuran file "$fileName" ($fileSizeMB MB) melebihi batas maksimal 1 MB',
+        );
+      }
+      return;
+    }
+
     setState(() {
       _attachmentFile = file;
       _attachmentFileName = fileName;
@@ -390,24 +405,24 @@ class _FormLemburScreenState extends State<FormLemburScreen> {
         ),
       ),
       body: SingleChildScrollView(
-        padding: EdgeInsets.all(16.w),
+        padding: EdgeInsets.all(14.w),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildLabel(colors, 'Permintaan Untuk'),
-            SizedBox(height: 8.h),
+            SizedBox(height: 6.h),
             _buildReadOnlyField(
               colors,
               value: user?.name ?? 'User',
               icon: Icons.person_outline,
             ),
-            SizedBox(height: 16.h),
+            SizedBox(height: 10.h),
 
             // Tanggal Lembur (single date)
             _buildLabel(colors, 'Tanggal Lembur'),
-            SizedBox(height: 8.h),
+            SizedBox(height: 6.h),
             _buildDateField(colors, date: _overtimeDate, onTap: _selectDate),
-            SizedBox(height: 16.h),
+            SizedBox(height: 10.h),
 
             // Jam Mulai & Jam Berakhir
             Row(
@@ -417,7 +432,7 @@ class _FormLemburScreenState extends State<FormLemburScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       _buildLabel(colors, 'Jam Mulai'),
-                      SizedBox(height: 8.h),
+                      SizedBox(height: 6.h),
                       _buildTimeField(
                         colors,
                         time: _startTime,
@@ -426,13 +441,13 @@ class _FormLemburScreenState extends State<FormLemburScreen> {
                     ],
                   ),
                 ),
-                SizedBox(width: 16.w),
+                SizedBox(width: 12.w),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       _buildLabel(colors, 'Jam Berakhir'),
-                      SizedBox(height: 8.h),
+                      SizedBox(height: 6.h),
                       _buildTimeField(
                         colors,
                         time: _endTime,
@@ -443,11 +458,11 @@ class _FormLemburScreenState extends State<FormLemburScreen> {
                 ),
               ],
             ),
-            SizedBox(height: 16.h),
+            SizedBox(height: 10.h),
 
             // Tipe Lembur
             _buildLabel(colors, 'Tipe Lembur'),
-            SizedBox(height: 8.h),
+            SizedBox(height: 6.h),
             _buildDropdownField(
               colors,
               value: _selectedOvertimeType?.displayName,
@@ -457,22 +472,22 @@ class _FormLemburScreenState extends State<FormLemburScreen> {
                   ? () => setState(() => _selectedOvertimeType = null)
                   : null,
             ),
-            SizedBox(height: 16.h),
+            SizedBox(height: 10.h),
 
             _buildLabel(colors, 'Keterangan'),
-            SizedBox(height: 8.h),
+            SizedBox(height: 6.h),
             _buildTextField(colors),
-            SizedBox(height: 16.h),
+            SizedBox(height: 10.h),
 
             _buildLabel(colors, 'Lampiran'),
-            SizedBox(height: 8.h),
+            SizedBox(height: 6.h),
             _buildAttachmentSection(colors),
-            SizedBox(height: 8.h),
+            SizedBox(height: 6.h),
             Text(
-              'Berkas yang Didukung: txt,doc,docx,jpg,png,gif,xls,pdf',
+              'Berkas yang Didukung: doc,jpg,ods,png,txt,doc,pdf',
               style: AppTextStyles.caption(colors.textSecondary),
             ),
-            SizedBox(height: 80.h),
+            SizedBox(height: 60.h),
           ],
         ),
       ),
@@ -481,7 +496,10 @@ class _FormLemburScreenState extends State<FormLemburScreen> {
   }
 
   Widget _buildLabel(ThemeColors colors, String text) {
-    return Text(text, style: AppTextStyles.body(colors.textSecondary));
+    return Text(
+      text,
+      style: AppTextStyles.body(colors.textSecondary, fontSize: 13.sp),
+    );
   }
 
   Widget _buildReadOnlyField(
@@ -490,7 +508,7 @@ class _FormLemburScreenState extends State<FormLemburScreen> {
     required IconData icon,
   }) {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 14.h),
+      padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 8.h),
       decoration: BoxDecoration(
         color: colors.background,
         borderRadius: BorderRadius.circular(8.r),
@@ -499,9 +517,12 @@ class _FormLemburScreenState extends State<FormLemburScreen> {
       child: Row(
         children: [
           Expanded(
-            child: Text(value, style: AppTextStyles.body(colors.textPrimary)),
+            child: Text(
+              value,
+              style: AppTextStyles.body(colors.textPrimary, fontSize: 13.sp),
+            ),
           ),
-          Icon(icon, color: colors.textSecondary, size: 20.sp),
+          Icon(icon, color: colors.textSecondary, size: 18.sp),
         ],
       ),
     );
@@ -515,7 +536,7 @@ class _FormLemburScreenState extends State<FormLemburScreen> {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 14.h),
+        padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 8.h),
         decoration: BoxDecoration(
           color: colors.background,
           borderRadius: BorderRadius.circular(8.r),
@@ -530,13 +551,14 @@ class _FormLemburScreenState extends State<FormLemburScreen> {
                     : 'Pilih tanggal',
                 style: AppTextStyles.body(
                   date != null ? colors.textPrimary : colors.textSecondary,
+                  fontSize: 13.sp,
                 ),
               ),
             ),
             Icon(
               Icons.calendar_today_outlined,
               color: colors.textSecondary,
-              size: 18.sp,
+              size: 14.sp,
             ),
           ],
         ),
@@ -554,7 +576,7 @@ class _FormLemburScreenState extends State<FormLemburScreen> {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 14.h),
+        padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 8.h),
         decoration: BoxDecoration(
           color: colors.background,
           borderRadius: BorderRadius.circular(8.r),
@@ -567,6 +589,7 @@ class _FormLemburScreenState extends State<FormLemburScreen> {
                 value ?? hint,
                 style: AppTextStyles.body(
                   value != null ? colors.textPrimary : colors.textSecondary,
+                  fontSize: 13.sp,
                 ),
               ),
             ),
@@ -576,15 +599,15 @@ class _FormLemburScreenState extends State<FormLemburScreen> {
                 child: Icon(
                   Icons.close,
                   color: colors.textSecondary,
-                  size: 18.sp,
+                  size: 14.sp,
                 ),
               ),
-              SizedBox(width: 8.w),
+              SizedBox(width: 6.w),
             ],
             Icon(
               Icons.keyboard_arrow_down,
               color: colors.textSecondary,
-              size: 20.sp,
+              size: 18.sp,
             ),
           ],
         ),
@@ -600,7 +623,7 @@ class _FormLemburScreenState extends State<FormLemburScreen> {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 14.h),
+        padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 8.h),
         decoration: BoxDecoration(
           color: colors.background,
           borderRadius: BorderRadius.circular(8.r),
@@ -613,13 +636,14 @@ class _FormLemburScreenState extends State<FormLemburScreen> {
                 time != null ? _formatTimeOfDay(time) : 'Pilih jam',
                 style: AppTextStyles.body(
                   time != null ? colors.textPrimary : colors.textSecondary,
+                  fontSize: 13.sp,
                 ),
               ),
             ),
             Icon(
               Icons.access_time_outlined,
               color: colors.textSecondary,
-              size: 18.sp,
+              size: 14.sp,
             ),
           ],
         ),
@@ -632,8 +656,8 @@ class _FormLemburScreenState extends State<FormLemburScreen> {
       controller: _descriptionController,
       maxLines: 3,
       decoration: InputDecoration(
-        hintText: 'Tulis alasan lembur',
-        hintStyle: AppTextStyles.body(colors.textSecondary),
+        hintText: 'Masukan Komentar',
+        hintStyle: AppTextStyles.body(colors.textSecondary, fontSize: 13.sp),
         filled: true,
         fillColor: colors.background,
         border: OutlineInputBorder(
@@ -648,9 +672,9 @@ class _FormLemburScreenState extends State<FormLemburScreen> {
           borderRadius: BorderRadius.circular(8.r),
           borderSide: BorderSide(color: colors.primaryBlue),
         ),
-        contentPadding: EdgeInsets.all(12.w),
+        contentPadding: EdgeInsets.all(10.w),
       ),
-      style: AppTextStyles.body(colors.textPrimary),
+      style: AppTextStyles.body(colors.textPrimary, fontSize: 13.sp),
     );
   }
 
@@ -659,8 +683,8 @@ class _FormLemburScreenState extends State<FormLemburScreen> {
       children: [
         if (_attachmentFileName != null) ...[
           Container(
-            margin: EdgeInsets.only(bottom: 8.h),
-            padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 10.h),
+            margin: EdgeInsets.only(bottom: 6.h),
+            padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 8.h),
             decoration: BoxDecoration(
               color: colors.background,
               borderRadius: BorderRadius.circular(8.r),
@@ -671,30 +695,33 @@ class _FormLemburScreenState extends State<FormLemburScreen> {
                 Icon(
                   Icons.attachment,
                   color: colors.textSecondary,
-                  size: 18.sp,
+                  size: 16.sp,
                 ),
-                SizedBox(width: 8.w),
+                SizedBox(width: 6.w),
                 Expanded(
                   child: Text(
                     _attachmentFileName!,
-                    style: AppTextStyles.body(colors.textPrimary),
+                    style: AppTextStyles.body(
+                      colors.textPrimary,
+                      fontSize: 13.sp,
+                    ),
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
                 GestureDetector(
                   onTap: _removeAttachment,
-                  child: Icon(Icons.close, color: colors.error, size: 18.sp),
+                  child: Icon(Icons.close, color: colors.error, size: 16.sp),
                 ),
               ],
             ),
           ),
-          SizedBox(height: 8.h),
+          SizedBox(height: 6.h),
         ],
         if (_attachmentFileName == null)
           GestureDetector(
             onTap: _pickFile,
             child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+              padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 10.h),
               decoration: BoxDecoration(
                 color: colors.background,
                 borderRadius: BorderRadius.circular(8.r),
@@ -703,11 +730,14 @@ class _FormLemburScreenState extends State<FormLemburScreen> {
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(Icons.add, color: colors.primaryBlue, size: 20.sp),
-                  SizedBox(width: 8.w),
+                  Icon(Icons.add, color: colors.primaryBlue, size: 18.sp),
+                  SizedBox(width: 6.w),
                   Text(
                     'Pilih File',
-                    style: AppTextStyles.bodyMedium(colors.primaryBlue),
+                    style: AppTextStyles.body(
+                      colors.primaryBlue,
+                      fontSize: 13.sp,
+                    ),
                   ),
                 ],
               ),
@@ -719,7 +749,7 @@ class _FormLemburScreenState extends State<FormLemburScreen> {
 
   Widget _buildBottomButton(ThemeColors colors) {
     return Container(
-      padding: EdgeInsets.fromLTRB(16.w, 12.h, 16.w, 24.h),
+      padding: EdgeInsets.fromLTRB(16.w, 10.h, 16.w, 20.h),
       decoration: BoxDecoration(
         color: colors.background,
         boxShadow: [
@@ -738,7 +768,7 @@ class _FormLemburScreenState extends State<FormLemburScreen> {
             backgroundColor: colors.primaryBlue,
             foregroundColor: Colors.white,
             disabledBackgroundColor: colors.primaryBlue.withValues(alpha: 0.5),
-            padding: EdgeInsets.symmetric(vertical: 14.h),
+            padding: EdgeInsets.symmetric(vertical: 12.h),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(8.r),
             ),

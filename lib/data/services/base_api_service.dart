@@ -95,7 +95,11 @@ class BaseApiService {
         options: options,
       );
 
-      return _decryptResponse(response, errorMessage: errorMessage);
+      return _decryptResponse(
+        response,
+        errorMessage: errorMessage,
+        endpoint: endpoint,
+      );
     } on DioException catch (e) {
       throw _handleDioError(e, errorMessage);
     } catch (e) {
@@ -115,7 +119,11 @@ class BaseApiService {
         options: Options(contentType: 'multipart/form-data'),
       );
 
-      return _decryptResponse(response, errorMessage: errorMessage);
+      return _decryptResponse(
+        response,
+        errorMessage: errorMessage,
+        endpoint: endpoint,
+      );
     } on DioException catch (e) {
       throw _handleDioError(e, errorMessage);
     } catch (e) {
@@ -156,7 +164,11 @@ class BaseApiService {
         endpoint,
         queryParameters: queryParameters,
       );
-      return _decryptResponse(response, errorMessage: errorMessage);
+      return _decryptResponse(
+        response,
+        errorMessage: errorMessage,
+        endpoint: endpoint,
+      );
     } on DioException catch (e) {
       throw _handleDioError(e, errorMessage);
     } catch (e) {
@@ -192,8 +204,13 @@ class BaseApiService {
   Map<String, dynamic> _decryptResponse(
     Response response, {
     String? errorMessage,
+    String? endpoint,
   }) {
-    if (response.statusCode != 200) {
+    final statusCode = response.statusCode ?? 0;
+
+    // Accept 2xx status codes as success
+    if (statusCode < 200 || statusCode >= 300) {
+      debugPrint('DEBUG-API-ERROR: Status $statusCode for $endpoint');
       throw Exception(
         errorMessage ?? 'Request gagal: ${response.statusMessage}',
       );
@@ -202,6 +219,9 @@ class BaseApiService {
     final encryptedResponse = response.data['response'] as String?;
 
     if (encryptedResponse == null) {
+      // Log more details for debugging
+      debugPrint('DEBUG-API-ERROR: No encrypted response for $endpoint');
+      debugPrint('DEBUG-API-ERROR: Raw data: ${response.data}');
       throw Exception('Response tidak memiliki data terenkripsi');
     }
 
