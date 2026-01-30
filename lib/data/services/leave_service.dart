@@ -25,6 +25,12 @@ class LeaveService {
     );
   }
 
+  Future<Map<String, dynamic>> getDetailLeaveEmployee({
+    required String leaveId,
+  }) async {
+    return _api.get('/leave/$leaveId');
+  }
+
   Future<Map<String, dynamic>> createLeaveEmployee({
     required String leaveRequestNo,
     required String startLeave,
@@ -68,6 +74,7 @@ class LeaveService {
     required String leaveRequestNo,
     required String startLeave,
     required String endLeave,
+    required String leaveTypeId,
     required String remarkLeave,
     required String employeeId,
     File? fileAttachment,
@@ -76,6 +83,7 @@ class LeaveService {
       'leave_request_no': leaveRequestNo,
       'start_leave': startLeave,
       'end_leave': endLeave,
+      'leave_type_id': leaveTypeId,
       'remark_leave': remarkLeave,
       'employee_id': employeeId,
     };
@@ -98,5 +106,11 @@ class LeaveService {
 
     final formData = FormData.fromMap(formMap);
     return _api.postFormData('/leave/$leaveId?method=_PUT', formData);
+  }
+
+  Future<Map<String, dynamic>> cancellationLeaveEmployee({
+    required String leaveId,
+  }) async {
+    return _api.post('/leave/cancellation/$leaveId', {});
   }
 }

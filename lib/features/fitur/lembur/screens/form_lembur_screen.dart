@@ -296,11 +296,6 @@ class _FormLemburScreenState extends State<FormLemburScreen> {
       return;
     }
 
-    if (_descriptionController.text.trim().isEmpty) {
-      context.showErrorSnackbar('Silakan isi keterangan');
-      return;
-    }
-
     final user = context.read<AuthProvider>().user;
     if (user == null) {
       context.showErrorSnackbar('User tidak ditemukan');
@@ -655,6 +650,7 @@ class _FormLemburScreenState extends State<FormLemburScreen> {
     return TextField(
       controller: _descriptionController,
       maxLines: 3,
+      maxLength: 30,
       decoration: InputDecoration(
         hintText: 'Masukan Komentar',
         hintStyle: AppTextStyles.body(colors.textSecondary, fontSize: 13.sp),

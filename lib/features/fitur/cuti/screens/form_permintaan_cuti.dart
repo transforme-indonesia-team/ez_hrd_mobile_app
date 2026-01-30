@@ -342,6 +342,11 @@ class _FormPermintaanCutiScreeenState extends State<FormPermintaanCutiScreeen> {
           leaveRequestNo: widget.existingLeave!.displayRequestNo,
           startLeave: DateFormat('yyyy-MM-dd').format(_startDate!),
           endLeave: DateFormat('yyyy-MM-dd').format(_endDate!),
+          leaveTypeId:
+              _selectedLeaveType?.leaveTypeId ??
+              _selectedLeaveType?.id ??
+              widget.existingLeave!.leaveTypeId ??
+              '',
           remarkLeave: _descriptionController.text.trim(),
           employeeId: user.employeeId!,
           fileAttachment: _attachmentFile,
@@ -608,6 +613,7 @@ class _FormPermintaanCutiScreeenState extends State<FormPermintaanCutiScreeen> {
     return TextField(
       controller: _descriptionController,
       maxLines: 3,
+      maxLength: 30,
       decoration: InputDecoration(
         hintText: 'Tulis Alasan Cuti...',
         hintStyle: AppTextStyles.body(colors.textSecondary, fontSize: 13.sp),
