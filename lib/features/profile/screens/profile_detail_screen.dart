@@ -154,7 +154,7 @@ class _ProfileDetailScreenState extends State<ProfileDetailScreen> {
     final colors = context.colors;
 
     return Scaffold(
-      backgroundColor: colors.backgroundDetail,
+      // backgroundColor: colors.backgroundDetail,
       appBar: AppBar(
         backgroundColor: colors.appBar,
         elevation: 0,

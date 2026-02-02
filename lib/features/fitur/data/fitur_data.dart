@@ -13,7 +13,7 @@ class FiturData {
           backgroundColor: Colors.blue.withValues(alpha: 0.2),
           items: [
             FiturItemModel(
-              id: 'profil_perusahaan',
+              id: 'profile_perusahaan',
               title: 'Profil Perusahaan',
               icon: Icons.business_outlined,
             ),

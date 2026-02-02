@@ -4,6 +4,7 @@ import 'package:hrd_app/core/theme/app_colors.dart';
 import 'package:hrd_app/core/theme/app_text_styles.dart';
 import 'package:hrd_app/core/utils/snackbar_utils.dart';
 import 'package:hrd_app/core/widgets/empty_state_widget.dart';
+import 'package:hrd_app/features/fitur/company/screens/profile_perusahaan.dart';
 import 'package:hrd_app/features/fitur/cuti/screens/permintaan_cuti.dart';
 import 'package:hrd_app/features/fitur/data/fitur_data.dart';
 import 'package:hrd_app/features/fitur/models/fitur_item_model.dart';
@@ -14,6 +15,7 @@ import 'package:hrd_app/features/fitur/widgets/fitur_item_grid.dart';
 import 'package:hrd_app/features/fitur/widgets/fitur_item_list.dart';
 import 'package:hrd_app/features/fitur/widgets/fitur_bottom_sheet.dart';
 import 'package:hrd_app/features/fitur/lembur/screens/daftar_lembur_screen.dart';
+import 'package:hrd_app/features/profile/screens/profile_detail_screen.dart';
 
 class FiturScreen extends StatefulWidget {
   const FiturScreen({super.key});
@@ -51,6 +53,18 @@ class _FiturScreenState extends State<FiturScreen> {
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => const PermintaanCutiScreen()),
+        );
+      case 'profile_perusahaan':
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const ProfilePerusahaanScreen(),
+          ),
+        );
+      case 'data_personal':
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const ProfileDetailScreen()),
         );
       default:
         context.showInfoSnackbar('Fitur "${item.title}" belum tersedia');
