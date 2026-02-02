@@ -50,25 +50,31 @@ class _LemburFilterBottomSheetState extends State<LemburFilterBottomSheet> {
     _endDate = widget.endDate;
   }
 
-  Future<void> _selectDate(bool isStart) async {
-    final initialDate = isStart
-        ? (_startDate ?? DateTime.now())
-        : (_endDate ?? DateTime.now());
+  Future<void> _selectDateRange() async {
+    final initialDateRange = DateTimeRange(
+      start: _startDate ?? DateTime.now(),
+      end: _endDate ?? DateTime.now().add(const Duration(days: 7)),
+    );
 
-    final picked = await showDatePicker(
+    final picked = await showDateRangePicker(
       context: context,
-      initialDate: initialDate,
       firstDate: DateTime(2020),
       lastDate: DateTime(2030),
+      initialDateRange: (_startDate != null && _endDate != null)
+          ? initialDateRange
+          : null,
+      helpText: 'Pilih Rentang Tanggal',
+      cancelText: 'Batal',
+      confirmText: 'Pilih',
+      saveText: 'Simpan',
+      fieldStartLabelText: 'Tanggal Mulai',
+      fieldEndLabelText: 'Tanggal Selesai',
     );
 
     if (picked != null) {
       setState(() {
-        if (isStart) {
-          _startDate = picked;
-        } else {
-          _endDate = picked;
-        }
+        _startDate = picked.start;
+        _endDate = picked.end;
       });
     }
   }
@@ -80,9 +86,13 @@ class _LemburFilterBottomSheetState extends State<LemburFilterBottomSheet> {
     });
   }
 
-  String _formatDate(DateTime? date) {
-    if (date == null) return '';
-    return FormatDate.shortDate(date);
+  String _formatDateRange() {
+    if (_startDate == null && _endDate == null) {
+      return 'Pilih rentang tanggal';
+    }
+    final start = _startDate != null ? FormatDate.shortDate(_startDate!) : '-';
+    final end = _endDate != null ? FormatDate.shortDate(_endDate!) : '-';
+    return '$start  →  $end';
   }
 
   @override
@@ -129,17 +139,7 @@ class _LemburFilterBottomSheetState extends State<LemburFilterBottomSheet> {
             style: AppTextStyles.body(colors.textSecondary),
           ),
           SizedBox(height: 12.h),
-          _buildDateField(
-            colors: colors,
-            value: _formatDate(_startDate),
-            onTap: () => _selectDate(true),
-          ),
-          SizedBox(height: 12.h),
-          _buildDateField(
-            colors: colors,
-            value: _formatDate(_endDate),
-            onTap: () => _selectDate(false),
-          ),
+          _buildDateRangeField(colors: colors),
           SizedBox(height: 24.h),
           SizedBox(
             width: double.infinity,
@@ -168,33 +168,38 @@ class _LemburFilterBottomSheetState extends State<LemburFilterBottomSheet> {
     );
   }
 
-  Widget _buildDateField({
-    required ThemeColors colors,
-    required String value,
-    required VoidCallback onTap,
-  }) {
+  Widget _buildDateRangeField({required ThemeColors colors}) {
+    final hasValue = _startDate != null && _endDate != null;
+
     return GestureDetector(
-      onTap: onTap,
+      onTap: _selectDateRange,
       child: Container(
         width: double.infinity,
-        padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 10.h),
+        padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 14.h),
         decoration: BoxDecoration(
           color: colors.surface,
           borderRadius: BorderRadius.circular(8.r),
-          border: Border.all(color: colors.divider),
+          border: Border.all(
+            color: hasValue ? colors.primaryBlue : colors.divider,
+          ),
         ),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
-              value.isEmpty ? '' : value,
-              style: AppTextStyles.body(colors.textPrimary),
-            ),
             Icon(
-              Icons.calendar_today_outlined,
-              color: colors.textSecondary,
-              size: 16.sp,
+              Icons.date_range_outlined,
+              color: hasValue ? colors.primaryBlue : colors.textSecondary,
+              size: 20.sp,
             ),
+            SizedBox(width: 12.w),
+            Expanded(
+              child: Text(
+                _formatDateRange(),
+                style: AppTextStyles.body(
+                  hasValue ? colors.textPrimary : colors.textSecondary,
+                ),
+              ),
+            ),
+            Icon(Icons.chevron_right, color: colors.textSecondary, size: 20.sp),
           ],
         ),
       ),

@@ -40,6 +40,11 @@ class _PermintaanCutiScreenState extends State<PermintaanCutiScreen> {
     _fetchData();
   }
 
+  String? _formatDateForApi(DateTime? date) {
+    if (date == null) return null;
+    return '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
+  }
+
   Future<void> _fetchData() async {
     setState(() => _isLoading = true);
 
@@ -47,26 +52,49 @@ class _PermintaanCutiScreenState extends State<PermintaanCutiScreen> {
       final response = await LeaveService().getLeaveEmployee(
         page: _currentPage,
         limit: 10,
+        startDate: _formatDateForApi(_filterStartDate),
+        endDate: _formatDateForApi(_filterEndDate),
       );
 
-      final records = response['original']['records'];
+      final recordsRaw = response['original']['records'];
+
+      // Handle case where records is empty list [] instead of Map
+      if (recordsRaw == null || recordsRaw is List) {
+        if (mounted) {
+          setState(() {
+            _isLoading = false;
+            _requests = [];
+            _totalItems = 0;
+            _totalPages = 1;
+            _errorMessage = null;
+          });
+        }
+        return;
+      }
+
+      final records = recordsRaw as Map<String, dynamic>;
+      final items = records['items'] as List<dynamic>? ?? [];
+      final pagination = records['pagination'] as Map<String, dynamic>?;
 
       if (mounted) {
         setState(() {
           _isLoading = false;
-          _requests = (records['items'] as List<dynamic>)
-              .map((e) => LeaveEmployeeModel.fromJson(e))
+          _requests = items
+              .map(
+                (e) => LeaveEmployeeModel.fromJson(e as Map<String, dynamic>),
+              )
               .toList();
-          _totalItems = records['pagination']['total_data'] as int? ?? 0;
-          _totalPages = records['pagination']['total_pages'] as int? ?? 1;
+          _totalItems = pagination?['total_data'] as int? ?? 0;
+          _totalPages = pagination?['total_pages'] as int? ?? 1;
           _errorMessage = null;
         });
       }
     } catch (e) {
+      debugPrint('Error fetching leave list: $e');
       if (mounted) {
         setState(() {
           _isLoading = false;
-          _errorMessage = 'Gagal memuat data: $e';
+          _errorMessage = 'Terjadi kesalahan saat memuat data';
         });
       }
     }
@@ -81,8 +109,9 @@ class _PermintaanCutiScreenState extends State<PermintaanCutiScreen> {
         setState(() {
           _filterStartDate = startDate;
           _filterEndDate = endDate;
+          _currentPage = 1;
         });
-        // TODO: Apply filter to API call
+        _fetchData();
       },
     );
   }
@@ -165,24 +194,10 @@ class _PermintaanCutiScreenState extends State<PermintaanCutiScreen> {
     }
 
     if (_errorMessage != null) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.error_outline, size: 64.sp, color: colors.textSecondary),
-            SizedBox(height: 16.h),
-            Text(
-              _errorMessage!,
-              style: AppTextStyles.body(colors.textSecondary),
-              textAlign: TextAlign.center,
-            ),
-            SizedBox(height: 16.h),
-            ElevatedButton(
-              onPressed: _fetchData,
-              child: const Text('Coba Lagi'),
-            ),
-          ],
-        ),
+      return EmptyStateWidget(
+        message: _errorMessage!,
+        icon: Icons.error_outline,
+        onRetry: _fetchData,
       );
     }
 

@@ -14,6 +14,8 @@ class LeaveService {
     int? page,
     int? limit,
     String? search,
+    String? startDate,
+    String? endDate,
   }) async {
     return _api.get(
       '/leave',
@@ -21,6 +23,8 @@ class LeaveService {
         if (page != null) 'page': page,
         if (limit != null) 'sizes': limit,
         if (search != null) 'search': search,
+        if (startDate != null) 'filter[start_date]': startDate,
+        if (endDate != null) 'filter[end_date]': endDate,
       },
     );
   }

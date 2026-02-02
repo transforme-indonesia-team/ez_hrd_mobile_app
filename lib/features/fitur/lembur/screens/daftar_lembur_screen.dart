@@ -35,12 +35,19 @@ class _DaftarLemburScreenState extends State<DaftarLemburScreen> {
     _fetchData();
   }
 
+  String? _formatDateForApi(DateTime? date) {
+    if (date == null) return null;
+    return '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
+  }
+
   Future<void> _fetchData() async {
     setState(() => _isLoading = true);
     try {
       final response = await OvertimeService().getOvertimeEmployee(
         page: _currentPage,
         limit: 10,
+        startDate: _formatDateForApi(_filterStartDate),
+        endDate: _formatDateForApi(_filterEndDate),
       );
 
       final recordsRaw = response['original']['records'];
@@ -92,8 +99,9 @@ class _DaftarLemburScreenState extends State<DaftarLemburScreen> {
         setState(() {
           _filterStartDate = startDate;
           _filterEndDate = endDate;
+          _currentPage = 1;
         });
-        // TODO: Apply filter to API call
+        _fetchData();
       },
     );
   }

@@ -1,3 +1,5 @@
+import 'package:hrd_app/core/utils/format_date.dart';
+
 class OvertimeEmployeeModel {
   final String id;
   final String? overtimeRequestNo;
@@ -101,7 +103,7 @@ class OvertimeEmployeeModel {
   String get displayOvertimeRequestNo => overtimeRequestNo ?? '-';
   String get displayEmployeeName => employeeName ?? '-';
   String get displayStatus => status ?? '-';
-  String get displayDateOvertime => dateOvertime ?? '-';
+  String get displayDateOvertime => FormatDate.fromString(dateOvertime);
   String get displayTimeRange =>
       '${startOvertime ?? '-'} - ${endOvertime ?? '-'}';
 
