@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hrd_app/core/theme/app_text_styles.dart';
 import 'package:hrd_app/core/theme/app_colors.dart';
+import 'package:hrd_app/core/utils/format_date.dart';
 import 'package:hrd_app/core/widgets/empty_state_widget.dart';
 import 'package:hrd_app/core/widgets/skeleton_widget.dart';
 import 'package:hrd_app/data/services/employee_service.dart';
@@ -47,29 +48,7 @@ class _PenghargaanScreenState extends State<PenghargaanScreen> {
     }
   }
 
-  String _formatDate(String? dateStr) {
-    if (dateStr == null || dateStr.isEmpty) return '-';
-    try {
-      final date = DateTime.parse(dateStr);
-      const months = [
-        'Jan',
-        'Feb',
-        'Mar',
-        'Apr',
-        'Mei',
-        'Jun',
-        'Jul',
-        'Agu',
-        'Sep',
-        'Okt',
-        'Nov',
-        'Des',
-      ];
-      return '${date.day} ${months[date.month - 1]} ${date.year}';
-    } catch (_) {
-      return dateStr;
-    }
-  }
+  String _formatDate(String? dateStr) => FormatDate.fromString(dateStr);
 
   @override
   Widget build(BuildContext context) {

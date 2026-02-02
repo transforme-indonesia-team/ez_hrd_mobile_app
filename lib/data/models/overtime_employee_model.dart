@@ -198,7 +198,7 @@ class OvertimeDetailResponse {
   factory OvertimeDetailResponse.fromJson(Map<String, dynamic> json) {
     final records = json['records'] as Map<String, dynamic>;
     final approverRequestJson =
-        records['approverRequest'] as List<dynamic>? ?? [];
+        records['approver_request'] as List<dynamic>? ?? [];
     final approverList = approverRequestJson
         .map(
           (json) =>

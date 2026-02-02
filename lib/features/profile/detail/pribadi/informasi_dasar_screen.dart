@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hrd_app/core/providers/auth_provider.dart';
 import 'package:hrd_app/core/theme/app_colors.dart';
 import 'package:hrd_app/core/theme/app_text_styles.dart';
+import 'package:hrd_app/core/utils/format_date.dart';
 import 'package:hrd_app/data/models/user_model.dart';
 import 'package:provider/provider.dart';
 
@@ -39,30 +40,7 @@ class InformasiDasarScreen extends StatelessWidget {
     }
   }
 
-  String _formatDate(String? dateOfBirth) {
-    if (dateOfBirth == null || dateOfBirth.isEmpty) return '-';
-
-    try {
-      final dob = DateTime.parse(dateOfBirth);
-      const months = [
-        'Januari',
-        'Februari',
-        'Maret',
-        'April',
-        'Mei',
-        'Juni',
-        'Juli',
-        'Agustus',
-        'September',
-        'Oktober',
-        'November',
-        'Desember',
-      ];
-      return '${dob.day} ${months[dob.month - 1]} ${dob.year}';
-    } catch (e) {
-      return dateOfBirth;
-    }
-  }
+  String _formatDate(String? dateStr) => FormatDate.fromString(dateStr);
 
   @override
   Widget build(BuildContext context) {

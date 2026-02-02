@@ -389,7 +389,7 @@ class _RekamWaktuConfirmScreenState extends State<RekamWaktuConfirmScreen> {
                   )
                 : Text(
                     'Simpan Kehadiran',
-                    style: AppTextStyles.body(Colors.black),
+                    style: AppTextStyles.body(colors.textPrimary),
                   ),
           ),
         ),

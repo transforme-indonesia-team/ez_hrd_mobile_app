@@ -1,3 +1,4 @@
+import 'package:hrd_app/core/utils/format_date.dart';
 import 'package:hrd_app/data/models/leave_type_model.dart';
 
 /// Model untuk data cuti karyawan
@@ -21,6 +22,12 @@ class LeaveEmployeeModel {
   final String? createdByPhoto;
   final String? companyName;
   final String? fileNameOvertime;
+  final String? leaveTypeName;
+  final int? remainingLeave;
+  final String? startValidDateLeave;
+  final String? endValidDateLeave;
+  final String? fileNameLeave;
+  final List<dynamic>? historyApprover;
 
   const LeaveEmployeeModel({
     required this.id,
@@ -42,6 +49,12 @@ class LeaveEmployeeModel {
     this.createdByPhoto,
     this.companyName,
     this.fileNameOvertime,
+    this.leaveTypeName,
+    this.remainingLeave,
+    this.startValidDateLeave,
+    this.endValidDateLeave,
+    this.fileNameLeave,
+    this.historyApprover,
   });
 
   factory LeaveEmployeeModel.fromJson(Map<String, dynamic> json) {
@@ -67,6 +80,12 @@ class LeaveEmployeeModel {
       createdByPhoto: json['created_by_photo'] as String?,
       companyName: json['company_name'] as String?,
       fileNameOvertime: json['file_name_overtime'] as String?,
+      leaveTypeName: json['leave_type_name'] as String?,
+      remainingLeave: json['remaining_leave'] as int?,
+      startValidDateLeave: json['start_valid_date_leave'] as String?,
+      endValidDateLeave: json['end_valid_date_leave'] as String?,
+      fileNameLeave: json['file_name_leave'] as String?,
+      historyApprover: json['history_approver'] as List<dynamic>?,
     );
   }
 
@@ -91,6 +110,12 @@ class LeaveEmployeeModel {
       'created_by_photo': createdByPhoto,
       'company_name': companyName,
       'file_name_overtime': fileNameOvertime,
+      'leave_type_name': leaveTypeName,
+      'remaining_leave': remainingLeave,
+      'start_valid_date_leave': startValidDateLeave,
+      'end_valid_date_leave': endValidDateLeave,
+      'file_name_leave': fileNameLeave,
+      'history_approver': historyApprover,
     };
   }
 
@@ -106,7 +131,8 @@ class LeaveEmployeeModel {
   String get displayCompanyName => companyName ?? '-';
 
   /// Display leave type name untuk UI
-  String get displayLeaveTypeName => leaveType?.displayName ?? '-';
+  String get displayLeaveTypeName =>
+      leaveType?.displayName ?? leaveTypeName ?? '-';
 
   /// Display leave type code untuk UI
   String get displayLeaveTypeCode => leaveType?.displayCode ?? '-';
@@ -118,56 +144,14 @@ class LeaveEmployeeModel {
   }
 
   /// Display date range untuk UI (misal: "26 Jan 2026 - 26 Jan 2026")
-  String get displayDateRange {
-    if (startLeave == null && endLeave == null) return '-';
-    if (startLeave == endLeave) return formattedStartDate;
-    return '$formattedStartDate - $formattedEndDate';
-  }
+  String get displayDateRange =>
+      FormatDate.dateRangeFromString(startLeave, endLeave);
 
   /// Format start date untuk UI (misal: "15 Jan 2026")
-  String get formattedStartDate {
-    if (startLeave == null) return '-';
-    return _formatDate(startLeave!);
-  }
+  String get formattedStartDate => FormatDate.fromString(startLeave);
 
   /// Format end date untuk UI (misal: "15 Jan 2026")
-  String get formattedEndDate {
-    if (endLeave == null) return '-';
-    return _formatDate(endLeave!);
-  }
-
-  /// Helper untuk format tanggal dari "2026-01-15" ke "15 Jan 2026"
-  String _formatDate(String dateStr) {
-    try {
-      final parts = dateStr.split('-');
-      if (parts.length != 3) return dateStr;
-
-      final year = parts[0];
-      final month = int.parse(parts[1]);
-      final day = parts[2];
-
-      const months = [
-        '',
-        'Jan',
-        'Feb',
-        'Mar',
-        'Apr',
-        'May',
-        'Jun',
-        'Jul',
-        'Aug',
-        'Sep',
-        'Oct',
-        'Nov',
-        'Dec',
-      ];
-
-      if (month < 1 || month > 12) return dateStr;
-      return '$day ${months[month]} $year';
-    } catch (e) {
-      return dateStr;
-    }
-  }
+  String get formattedEndDate => FormatDate.fromString(endLeave);
 
   /// Display cancellation status untuk UI
   String get cancellationStatus => '-';
@@ -193,4 +177,15 @@ class LeaveEmployeeModel {
 
   /// Check apakah status pending
   bool get isPending => status?.toUpperCase() == 'PENDING';
+
+  /// Display remaining leave dengan periode validitas
+  /// Format: "12 Hari (14 Jan 2026 - 21 Dec 2026)"
+  String get displayRemainingLeave {
+    if (remainingLeave == null) return '-';
+    final validityPeriod = FormatDate.dateRangeFromString(
+      startValidDateLeave,
+      endValidDateLeave,
+    );
+    return '$remainingLeave Hari ($validityPeriod)';
+  }
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hrd_app/core/theme/app_text_styles.dart';
 import 'package:hrd_app/core/theme/app_colors.dart';
+import 'package:hrd_app/core/utils/format_date.dart';
 import 'package:hrd_app/data/services/employee_service.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -48,29 +49,7 @@ class _InfoKetenagakerjaanScreenState extends State<InfoKetenagakerjaanScreen> {
     }
   }
 
-  String _formatDate(String? dateStr) {
-    if (dateStr == null || dateStr.isEmpty) return '-';
-    try {
-      final date = DateTime.parse(dateStr);
-      const months = [
-        'Januari',
-        'Februari',
-        'Maret',
-        'April',
-        'Mei',
-        'Juni',
-        'Juli',
-        'Agustus',
-        'September',
-        'Oktober',
-        'November',
-        'Desember',
-      ];
-      return '${date.day} ${months[date.month - 1]} ${date.year}';
-    } catch (_) {
-      return dateStr;
-    }
-  }
+  String _formatDate(String? dateStr) => FormatDate.fromString(dateStr);
 
   @override
   Widget build(BuildContext context) {
@@ -172,15 +151,9 @@ class _InfoKetenagakerjaanScreenState extends State<InfoKetenagakerjaanScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            title,
-            style: AppTextStyles.bodySemiBold(colors.textPrimary),
-          ),
+          Text(title, style: AppTextStyles.bodySemiBold(colors.textPrimary)),
           SizedBox(height: 4.h),
-          Text(
-            subtitle,
-            style: AppTextStyles.caption(colors.textPrimary),
-          ),
+          Text(subtitle, style: AppTextStyles.caption(colors.textPrimary)),
           SizedBox(height: 8.h),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -201,26 +174,16 @@ class _InfoKetenagakerjaanScreenState extends State<InfoKetenagakerjaanScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          label,
-          style: AppTextStyles.bodyMedium(colors.textPrimary),
-        ),
+        Text(label, style: AppTextStyles.bodyMedium(colors.textPrimary)),
         SizedBox(height: 4.h),
-        Text(
-          value ?? '-',
-          style: AppTextStyles.body(colors.textPrimary),
-        ),
+        Text(value ?? '-', style: AppTextStyles.body(colors.textPrimary)),
         if (note != null) ...[
           SizedBox(height: 4.h),
-          Text(
-            note,
-            style: AppTextStyles.caption(colors.textSecondary),
-          ),
+          Text(note, style: AppTextStyles.caption(colors.textSecondary)),
         ],
       ],
     );
   }
-
 
   Widget _buildSkeletonLoading() {
     return Column(children: [_buildSkeletonCard(8)]);

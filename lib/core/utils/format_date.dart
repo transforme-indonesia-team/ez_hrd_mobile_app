@@ -34,4 +34,29 @@ class FormatDate {
   static String apiFormat(DateTime date) {
     return DateFormat('yyyy-MM-dd').format(date);
   }
+
+  /// Parse date string (yyyy-MM-dd) and format to "15 Jan 2026"
+  /// Returns original string if parsing fails
+  static String fromString(String? dateStr, {String fallback = '-'}) {
+    if (dateStr == null || dateStr.isEmpty) return fallback;
+    try {
+      final date = DateTime.parse(dateStr);
+      return DateFormat('d MMM yyyy', 'id_ID').format(date);
+    } catch (e) {
+      return dateStr;
+    }
+  }
+
+  /// Parse date string and format as date range
+  static String dateRangeFromString(
+    String? start,
+    String? end, {
+    String fallback = '-',
+  }) {
+    if (start == null && end == null) return fallback;
+    final startFormatted = fromString(start, fallback: fallback);
+    final endFormatted = fromString(end, fallback: fallback);
+    if (start == end) return startFormatted;
+    return '$startFormatted - $endFormatted';
+  }
 }

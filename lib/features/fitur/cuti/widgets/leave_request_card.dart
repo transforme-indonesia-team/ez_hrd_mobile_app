@@ -45,12 +45,22 @@ class LeaveRequestCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Expanded(
-                  child: Text(
-                    request.displayEmployeeName,
-                    style: AppTextStyles.h4(
-                      colors.textPrimary,
-                      fontSize: 15.sp,
-                    ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        request.displayEmployeeName,
+                        style: AppTextStyles.h4(
+                          colors.textPrimary,
+                          fontSize: 15.sp,
+                        ),
+                      ),
+                      SizedBox(height: 2.h),
+                      Text(
+                        request.displayRequestNo,
+                        style: AppTextStyles.caption(colors.textSecondary),
+                      ),
+                    ],
                   ),
                 ),
                 if (request.isDraft && onEdit != null)
@@ -172,37 +182,55 @@ class _StatusBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.colors;
     final statusUpper = status.toUpperCase();
 
-    Color backgroundColor;
-    Color textColor;
-    String displayText = status;
+    // Get display label and colors based on status
+    // Convert status to readable format: PARTIALLY_APPROVED -> Partially Approved
+    String label = status
+        .replaceAll('_', ' ')
+        .toLowerCase()
+        .split(' ')
+        .map(
+          (word) => word.isNotEmpty
+              ? '${word[0].toUpperCase()}${word.substring(1)}'
+              : '',
+        )
+        .join(' ');
 
-    if (statusUpper == 'DRAFT' || statusUpper == 'BELUM DIVERIFIKASI') {
-      backgroundColor = const Color(0xFFFFF3CD);
-      textColor = const Color(0xFFD68910);
-      displayText = 'Belum diverifikasi';
-    } else if (statusUpper == 'PENDING' || statusUpper.contains('WAITING')) {
-      backgroundColor = const Color(0xFFFFF3CD);
-      textColor = const Color(0xFFD68910);
-    } else if (statusUpper == 'APPROVED' || statusUpper.contains('APPROVE')) {
-      backgroundColor = const Color(0xFFD4EDDA);
-      textColor = const Color(0xFF28A745);
-    } else if (statusUpper == 'REJECTED' || statusUpper.contains('REJECT')) {
-      backgroundColor = const Color(0xFFF8D7DA);
-      textColor = const Color(0xFFDC3545);
-    } else {
-      backgroundColor = const Color(0xFFE5E7EB);
-      textColor = const Color(0xFF6B7280);
-    }
+    final (Color backgroundColor, Color textColor) = switch (statusUpper) {
+      'DRAFT' => (const Color(0xFFE0E7FF), const Color(0xFF4338CA)),
+      'PENDING' => (const Color(0xFFFFF3CD), const Color(0xFFD68910)),
+      _ when statusUpper.contains('WAITING') => (
+        const Color(0xFFFFF3CD),
+        const Color(0xFFD68910),
+      ),
+      _ when statusUpper.contains('APPROVE') => (
+        const Color(0xFFD4EDDA),
+        const Color(0xFF28A745),
+      ),
+      _ when statusUpper.contains('REJECT') => (
+        const Color(0xFFF8D7DA),
+        const Color(0xFFDC3545),
+      ),
+      _ when statusUpper.contains('CANCEL') => (
+        const Color(0xFFF8D7DA),
+        const Color(0xFFDC3545),
+      ),
+      _ => (colors.divider, colors.textSecondary),
+    };
 
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 2.h),
+      padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
       decoration: BoxDecoration(
         color: backgroundColor,
-        borderRadius: BorderRadius.circular(5.r),
+        borderRadius: BorderRadius.circular(4.r),
       ),
-      child: Text(displayText, style: AppTextStyles.caption(textColor)),
+      child: Text(
+        label,
+        style: AppTextStyles.caption(textColor),
+        overflow: TextOverflow.ellipsis,
+      ),
     );
   }
 }

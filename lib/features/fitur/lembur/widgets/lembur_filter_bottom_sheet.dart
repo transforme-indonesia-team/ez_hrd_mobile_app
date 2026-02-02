@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hrd_app/core/theme/app_colors.dart';
 import 'package:hrd_app/core/theme/app_text_styles.dart';
+import 'package:hrd_app/core/utils/format_date.dart';
 
 class LemburFilterBottomSheet extends StatefulWidget {
   final DateTime? startDate;
@@ -81,7 +82,7 @@ class _LemburFilterBottomSheetState extends State<LemburFilterBottomSheet> {
 
   String _formatDate(DateTime? date) {
     if (date == null) return '';
-    return '${date.day}/${date.month}/${date.year}';
+    return FormatDate.shortDate(date);
   }
 
   @override
