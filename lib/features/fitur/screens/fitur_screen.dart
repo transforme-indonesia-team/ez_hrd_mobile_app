@@ -5,6 +5,7 @@ import 'package:hrd_app/core/theme/app_text_styles.dart';
 import 'package:hrd_app/core/utils/snackbar_utils.dart';
 import 'package:hrd_app/core/widgets/empty_state_widget.dart';
 import 'package:hrd_app/features/fitur/company/screens/profile_perusahaan.dart';
+import 'package:hrd_app/features/fitur/cuti/screens/kalender_cuti_screen.dart';
 import 'package:hrd_app/features/fitur/cuti/screens/permintaan_cuti.dart';
 import 'package:hrd_app/features/fitur/data/fitur_data.dart';
 import 'package:hrd_app/features/fitur/models/fitur_item_model.dart';
@@ -65,6 +66,11 @@ class _FiturScreenState extends State<FiturScreen> {
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => const ProfileDetailScreen()),
+        );
+      case 'kalender_cuti':
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const KalenderCutiScreen()),
         );
       default:
         context.showInfoSnackbar('Fitur "${item.title}" belum tersedia');

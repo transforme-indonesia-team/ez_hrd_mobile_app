@@ -117,4 +117,17 @@ class LeaveService {
   }) async {
     return _api.post('/leave/cancellation/$leaveId', {});
   }
+
+  Future<Map<String, dynamic>> leaveCalender({
+    required String startDate,
+    required String endDate,
+  }) async {
+    return _api.get(
+      '/leave/leave-calendar',
+      queryParameters: {
+        'filter[start_date]': startDate,
+        'filter[end_date]': endDate,
+      },
+    );
+  }
 }
