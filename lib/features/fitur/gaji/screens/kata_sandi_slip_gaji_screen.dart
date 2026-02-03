@@ -5,6 +5,7 @@ import 'package:hrd_app/core/theme/app_colors.dart';
 import 'package:hrd_app/core/theme/app_text_styles.dart';
 import 'package:hrd_app/core/utils/snackbar_utils.dart';
 import 'package:hrd_app/data/services/slip_gaji_service.dart';
+import 'package:hrd_app/features/fitur/gaji/widgets/form_widgets.dart';
 import 'package:provider/provider.dart';
 
 class KataSandiSlipGajiScreen extends StatefulWidget {
@@ -94,17 +95,16 @@ class _KataSandiSlipGajiScreenState extends State<KataSandiSlipGajiScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Employee Name (read-only)
-              _buildLabel(colors, 'Nama Karyawan'),
-              SizedBox(height: 8.h),
-              _buildReadOnlyField(colors, user?.name ?? '-'),
+              ReadOnlyFormField(
+                label: 'Nama Karyawan',
+                value: user?.name ?? '-',
+              ),
               SizedBox(height: 16.h),
 
               // App Login Password
-              _buildLabel(colors, 'Kata Sandi Login Aplikasi'),
-              SizedBox(height: 8.h),
-              _buildPasswordField(
-                colors,
+              PasswordFormField(
                 controller: _appPasswordController,
+                label: 'Kata Sandi Login Aplikasi',
                 hint: 'Kata Sandi Login Aplikasi',
                 obscure: _obscureAppPassword,
                 onToggle: () =>
@@ -119,11 +119,9 @@ class _KataSandiSlipGajiScreenState extends State<KataSandiSlipGajiScreen> {
               SizedBox(height: 16.h),
 
               // New Slip Gaji Password
-              _buildLabel(colors, 'Kata Sandi Baru Slip Gaji'),
-              SizedBox(height: 8.h),
-              _buildPasswordField(
-                colors,
+              PasswordFormField(
                 controller: _newPasswordController,
+                label: 'Kata Sandi Baru Slip Gaji',
                 hint: 'Kata Sandi Baru Slip Gaji',
                 obscure: _obscureNewPassword,
                 maxLength: _maxPasswordLength,
@@ -142,11 +140,9 @@ class _KataSandiSlipGajiScreenState extends State<KataSandiSlipGajiScreen> {
               SizedBox(height: 16.h),
 
               // Confirm Password
-              _buildLabel(colors, 'Konfirmasi Kata Sandi Baru Slip Gaji'),
-              SizedBox(height: 8.h),
-              _buildPasswordField(
-                colors,
+              PasswordFormField(
                 controller: _confirmPasswordController,
+                label: 'Konfirmasi Kata Sandi Baru Slip Gaji',
                 hint: 'Konfirmasi Kata Sandi Baru Slip Gaji',
                 obscure: _obscureConfirmPassword,
                 maxLength: _maxPasswordLength,
@@ -166,115 +162,14 @@ class _KataSandiSlipGajiScreenState extends State<KataSandiSlipGajiScreen> {
               SizedBox(height: 24.h),
 
               // Submit Button
-              _buildSubmitButton(colors),
+              SubmitButton(
+                isLoading: _isSubmitting,
+                text: 'Ajukan',
+                onPressed: _submit,
+              ),
             ],
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _buildLabel(ThemeColors colors, String text) {
-    return Text(
-      text,
-      style: AppTextStyles.body(
-        colors.textPrimary,
-        fontSize: 13.sp,
-        fontWeight: FontWeight.w500,
-      ),
-    );
-  }
-
-  Widget _buildReadOnlyField(ThemeColors colors, String value) {
-    return Container(
-      width: double.infinity,
-      padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 14.h),
-      decoration: BoxDecoration(
-        color: colors.divider.withValues(alpha: 0.3),
-        borderRadius: BorderRadius.circular(8.r),
-        border: Border.all(color: colors.divider),
-      ),
-      child: Text(
-        value,
-        style: AppTextStyles.body(colors.textPrimary, fontSize: 14.sp),
-      ),
-    );
-  }
-
-  Widget _buildPasswordField(
-    ThemeColors colors, {
-    required TextEditingController controller,
-    required String hint,
-    required bool obscure,
-    required VoidCallback onToggle,
-    required String? Function(String?) validator,
-    int? maxLength,
-  }) {
-    return TextFormField(
-      controller: controller,
-      obscureText: obscure,
-      maxLength: maxLength,
-      decoration: InputDecoration(
-        hintText: hint,
-        hintStyle: AppTextStyles.body(colors.textSecondary, fontSize: 14.sp),
-        filled: true,
-        fillColor: colors.background,
-        counterText: '',
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8.r),
-          borderSide: BorderSide(color: colors.divider),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8.r),
-          borderSide: BorderSide(color: colors.divider),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8.r),
-          borderSide: BorderSide(color: colors.primaryBlue),
-        ),
-        errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8.r),
-          borderSide: BorderSide(color: colors.error),
-        ),
-        contentPadding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 14.h),
-        suffixIcon: IconButton(
-          onPressed: onToggle,
-          icon: Icon(
-            obscure ? Icons.visibility_outlined : Icons.visibility_off_outlined,
-            color: colors.textSecondary,
-            size: 20.sp,
-          ),
-        ),
-      ),
-      style: AppTextStyles.body(colors.textPrimary, fontSize: 14.sp),
-      validator: validator,
-    );
-  }
-
-  Widget _buildSubmitButton(ThemeColors colors) {
-    return SizedBox(
-      width: double.infinity,
-      child: ElevatedButton(
-        onPressed: _isSubmitting ? null : _submit,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: colors.primaryBlue,
-          foregroundColor: Colors.white,
-          disabledBackgroundColor: colors.primaryBlue.withValues(alpha: 0.5),
-          padding: EdgeInsets.symmetric(vertical: 14.h),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8.r),
-          ),
-        ),
-        child: _isSubmitting
-            ? SizedBox(
-                height: 20.h,
-                width: 20.h,
-                child: const CircularProgressIndicator(
-                  strokeWidth: 2,
-                  color: Colors.white,
-                ),
-              )
-            : Text('Ajukan', style: AppTextStyles.button(Colors.white)),
       ),
     );
   }

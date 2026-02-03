@@ -10,6 +10,7 @@ import 'package:hrd_app/features/fitur/cuti/screens/kalender_cuti_screen.dart';
 import 'package:hrd_app/features/fitur/cuti/screens/permintaan_cuti.dart';
 import 'package:hrd_app/features/fitur/data/fitur_data.dart';
 import 'package:hrd_app/features/fitur/gaji/screens/kata_sandi_slip_gaji_screen.dart';
+import 'package:hrd_app/features/fitur/gaji/screens/slip_gaji_screen.dart';
 import 'package:hrd_app/features/fitur/models/fitur_item_model.dart';
 import 'package:hrd_app/features/fitur/widgets/fitur_search_bar.dart';
 import 'package:hrd_app/features/fitur/widgets/fitur_section_header.dart';
@@ -78,6 +79,11 @@ class _FiturScreenState extends State<FiturScreen> {
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => const JatahCutiScreen()),
+        );
+      case 'slip_gaji_saya':
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const SlipGajiScreen()),
         );
       case 'kata_sandi_slip_gaji':
         Navigator.push(
