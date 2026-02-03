@@ -108,6 +108,40 @@ class _KalenderCutiScreenState extends State<KalenderCutiScreen> {
     _fetchCalendarData();
   }
 
+  /// Open month/year picker
+  Future<void> _selectMonthYear() async {
+    final colors = context.colors;
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: _selectedDate,
+      firstDate: DateTime(2020),
+      lastDate: DateTime(2030),
+      initialEntryMode: DatePickerEntryMode.calendarOnly,
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: ColorScheme.light(
+              primary: colors.primaryBlue,
+              onPrimary: Colors.white,
+              surface: colors.background,
+              onSurface: colors.textPrimary,
+            ),
+          ),
+          child: child!,
+        );
+      },
+    );
+
+    if (picked != null) {
+      setState(() {
+        _selectedDate = picked;
+        _weekStartDate = _getWeekStartDate(picked);
+        _currentItemIndex = 0;
+      });
+      _fetchCalendarData();
+    }
+  }
+
   /// Select a date
   void _selectDate(DateTime date) {
     setState(() {
@@ -217,7 +251,20 @@ class _KalenderCutiScreenState extends State<KalenderCutiScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(monthYear, style: AppTextStyles.h4(colors.textPrimary)),
+          GestureDetector(
+            onTap: _selectMonthYear,
+            child: Row(
+              children: [
+                Text(monthYear, style: AppTextStyles.h4(colors.textPrimary)),
+                SizedBox(width: 4.w),
+                Icon(
+                  Icons.keyboard_arrow_down,
+                  color: colors.textSecondary,
+                  size: 20.sp,
+                ),
+              ],
+            ),
+          ),
           Row(
             children: [
               IconButton(
