@@ -125,4 +125,7 @@ class ThemeColors {
   List<Color> get buttonGradient => AppColors.buttonGradient(isDark);
   List<Color> get buttonGradientDisabled =>
       AppColors.buttonGradientDisabled(isDark);
+
+  // Text color for text on primary buttons (always white for contrast)
+  Color get buttonTextOnPrimary => const Color(0xFFFFFFFF);
 }

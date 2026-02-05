@@ -125,6 +125,21 @@ class BaseApiService {
     FormData formData, {
     String? errorMessage,
   }) async {
+    // DEBUG: Log all form fields being sent
+    debugPrint('========== DEBUG FORM DATA ==========');
+    debugPrint('Endpoint: $endpoint');
+    for (var field in formData.fields) {
+      debugPrint('Field: ${field.key} = ${field.value}');
+    }
+    for (var file in formData.files) {
+      final multipartFile = file.value;
+      debugPrint('File: ${file.key}');
+      debugPrint('  - filename: ${multipartFile.filename}');
+      debugPrint('  - length: ${multipartFile.length} bytes');
+      debugPrint('  - contentType: ${multipartFile.contentType}');
+    }
+    debugPrint('======================================');
+
     try {
       final response = await _dio.post(
         endpoint,

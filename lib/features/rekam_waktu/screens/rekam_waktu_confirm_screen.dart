@@ -382,14 +382,14 @@ class _RekamWaktuConfirmScreenState extends State<RekamWaktuConfirmScreen> {
                 ? SizedBox(
                     height: 20.h,
                     width: 20.h,
-                    child: const CircularProgressIndicator(
+                    child: CircularProgressIndicator(
                       strokeWidth: 2,
-                      color: Colors.white,
+                      color: colors.buttonTextOnPrimary,
                     ),
                   )
                 : Text(
                     'Simpan Kehadiran',
-                    style: AppTextStyles.body(colors.textPrimary),
+                    style: AppTextStyles.body(colors.buttonTextOnPrimary),
                   ),
           ),
         ),
@@ -417,7 +417,8 @@ class _RekamWaktuConfirmScreenState extends State<RekamWaktuConfirmScreen> {
       );
       if (mounted) {
         context.showSuccessSnackbar('Kehadiran berhasil disimpan!');
-        Navigator.of(context).popUntil((route) => route.isFirst);
+        // Pop dengan result true, agar CameraScreen tahu harus pop juga
+        Navigator.of(context).pop(true);
       }
     } catch (e) {
       if (mounted) {

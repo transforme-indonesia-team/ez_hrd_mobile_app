@@ -56,6 +56,7 @@ class _BerandaScreenState extends State<BerandaScreen>
   }
 
   Future<void> _loadShiftInfo() async {
+    debugPrint('=== BERANDA: _loadShiftInfo() called ===');
     try {
       final today = DateTime.now();
       final todayStr = DateFormat('yyyy-MM-dd').format(today);
@@ -68,6 +69,7 @@ class _BerandaScreenState extends State<BerandaScreen>
       );
       final endDate = DateTime(today.year, today.month, today.day + 1);
 
+      debugPrint('=== BERANDA: Fetching API... ===');
       final response = await AttendanceService().getAbsentEmployee(
         startDate: startDate,
         endDate: endDate,
@@ -75,6 +77,7 @@ class _BerandaScreenState extends State<BerandaScreen>
 
       if (!mounted) return;
 
+      debugPrint('=== BERANDA: API response received ===');
       final original = response['original'] as Map<String, dynamic>?;
 
       if (original != null &&
@@ -108,17 +111,22 @@ class _BerandaScreenState extends State<BerandaScreen>
           orElse: () => null,
         );
 
+        debugPrint('=== BERANDA: Updating state with new data ===');
         setState(() {
           _attendanceRecords = validRecords;
-          if (todayRecord != null) {
-            _shiftData = EmployeeShiftModel.fromJson(todayRecord);
-          }
+          _shiftData = todayRecord != null
+              ? EmployeeShiftModel.fromJson(todayRecord)
+              : null;
           _isLoadingShift = false;
         });
       } else {
-        setState(() => _isLoadingShift = false);
+        setState(() {
+          _shiftData = null;
+          _isLoadingShift = false;
+        });
       }
     } catch (e) {
+      debugPrint('=== BERANDA: Error loading shift: $e ===');
       if (mounted) {
         setState(() => _isLoadingShift = false);
       }
@@ -148,7 +156,14 @@ class _BerandaScreenState extends State<BerandaScreen>
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => const RekamWaktuCameraScreen()),
-      );
+      ).then((_) {
+        // Refresh data setelah kembali dari rekam waktu
+        debugPrint('=== BERANDA: Kembali dari rekam waktu, refreshing... ===');
+        if (mounted) {
+          setState(() => _isLoadingShift = true);
+          _loadShiftInfo();
+        }
+      });
     }
   }
 
