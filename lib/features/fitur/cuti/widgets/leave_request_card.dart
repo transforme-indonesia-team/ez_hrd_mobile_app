@@ -199,7 +199,7 @@ class _StatusBadge extends StatelessWidget {
         .join(' ');
 
     final (Color backgroundColor, Color textColor) = switch (statusUpper) {
-      'DRAFT' => (const Color(0xFFE0E7FF), const Color(0xFF4338CA)),
+      'UNVERIFIED' => (const Color(0xFFE0E7FF), const Color(0xFF4338CA)),
       'PENDING' => (const Color(0xFFFFF3CD), const Color(0xFFD68910)),
       _ when statusUpper.contains('WAITING') => (
         const Color(0xFFFFF3CD),

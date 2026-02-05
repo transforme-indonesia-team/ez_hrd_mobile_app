@@ -454,7 +454,7 @@ class _DetailCutiScreenState extends State<DetailCutiScreen> {
         .join(' ');
 
     final (Color backgroundColor, Color textColor) = switch (statusUpper) {
-      'DRAFT' => (const Color(0xFFE0E7FF), const Color(0xFF4338CA)),
+      'UNVERIFIED' => (const Color(0xFFE0E7FF), const Color(0xFF4338CA)),
       'PENDING' => (const Color(0xFFFFF3CD), const Color(0xFFD68910)),
       _ when statusUpper.contains('WAITING') => (
         const Color(0xFFFFF3CD),
@@ -647,7 +647,7 @@ class _DetailCutiScreenState extends State<DetailCutiScreen> {
 
   bool _canCancel(LeaveEmployeeModel data) {
     final status = data.status?.toUpperCase();
-    return status == 'DRAFT' || status == 'PENDING';
+    return status == 'UNVERIFIED' || status == 'PENDING';
   }
 
   Widget _buildCancelButton(ThemeColors colors, LeaveEmployeeModel data) {

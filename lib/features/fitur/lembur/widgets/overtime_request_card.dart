@@ -128,7 +128,7 @@ class _StatusBadge extends StatelessWidget {
     Color backgroundColor;
     Color textColor;
 
-    if (statusUpper == 'DRAFT') {
+    if (statusUpper == 'UNVERIFIED') {
       backgroundColor = const Color(0xFFE0E7FF);
       textColor = const Color(0xFF4338CA);
     } else if (statusUpper == 'PENDING' || statusUpper.contains('WAITING')) {

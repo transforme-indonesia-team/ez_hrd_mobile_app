@@ -727,7 +727,7 @@ class _DetailLemburScreenState extends State<DetailLemburScreen> {
   /// Check if can cancel - only if status is DRAFT or PENDING
   bool _canCancel(OvertimeEmployeeModel data) {
     final status = data.status?.toUpperCase();
-    return status == 'DRAFT' || status == 'PENDING';
+    return status == 'UNVERIFIED' || status == 'PENDING';
   }
 
   Widget _buildCancelButton(ThemeColors colors, OvertimeEmployeeModel data) {
