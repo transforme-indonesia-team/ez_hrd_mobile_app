@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:hrd_app/features/fitur/cuti/screens/permintaan_cuti.dart';
+import 'package:hrd_app/features/fitur/gaji/screens/slip_gaji_screen.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:hrd_app/core/constants/app_constants.dart';
@@ -265,6 +266,13 @@ class _BerandaScreenState extends State<BerandaScreen>
                       context,
                       MaterialPageRoute(
                         builder: (context) => const PermintaanCutiScreen(),
+                      ),
+                    );
+                  case 'slip_gaji_saya':
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const SlipGajiScreen(),
                       ),
                     );
                   default:

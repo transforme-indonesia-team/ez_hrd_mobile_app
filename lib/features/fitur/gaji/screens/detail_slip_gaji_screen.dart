@@ -3,17 +3,51 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hrd_app/core/theme/app_colors.dart';
 import 'package:hrd_app/core/theme/app_text_styles.dart';
 import 'package:hrd_app/data/models/payroll_detail_model.dart';
+import 'package:hrd_app/features/fitur/gaji/services/payslip_pdf_service.dart';
 import 'package:intl/intl.dart';
+import 'package:printing/printing.dart';
 
-class DetailSlipGajiScreen extends StatelessWidget {
+class DetailSlipGajiScreen extends StatefulWidget {
   final PayrollDetailModel payrollDetail;
 
   const DetailSlipGajiScreen({super.key, required this.payrollDetail});
 
   @override
+  State<DetailSlipGajiScreen> createState() => _DetailSlipGajiScreenState();
+}
+
+class _DetailSlipGajiScreenState extends State<DetailSlipGajiScreen> {
+  bool _isGeneratingPdf = false;
+
+  Future<void> _downloadPdf() async {
+    setState(() => _isGeneratingPdf = true);
+
+    try {
+      final pdfData = await PayslipPdfService.generatePdf(widget.payrollDetail);
+
+      // Share/print the PDF
+      await Printing.sharePdf(
+        bytes: pdfData,
+        filename:
+            'slip_gaji_${widget.payrollDetail.displayPeriod.replaceAll(' ', '_')}.pdf',
+      );
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Gagal generate PDF: $e')));
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isGeneratingPdf = false);
+      }
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final colors = context.colors;
-    final data = payrollDetail.data;
+    final data = widget.payrollDetail.data;
 
     return Scaffold(
       backgroundColor: colors.surface,
@@ -25,9 +59,28 @@ class DetailSlipGajiScreen extends StatelessWidget {
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
-          'Slip Gaji ${payrollDetail.displayPeriod}',
+          'Slip Gaji ${widget.payrollDetail.displayPeriod}',
           style: AppTextStyles.h3(colors.textPrimary),
         ),
+        actions: [
+          _isGeneratingPdf
+              ? Padding(
+                  padding: EdgeInsets.all(12.w),
+                  child: SizedBox(
+                    width: 24.w,
+                    height: 24.w,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: colors.primaryBlue,
+                    ),
+                  ),
+                )
+              : IconButton(
+                  icon: Icon(Icons.download_rounded, color: colors.primaryBlue),
+                  onPressed: _downloadPdf,
+                  tooltip: 'Download PDF',
+                ),
+        ],
       ),
       body: data == null
           ? Center(
