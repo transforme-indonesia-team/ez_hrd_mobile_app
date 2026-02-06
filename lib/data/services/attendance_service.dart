@@ -50,6 +50,7 @@ class AttendanceService {
         contentType: DioMediaType('image', 'jpeg'),
       ),
       'absent': absentTime,
+      // 'absent': '2026-02-06 13:30:00',
     });
 
     return _api.postFormData('/attendance/absent', formData);
