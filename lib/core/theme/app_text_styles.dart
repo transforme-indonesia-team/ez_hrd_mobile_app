@@ -73,11 +73,12 @@ class AppTextStyles {
     color: color,
   );
 
-  static TextStyle caption(Color color) => GoogleFonts.inter(
-    fontSize: 12.sp,
-    fontWeight: FontWeight.w400,
-    color: color,
-  );
+  static TextStyle caption(Color color, {double? fontSize}) =>
+      GoogleFonts.inter(
+        fontSize: fontSize ?? 12.sp,
+        fontWeight: FontWeight.w400,
+        color: color,
+      );
 
   static TextStyle captionMedium(Color color) => GoogleFonts.inter(
     fontSize: 12.sp,

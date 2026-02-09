@@ -94,13 +94,35 @@ class _DaftarKehadiranScreenState extends State<DaftarKehadiranScreen> {
         return;
       }
 
+      List<AttendanceEmployeeModel> allAttendances = recordsRaw!
+          .map(
+            (e) => AttendanceEmployeeModel.fromJson(e as Map<String, dynamic>),
+          )
+          .toList();
+
+      // Apply local filter based on selected quick filter
+      List<AttendanceEmployeeModel> filteredAttendances;
+      switch (_selectedFilter) {
+        case AttendanceFilterType.today:
+          // Semua Hari Ini: hanya tampilkan yang sudah check-in
+          filteredAttendances = allAttendances
+              .where((a) => a.hasCheckIn)
+              .toList();
+          break;
+        case AttendanceFilterType.absentToday:
+          // Tidak hadir hari ini: tampilkan yang absent (belum check-in)
+          filteredAttendances = allAttendances
+              .where((a) => a.isAbsent)
+              .toList();
+          break;
+        case AttendanceFilterType.last30Days:
+          // 30 Hari Terakhir: tampilkan semua
+          filteredAttendances = allAttendances;
+          break;
+      }
+
       setState(() {
-        _attendances = recordsRaw!
-            .map(
-              (e) =>
-                  AttendanceEmployeeModel.fromJson(e as Map<String, dynamic>),
-            )
-            .toList();
+        _attendances = filteredAttendances;
         _isLoading = false;
         _errorMessage = null;
       });
@@ -211,7 +233,7 @@ class _DaftarKehadiranScreenState extends State<DaftarKehadiranScreen> {
                 ),
               ),
               child: Icon(
-                Icons.filter_list,
+                Icons.filter_alt_outlined,
                 color: _hasActiveFilter
                     ? colors.primaryBlue
                     : colors.textPrimary,

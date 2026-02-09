@@ -17,6 +17,7 @@ class AttendanceEmployeeModel {
   final String? attendancePhotoIn;
   final String? attendancePhotoOut;
   final int? overtimeMinutes;
+  final String? remarkSchedule;
 
   AttendanceEmployeeModel({
     this.scheduleId,
@@ -35,6 +36,7 @@ class AttendanceEmployeeModel {
     this.attendancePhotoIn,
     this.attendancePhotoOut,
     this.overtimeMinutes,
+    this.remarkSchedule,
   });
 
   factory AttendanceEmployeeModel.fromJson(Map<String, dynamic> json) {
@@ -55,6 +57,7 @@ class AttendanceEmployeeModel {
       attendancePhotoIn: _parsePhotoValue(json['attendance_photo_in']),
       attendancePhotoOut: _parsePhotoValue(json['attendance_photo_out']),
       overtimeMinutes: json['overtime_minutes'] as int? ?? 0,
+      remarkSchedule: json['remark_schedule'] as String?,
     );
   }
 

@@ -190,11 +190,11 @@ class _KehadiranFilterBottomSheetState
                 ),
               ),
             ),
-            SizedBox(height: 16.h),
+            SizedBox(height: 12.h),
 
             // Title
             Text('Sortir', style: AppTextStyles.h4(colors.textPrimary)),
-            SizedBox(height: 16.h),
+            SizedBox(height: 12.h),
 
             // Pilih Karyawan
             _buildTextField(
@@ -203,41 +203,39 @@ class _KehadiranFilterBottomSheetState
               hint: 'Pilih Karyawan',
               suffixIcon: Icons.people_outline,
             ),
-            SizedBox(height: 16.h),
+            SizedBox(height: 12.h),
 
             // Rentang Tanggal
-            Text(
-              'Rentang Tanggal',
-              style: AppTextStyles.caption(colors.textSecondary),
-            ),
-            SizedBox(height: 8.h),
+            _buildLabel(colors, 'Rentang Tanggal'),
+            SizedBox(height: 6.h),
             _buildDateRangeField(colors: colors),
-            SizedBox(height: 16.h),
+            SizedBox(height: 12.h),
 
             // Lokasi Kerja
+            _buildLabel(colors, 'Lokasi Kerja'),
+            SizedBox(height: 6.h),
             _buildTextField(colors, hint: 'Pilih Lokasi Kerja'),
-            SizedBox(height: 16.h),
+            SizedBox(height: 12.h),
 
             // Status
+            _buildLabel(colors, 'Status'),
+            SizedBox(height: 6.h),
             _buildTextField(colors, hint: 'Pilih Status'),
-            SizedBox(height: 16.h),
+            SizedBox(height: 12.h),
 
             // Pengenalan Wajah section
-            Text(
-              'Pengenalan Wajah',
-              style: AppTextStyles.caption(colors.textSecondary),
-            ),
+            _buildLabel(colors, 'Pengenalan Wajah'),
             Text(
               'Ambang Batas Global Pengenalan Wajah = 98%',
               style: AppTextStyles.xSmall(colors.textSecondary),
             ),
-            SizedBox(height: 8.h),
+            SizedBox(height: 6.h),
             Row(
               children: [
                 Expanded(
                   child: _buildTextField(colors, hint: '0', enabled: false),
                 ),
-                SizedBox(width: 16.w),
+                SizedBox(width: 12.w),
                 Expanded(
                   child: _buildTextField(colors, hint: '100', enabled: false),
                 ),
@@ -253,14 +251,11 @@ class _KehadiranFilterBottomSheetState
               onChanged: (val) =>
                   setState(() => _showWithoutFaceRecognition = val ?? false),
             ),
-            SizedBox(height: 12.h),
+            SizedBox(height: 8.h),
 
             // Opsi Lainnya
-            Text(
-              'Opsi Lainnya',
-              style: AppTextStyles.caption(colors.textSecondary),
-            ),
-            SizedBox(height: 8.h),
+            _buildLabel(colors, 'Opsi Lainnya', fontSize: 13.sp),
+            SizedBox(height: 12.h),
             _buildCheckbox(
               colors,
               label: 'Tampilkan semua tanpa lokasi gps',
@@ -275,7 +270,7 @@ class _KehadiranFilterBottomSheetState
               onChanged: (val) =>
                   setState(() => _showWithoutPhoto = val ?? false),
             ),
-            SizedBox(height: 24.h),
+            SizedBox(height: 16.h),
 
             // Bottom buttons
             Row(
@@ -285,11 +280,11 @@ class _KehadiranFilterBottomSheetState
                     onPressed: _clearFilters,
                     child: Text(
                       'Hapus',
-                      style: AppTextStyles.button(colors.primaryBlue),
+                      style: AppTextStyles.bodyMedium(colors.primaryBlue),
                     ),
                   ),
                 ),
-                SizedBox(width: 16.w),
+                SizedBox(width: 12.w),
                 Expanded(
                   flex: 2,
                   child: ElevatedButton(
@@ -317,6 +312,13 @@ class _KehadiranFilterBottomSheetState
     );
   }
 
+  Widget _buildLabel(ThemeColors colors, String text, {double? fontSize}) {
+    return Text(
+      text,
+      style: AppTextStyles.caption(colors.textSecondary, fontSize: fontSize),
+    );
+  }
+
   Widget _buildTextField(
     ThemeColors colors, {
     TextEditingController? controller,
@@ -333,7 +335,8 @@ class _KehadiranFilterBottomSheetState
         hintStyle: AppTextStyles.body(colors.textSecondary),
         filled: true,
         fillColor: colors.surface,
-        contentPadding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 14.h),
+        isDense: true,
+        contentPadding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 10.h),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8.r),
           borderSide: BorderSide(color: colors.divider),
@@ -347,7 +350,7 @@ class _KehadiranFilterBottomSheetState
           borderSide: BorderSide(color: colors.primaryBlue),
         ),
         suffixIcon: suffixIcon != null
-            ? Icon(suffixIcon, color: colors.textSecondary, size: 20.sp)
+            ? Icon(suffixIcon, color: colors.textSecondary, size: 16.sp)
             : null,
       ),
     );
@@ -360,7 +363,7 @@ class _KehadiranFilterBottomSheetState
       onTap: _selectDateRange,
       child: Container(
         width: double.infinity,
-        padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 14.h),
+        padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 12.h),
         decoration: BoxDecoration(
           color: colors.surface,
           borderRadius: BorderRadius.circular(8.r),
@@ -398,14 +401,18 @@ class _KehadiranFilterBottomSheetState
     return Row(
       children: [
         SizedBox(
-          width: 24.w,
-          height: 24.w,
-          child: Checkbox(
-            value: value,
-            onChanged: onChanged,
-            activeColor: colors.primaryBlue,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(4.r),
+          width: 26.w,
+          height: 26.w,
+          child: Transform.scale(
+            scale: 1.2,
+            child: Checkbox(
+              value: value,
+              onChanged: onChanged,
+              activeColor: colors.primaryBlue,
+              materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(4.r),
+              ),
             ),
           ),
         ),

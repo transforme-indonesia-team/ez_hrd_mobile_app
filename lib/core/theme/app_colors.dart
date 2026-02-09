@@ -107,6 +107,7 @@ class ThemeColors {
       isDark ? AppColors.backgroundDark : AppColors.backgroundLight;
   Color get surface => isDark ? AppColors.surfaceDark : AppColors.surfaceLight;
   Color get divider => isDark ? AppColors.dividerDark : AppColors.dividerLight;
+  Color get card => isDark ? AppColors.dividerDark : ColorPalette.slate100;
 
   Color get inactiveGray =>
       isDark ? AppColors.inactiveGrayDark : AppColors.inactiveGrayLight;

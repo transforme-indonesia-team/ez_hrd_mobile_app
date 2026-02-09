@@ -51,6 +51,35 @@ class AttendanceCard extends StatelessWidget {
                     style: AppTextStyles.bodySemiBold(colors.textPrimary),
                   ),
                 ),
+
+                if (attendance.isAbsent) ...[
+                  GestureDetector(
+                    onTap: () => _showAbsentActionSheet(context),
+                    child: Container(
+                      width: 22.w,
+                      height: 22.w,
+                      decoration: BoxDecoration(
+                        color: Colors.transparent,
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: ColorPalette.red500,
+                          width: 2,
+                        ),
+                      ),
+                      child: Center(
+                        child: Text(
+                          '!',
+                          style: TextStyle(
+                            color: ColorPalette.red500,
+                            fontSize: 12.sp,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 8.w),
+                ],
                 if (onMorePressed != null)
                   GestureDetector(
                     onTap: onMorePressed,
@@ -62,8 +91,10 @@ class AttendanceCard extends StatelessWidget {
                   ),
               ],
             ),
+
+            SizedBox(height: 12.h),
             Divider(height: 1, color: colors.divider),
-            SizedBox(height: 16.h),
+            SizedBox(height: 12.h),
 
             // Tanggal
             Text('Tanggal', style: AppTextStyles.caption(colors.textSecondary)),
@@ -117,7 +148,7 @@ class AttendanceCard extends StatelessWidget {
             Container(
               padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
               decoration: BoxDecoration(
-                color: colors.surface,
+                color: colors.card,
                 borderRadius: BorderRadius.circular(8.r),
               ),
               child: IntrinsicHeight(
@@ -136,7 +167,7 @@ class AttendanceCard extends StatelessWidget {
                     // Divider
                     Container(
                       width: 1,
-                      color: colors.divider,
+                      color: ColorPalette.slate400,
                       margin: EdgeInsets.symmetric(horizontal: 16.w),
                     ),
                     // Jam Keluar
@@ -151,6 +182,25 @@ class AttendanceCard extends StatelessWidget {
                     ),
                   ],
                 ),
+              ),
+            ),
+
+            SizedBox(height: 12.h),
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
+              decoration: BoxDecoration(
+                color: attendance.remarkSchedule == "ABS"
+                    ? ColorPalette.red50
+                    : ColorPalette.green50,
+                borderRadius: BorderRadius.circular(12.r),
+              ),
+              child: Text(
+                attendance.remarkSchedule ?? "-",
+                style: AppTextStyles.small(
+                  attendance.remarkSchedule == "ABS"
+                      ? ColorPalette.red500
+                      : ColorPalette.green500,
+                ).copyWith(fontWeight: FontWeight.w600),
               ),
             ),
           ],
@@ -223,6 +273,104 @@ class AttendanceCard extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+
+  void _showAbsentActionSheet(BuildContext context) {
+    final colors = context.colors;
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        decoration: BoxDecoration(
+          color: colors.background,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(16.r)),
+        ),
+        padding: EdgeInsets.all(20.w),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Handle bar
+            Center(
+              child: Container(
+                width: 40.w,
+                height: 4.h,
+                decoration: BoxDecoration(
+                  color: colors.divider,
+                  borderRadius: BorderRadius.circular(2.r),
+                ),
+              ),
+            ),
+            SizedBox(height: 16.h),
+
+            // Message
+            Text(
+              'Tampaknya ada masalah dengan status kehadiran Kamu. Permintaan cuti atau koreksi kehadiran segera!',
+              style: AppTextStyles.body(colors.textPrimary),
+            ),
+            SizedBox(height: 20.h),
+
+            // Label
+            Text(
+              'Permintaan untuk',
+              style: AppTextStyles.caption(colors.textSecondary),
+            ),
+            SizedBox(height: 12.h),
+
+            // Cuti button
+            _buildActionButton(
+              context,
+              colors,
+              label: 'Cuti',
+              onTap: () {
+                Navigator.pop(context);
+                // TODO: Navigate to cuti screen
+              },
+            ),
+            SizedBox(height: 12.h),
+
+            // Koreksi Kehadiran button
+            _buildActionButton(
+              context,
+              colors,
+              label: 'Koreksi Kehadiran',
+              onTap: () {
+                Navigator.pop(context);
+                // TODO: Navigate to koreksi kehadiran screen
+              },
+            ),
+            SizedBox(height: MediaQuery.of(context).padding.bottom + 8.h),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildActionButton(
+    BuildContext context,
+    ThemeColors colors, {
+    required String label,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: double.infinity,
+        padding: EdgeInsets.symmetric(vertical: 14.h),
+        decoration: BoxDecoration(
+          color: colors.background,
+          borderRadius: BorderRadius.circular(8.r),
+          border: Border.all(color: colors.divider),
+        ),
+        child: Center(
+          child: Text(
+            label,
+            style: AppTextStyles.bodyMedium(colors.primaryBlue),
+          ),
+        ),
+      ),
     );
   }
 }

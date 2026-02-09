@@ -11,10 +11,12 @@ class AuthService {
     required String username,
     required String password,
   }) async {
-    return _api.post('/user/login', {
-      'username': username,
-      'password': password,
-    }, errorMessage: 'Login gagal');
+    return _api.post(
+      '/user/login',
+      {'username': username, 'password': password},
+      errorMessage: 'Login gagal',
+      extraHeaders: {'User-Agent': 'APPS'},
+    );
   }
 
   Future<Map<String, dynamic>> forgotPassword({
