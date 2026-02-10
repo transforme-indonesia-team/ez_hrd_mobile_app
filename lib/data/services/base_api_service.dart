@@ -72,9 +72,7 @@ class BaseApiService {
     String? errorMessage,
     Map<String, String>? extraHeaders,
   }) async {
-    debugPrint('DEBUG-API: POST $endpoint - Starting request');
     try {
-      debugPrint('DEBUG-API: POST $endpoint - Encrypting payload...');
       final encryptedPayload = _crypto.encryptPayload(payload);
       debugPrint(
         'DEBUG-API: POST $endpoint - Payload encrypted (${encryptedPayload.length} chars)',
@@ -94,7 +92,6 @@ class BaseApiService {
         );
       }
 
-      debugPrint('DEBUG-API: POST $endpoint - Sending request to server...');
       final response = await _dio.post(
         endpoint,
         data: {'payload': encryptedPayload},
@@ -284,6 +281,7 @@ class BaseApiService {
         debugPrint(
           'DEBUG-API: Raw (unencrypted) response detected for $endpoint',
         );
+        debugPrint("DEBUG-API: ISI RESPONSE RAW $endpoint: $responseData");
         return {'original': responseData};
       }
 

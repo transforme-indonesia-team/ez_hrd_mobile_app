@@ -6,6 +6,7 @@ import 'package:hrd_app/core/widgets/empty_state_widget.dart';
 import 'package:hrd_app/core/widgets/skeleton_widget.dart';
 import 'package:hrd_app/data/models/attendance_employee_model.dart';
 import 'package:hrd_app/data/services/attendance_service.dart';
+import 'package:hrd_app/features/fitur/kehadiran/screens/detail_kehadiran_screen.dart';
 import 'package:hrd_app/features/fitur/kehadiran/screens/riwayat_kehadiran_screen.dart';
 import 'package:hrd_app/features/fitur/kehadiran/widgets/attendance_action_bottom_sheet.dart';
 import 'package:hrd_app/features/fitur/kehadiran/widgets/attendance_card.dart';
@@ -345,7 +346,12 @@ class _DaftarKehadiranScreenState extends State<DaftarKehadiranScreen> {
       context,
       attendance: attendance,
       onDetailKehadiran: () {
-        // TODO: Navigate to detail kehadiran screen
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => DetailKehadiranScreen(attendance: attendance),
+          ),
+        );
       },
       onRiwayatKehadiran: () {
         DateTime? cardDate;
