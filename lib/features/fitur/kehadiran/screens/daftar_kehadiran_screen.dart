@@ -6,6 +6,8 @@ import 'package:hrd_app/core/widgets/empty_state_widget.dart';
 import 'package:hrd_app/core/widgets/skeleton_widget.dart';
 import 'package:hrd_app/data/models/attendance_employee_model.dart';
 import 'package:hrd_app/data/services/attendance_service.dart';
+import 'package:hrd_app/features/fitur/kehadiran/screens/riwayat_kehadiran_screen.dart';
+import 'package:hrd_app/features/fitur/kehadiran/widgets/attendance_action_bottom_sheet.dart';
 import 'package:hrd_app/features/fitur/kehadiran/widgets/attendance_card.dart';
 import 'package:hrd_app/features/fitur/kehadiran/widgets/kehadiran_filter_bottom_sheet.dart';
 
@@ -94,7 +96,7 @@ class _DaftarKehadiranScreenState extends State<DaftarKehadiranScreen> {
         return;
       }
 
-      List<AttendanceEmployeeModel> allAttendances = recordsRaw!
+      List<AttendanceEmployeeModel> allAttendances = recordsRaw
           .map(
             (e) => AttendanceEmployeeModel.fromJson(e as Map<String, dynamic>),
           )
@@ -327,17 +329,52 @@ class _DaftarKehadiranScreenState extends State<DaftarKehadiranScreen> {
         padding: EdgeInsets.only(top: 8.h, bottom: 16.h),
         itemCount: _attendances.length,
         itemBuilder: (context, index) {
+          final attendance = _attendances[index];
           return AttendanceCard(
-            attendance: _attendances[index],
-            onTap: () {
-              // TODO: Navigate to detail screen
-            },
-            onMorePressed: () {
-              // TODO: Show more options
-            },
+            attendance: attendance,
+            onTap: () => _showCardActionSheet(attendance),
+            onMorePressed: () => _showCardActionSheet(attendance),
           );
         },
       ),
+    );
+  }
+
+  void _showCardActionSheet(AttendanceEmployeeModel attendance) {
+    AttendanceActionBottomSheet.show(
+      context,
+      attendance: attendance,
+      onDetailKehadiran: () {
+        // TODO: Navigate to detail kehadiran screen
+      },
+      onRiwayatKehadiran: () {
+        DateTime? cardDate;
+        if (attendance.dateSchedule != null) {
+          try {
+            cardDate = DateTime.parse(attendance.dateSchedule!);
+          } catch (_) {}
+        }
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => RiwayatKehadiranScreen(
+              attendance: attendance,
+              startDate: cardDate,
+              endDate: cardDate,
+            ),
+          ),
+        );
+      },
+      onTampilkan7Hari: () {
+        final now = DateTime.now();
+        final today = DateTime(now.year, now.month, now.day);
+        setState(() {
+          _selectedFilter = AttendanceFilterType.last30Days;
+          _filterStartDate = today.subtract(const Duration(days: 7));
+          _filterEndDate = today;
+        });
+        _fetchData();
+      },
     );
   }
 

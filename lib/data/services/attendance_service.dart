@@ -50,7 +50,7 @@ class AttendanceService {
         contentType: DioMediaType('image', 'jpeg'),
       ),
       'absent': absentTime,
-      // 'absent': '2026-02-06 13:30:00',
+      // 'absent': '2026-02-10 07:30:00',
     });
 
     return _api.postFormData('/attendance/absent', formData);
@@ -69,6 +69,26 @@ class AttendanceService {
         'employee_id': employeeId,
         'start_date': startDate != null ? dateFormat.format(startDate) : null,
         'end_date': endDate != null ? dateFormat.format(endDate) : null,
+      },
+    );
+  }
+
+  Future<Map<String, dynamic>> getAttendanceHistory({
+    DateTime? startDate,
+    DateTime? endDate,
+  }) async {
+    final dateFormat = DateFormat('yyyy-MM-dd');
+    final now = DateTime.now();
+
+    return _api.get(
+      '/attendance/absent-by-employee',
+      queryParameters: {
+        'start_date': startDate != null
+            ? dateFormat.format(startDate)
+            : dateFormat.format(now.subtract(const Duration(days: 30))),
+        'end_date': endDate != null
+            ? dateFormat.format(endDate)
+            : dateFormat.format(now),
       },
     );
   }
