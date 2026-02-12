@@ -479,7 +479,7 @@ class _FormLemburScreenState extends State<FormLemburScreen> {
             _buildAttachmentSection(colors),
             SizedBox(height: 6.h),
             Text(
-              'Berkas yang Didukung: doc,jpg,ods,png,txt,doc,pdf',
+              'Berkas yang Didukung: doc,jpg,ods,png,txt,doc,pdf max 1MB',
               style: AppTextStyles.caption(colors.textSecondary),
             ),
             SizedBox(height: 60.h),

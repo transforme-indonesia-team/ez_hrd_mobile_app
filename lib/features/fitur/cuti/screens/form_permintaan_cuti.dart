@@ -48,6 +48,14 @@ class _FormPermintaanCutiScreeenState extends State<FormPermintaanCutiScreeen> {
 
   bool _isSubmitting = false;
 
+  /// Disable tombol submit jika sisa cuti 0 (hanya untuk permintaan baru)
+  bool get _isSubmitDisabled {
+    if (widget.existingLeave != null) return false;
+    if (_selectedLeaveType == null) return false;
+    final remaining = _selectedLeaveType!.remainingLeave ?? 0;
+    return remaining <= 0;
+  }
+
   @override
   void initState() {
     super.initState();
@@ -141,10 +149,18 @@ class _FormPermintaanCutiScreeenState extends State<FormPermintaanCutiScreeen> {
   }
 
   Future<void> _selectStartDate() async {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final isEditMode = widget.existingLeave != null;
+    final firstDate = isEditMode ? DateTime(2020) : today;
+    final initialDate = _startDate != null && _startDate!.isAfter(firstDate)
+        ? _startDate!
+        : firstDate;
+
     final picked = await showDatePicker(
       context: context,
-      initialDate: _startDate ?? DateTime.now(),
-      firstDate: DateTime(2020),
+      initialDate: initialDate,
+      firstDate: firstDate,
       lastDate: DateTime(2030),
       builder: (context, child) {
         final colors = context.colors;
@@ -173,10 +189,21 @@ class _FormPermintaanCutiScreeenState extends State<FormPermintaanCutiScreeen> {
   }
 
   Future<void> _selectEndDate() async {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final isEditMode = widget.existingLeave != null;
+    final minDate = isEditMode ? DateTime(2020) : today;
+    final firstDate = _startDate != null && _startDate!.isAfter(minDate)
+        ? _startDate!
+        : minDate;
+    final initialDate = _endDate != null && _endDate!.isAfter(firstDate)
+        ? _endDate!
+        : firstDate;
+
     final picked = await showDatePicker(
       context: context,
-      initialDate: _endDate ?? _startDate ?? DateTime.now(),
-      firstDate: _startDate ?? DateTime(2020),
+      initialDate: initialDate,
+      firstDate: firstDate,
       lastDate: DateTime(2030),
       builder: (context, child) {
         final colors = context.colors;
@@ -474,7 +501,7 @@ class _FormPermintaanCutiScreeenState extends State<FormPermintaanCutiScreeen> {
             _buildAttachmentSection(colors),
             SizedBox(height: 6.h),
             Text(
-              'Berkas yang Didukung: doc,jpg,ods,png,txt,doc,pdf',
+              'Berkas yang Didukung: doc,jpg,ods,png,txt,doc,pdf max 1MB',
               style: AppTextStyles.caption(colors.textSecondary),
             ),
             SizedBox(height: 60.h),
@@ -721,7 +748,7 @@ class _FormPermintaanCutiScreeenState extends State<FormPermintaanCutiScreeen> {
       child: SizedBox(
         width: double.infinity,
         child: ElevatedButton(
-          onPressed: _isSubmitting ? null : _submit,
+          onPressed: _isSubmitting || _isSubmitDisabled ? null : _submit,
           style: ElevatedButton.styleFrom(
             backgroundColor: colors.primaryBlue,
             foregroundColor: Colors.white,
