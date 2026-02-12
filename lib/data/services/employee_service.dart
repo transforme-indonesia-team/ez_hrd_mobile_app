@@ -7,10 +7,13 @@ class EmployeeService {
 
   final _api = BaseApiService();
 
-  Future<Map<String, dynamic>> getRelation({String? relation}) async {
+  Future<Map<String, dynamic>> getRelation({
+    String? relation,
+    String? employeeCode,
+  }) async {
     return _api.get(
       '/employee/get-relation',
-      queryParameters: {'relation': relation},
+      queryParameters: {'relation': relation, 'employee_code': employeeCode},
     );
   }
 }

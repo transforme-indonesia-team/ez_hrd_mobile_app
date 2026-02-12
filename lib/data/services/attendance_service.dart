@@ -30,6 +30,7 @@ class AttendanceService {
     required double latitude,
     required double longitude,
     required File photo,
+    required String employeeCode,
   }) async {
     final fileExists = await photo.exists();
 
@@ -49,8 +50,9 @@ class AttendanceService {
         filename: fileName,
         contentType: DioMediaType('image', 'jpeg'),
       ),
+      'employee_code': employeeCode,
       'absent': absentTime,
-      // 'absent': '2026-02-10 07:30:00',
+      // 'absent': '2026-02-12 21:30:00',
     });
 
     return _api.postFormData('/attendance/absent', formData);

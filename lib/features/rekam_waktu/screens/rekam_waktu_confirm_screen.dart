@@ -92,6 +92,7 @@ class _RekamWaktuConfirmScreenState extends State<RekamWaktuConfirmScreen> {
       debugPrint('=== REKAM WAKTU: Memuat lokasi kehadiran... ===');
       final response = await EmployeeService().getRelation(
         relation: 'ATTENDANCE_LOCATION',
+        employeeCode: context.read<AuthProvider>().user?.employeeCode,
       );
 
       if (!mounted) return;
@@ -792,6 +793,8 @@ class _RekamWaktuConfirmScreenState extends State<RekamWaktuConfirmScreen> {
         return;
       }
 
+      final user = context.read<AuthProvider>().user;
+
       final isOnline = context.read<ConnectivityProvider>().isOnline;
 
       if (isOnline) {
@@ -800,6 +803,7 @@ class _RekamWaktuConfirmScreenState extends State<RekamWaktuConfirmScreen> {
           latitude: position.latitude,
           longitude: position.longitude,
           photo: widget.photo,
+          employeeCode: user?.employeeCode ?? '',
         );
         if (mounted) {
           context.showSuccessSnackbar('Kehadiran berhasil disimpan!');

@@ -3,6 +3,7 @@ import 'package:hrd_app/data/models/user_model.dart';
 
 class ProfileDetailModel {
   final String? username;
+  final String? employeeCode;
   final String name;
   final String role;
   final String? avatarUrl;
@@ -12,6 +13,7 @@ class ProfileDetailModel {
 
   const ProfileDetailModel({
     this.username,
+    this.employeeCode,
     required this.name,
     required this.role,
     this.avatarUrl,
@@ -24,12 +26,14 @@ class ProfileDetailModel {
     if (user == null) {
       return const ProfileDetailModel(
         username: '-',
+        employeeCode: '-',
         name: 'User',
         role: 'Employee',
       );
     }
     return ProfileDetailModel(
       username: user.username ?? '-',
+      employeeCode: user.employeeCode ?? '-',
       name: user.name,
       role: user.role ?? 'Employee',
       avatarUrl: user.avatarUrl,

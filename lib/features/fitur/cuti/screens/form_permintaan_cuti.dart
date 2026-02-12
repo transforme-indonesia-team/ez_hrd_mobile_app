@@ -48,12 +48,25 @@ class _FormPermintaanCutiScreeenState extends State<FormPermintaanCutiScreeen> {
 
   bool _isSubmitting = false;
 
-  /// Disable tombol submit jika sisa cuti 0 (hanya untuk permintaan baru)
+  /// Jumlah hari cuti yang dipilih
+  int get _selectedDays {
+    if (_startDate == null || _endDate == null) return 0;
+    return _endDate!.difference(_startDate!).inDays + 1;
+  }
+
+  /// Sisa cuti dari jenis cuti yang dipilih
+  int get _maxRemainingLeave {
+    if (_selectedLeaveType == null) return 0;
+    return (_selectedLeaveType!.remainingLeave ?? 0).toInt();
+  }
+
+  /// Disable tombol submit jika sisa cuti 0 atau hari melebihi sisa cuti
   bool get _isSubmitDisabled {
     if (widget.existingLeave != null) return false;
     if (_selectedLeaveType == null) return false;
-    final remaining = _selectedLeaveType!.remainingLeave ?? 0;
-    return remaining <= 0;
+    if (_maxRemainingLeave <= 0) return true;
+    if (_selectedDays > _maxRemainingLeave) return true;
+    return false;
   }
 
   @override
@@ -184,6 +197,16 @@ class _FormPermintaanCutiScreeenState extends State<FormPermintaanCutiScreeen> {
         if (_endDate != null && _endDate!.isBefore(picked)) {
           _endDate = picked;
         }
+        // Auto-koreksi end date jika melebihi sisa cuti
+        if (widget.existingLeave == null &&
+            _selectedLeaveType != null &&
+            _maxRemainingLeave > 0 &&
+            _endDate != null) {
+          final maxEndDate = picked.add(Duration(days: _maxRemainingLeave - 1));
+          if (_endDate!.isAfter(maxEndDate)) {
+            _endDate = maxEndDate;
+          }
+        }
       });
     }
   }
@@ -200,11 +223,20 @@ class _FormPermintaanCutiScreeenState extends State<FormPermintaanCutiScreeen> {
         ? _endDate!
         : firstDate;
 
+    // Batasi lastDate berdasarkan sisa cuti (hanya untuk permintaan baru)
+    DateTime lastDate = DateTime(2030);
+    if (widget.existingLeave == null &&
+        _selectedLeaveType != null &&
+        _maxRemainingLeave > 0 &&
+        _startDate != null) {
+      lastDate = _startDate!.add(Duration(days: _maxRemainingLeave - 1));
+    }
+
     final picked = await showDatePicker(
       context: context,
-      initialDate: initialDate,
+      initialDate: initialDate.isAfter(lastDate) ? firstDate : initialDate,
       firstDate: firstDate,
-      lastDate: DateTime(2030),
+      lastDate: lastDate,
       builder: (context, child) {
         final colors = context.colors;
         return Theme(
@@ -235,7 +267,20 @@ class _FormPermintaanCutiScreeenState extends State<FormPermintaanCutiScreeen> {
     );
 
     if (selected != null) {
-      setState(() => _selectedLeaveType = selected);
+      setState(() {
+        _selectedLeaveType = selected;
+        // Auto-koreksi end date jika melebihi sisa cuti tipe baru
+        final remaining = (selected.remainingLeave ?? 0).toInt();
+        if (widget.existingLeave == null &&
+            remaining > 0 &&
+            _startDate != null &&
+            _endDate != null) {
+          final maxEndDate = _startDate!.add(Duration(days: remaining - 1));
+          if (_endDate!.isAfter(maxEndDate)) {
+            _endDate = maxEndDate;
+          }
+        }
+      });
     }
   }
 

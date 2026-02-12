@@ -49,7 +49,7 @@ class ProfileHeader extends StatelessWidget {
                 ),
                 SizedBox(height: 2.h),
                 Text(
-                  profile.username!,
+                  profile.employeeCode!,
                   style: AppTextStyles.caption(colors.textSecondary),
                 ),
               ],

@@ -120,7 +120,7 @@ class _ProfileDetailScreenState extends State<ProfileDetailScreen> {
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (context) => QrCodeBottomSheet(
-        username: _profile.username ?? '-',
+        employeeCode: _profile.employeeCode ?? '-',
         name: _profile.name,
         role: _profile.role,
       ),

@@ -6,13 +6,13 @@ import 'package:hrd_app/core/theme/app_text_styles.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
 class QrCodeBottomSheet extends StatefulWidget {
-  final String username;
+  final String employeeCode;
   final String name;
   final String role;
 
   const QrCodeBottomSheet({
     super.key,
-    required this.username,
+    required this.employeeCode,
     required this.name,
     required this.role,
   });
@@ -79,7 +79,7 @@ class _QrCodeBottomSheetState extends State<QrCodeBottomSheet> {
           ),
           SizedBox(height: 2.h),
           Text(
-            widget.username,
+            widget.employeeCode,
             style: AppTextStyles.caption(colors.textSecondary),
             textAlign: TextAlign.center,
           ),
@@ -108,7 +108,7 @@ class _QrCodeBottomSheetState extends State<QrCodeBottomSheet> {
       width: 200.w,
       height: 200.w,
       child: QrImageView(
-        data: widget.username,
+        data: widget.employeeCode,
         version: QrVersions.auto,
         size: 200.w,
         backgroundColor: Colors.white,
@@ -134,7 +134,7 @@ class _QrCodeBottomSheetState extends State<QrCodeBottomSheet> {
       ),
       child: BarcodeWidget(
         barcode: Barcode.code128(),
-        data: widget.username,
+        data: widget.employeeCode,
         width: 220.w,
         height: 80.h,
         drawText: true,
