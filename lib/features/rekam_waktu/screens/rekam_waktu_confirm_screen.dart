@@ -12,8 +12,10 @@ import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import 'package:hrd_app/core/theme/app_colors.dart';
 import 'package:hrd_app/core/providers/auth_provider.dart';
+import 'package:hrd_app/core/providers/connectivity_provider.dart';
 import 'package:hrd_app/core/utils/snackbar_utils.dart';
 import 'package:hrd_app/core/utils/location_utils.dart';
+import 'package:hrd_app/data/services/attendance_sync_service.dart';
 import 'package:hrd_app/core/utils/image_url_extension.dart';
 
 class RekamWaktuConfirmScreen extends StatefulWidget {
@@ -73,6 +75,19 @@ class _RekamWaktuConfirmScreenState extends State<RekamWaktuConfirmScreen> {
   }
 
   Future<void> _loadAttendanceLocations() async {
+    // Saat offline, skip loading lokasi dan izinkan simpan langsung
+    final isOnline = context.read<ConnectivityProvider>().isOnline;
+    if (!isOnline) {
+      debugPrint('=== REKAM WAKTU: Offline, skip muat lokasi ===');
+      if (mounted) {
+        setState(() {
+          _isLoadingLocations = false;
+          _hasLocationRestriction = false;
+        });
+      }
+      return;
+    }
+
     try {
       debugPrint('=== REKAM WAKTU: Memuat lokasi kehadiran... ===');
       final response = await EmployeeService().getRelation(
@@ -699,14 +714,32 @@ class _RekamWaktuConfirmScreenState extends State<RekamWaktuConfirmScreen> {
         return;
       }
 
-      await AttendanceService().absent(
-        latitude: position.latitude,
-        longitude: position.longitude,
-        photo: widget.photo,
-      );
-      if (mounted) {
-        context.showSuccessSnackbar('Kehadiran berhasil disimpan!');
-        Navigator.of(context).pop(true);
+      final isOnline = context.read<ConnectivityProvider>().isOnline;
+
+      if (isOnline) {
+        // Online → kirim langsung ke API
+        await AttendanceService().absent(
+          latitude: position.latitude,
+          longitude: position.longitude,
+          photo: widget.photo,
+        );
+        if (mounted) {
+          context.showSuccessSnackbar('Kehadiran berhasil disimpan!');
+          Navigator.of(context).pop(true);
+        }
+      } else {
+        // Offline → simpan ke lokal
+        await AttendanceSyncService().saveOffline(
+          latitude: position.latitude,
+          longitude: position.longitude,
+          photo: widget.photo,
+        );
+        if (mounted) {
+          context.showSuccessSnackbar(
+            'Kehadiran disimpan offline. Akan dikirim otomatis saat online.',
+          );
+          Navigator.of(context).pop(true);
+        }
       }
     } catch (e) {
       if (mounted) {

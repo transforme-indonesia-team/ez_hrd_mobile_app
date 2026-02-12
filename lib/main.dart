@@ -9,6 +9,7 @@ import 'core/theme/app_theme.dart';
 import 'package:hrd_app/core/utils/crypto_utils.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:hrd_app/data/services/base_api_service.dart';
+import 'package:hrd_app/core/providers/connectivity_provider.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
@@ -32,6 +33,9 @@ void main() async {
   await authProvider.initialize();
   _authProviderRef = authProvider;
 
+  final connectivityProvider = ConnectivityProvider();
+  await connectivityProvider.initialize();
+
   BaseApiService().setUnauthorizedCallback(() {
     _handleUnauthorized();
   });
@@ -41,6 +45,7 @@ void main() async {
       providers: [
         ChangeNotifierProvider.value(value: themeProvider),
         ChangeNotifierProvider.value(value: authProvider),
+        ChangeNotifierProvider.value(value: connectivityProvider),
       ],
       child: const MyApp(),
     ),

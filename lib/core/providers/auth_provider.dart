@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:hrd_app/data/models/user_model.dart';
 import 'package:hrd_app/data/services/auth_service.dart';
 import 'package:hrd_app/data/services/base_api_service.dart';
+import 'package:hrd_app/data/services/attendance_sync_service.dart';
 
 class AuthProvider extends ChangeNotifier {
   static const String _userKey = 'saved_user';
@@ -44,6 +45,11 @@ class AuthProvider extends ChangeNotifier {
 
     _isInitialized = true;
     notifyListeners();
+
+    // Sync absensi offline jika user sudah login
+    if (isAuthenticated) {
+      _syncPendingAttendance();
+    }
   }
 
   bool _isTokenValid(String? expiresAt) {
@@ -84,6 +90,9 @@ class AuthProvider extends ChangeNotifier {
 
       _isLoading = false;
       notifyListeners();
+
+      // Sync absensi offline setelah login berhasil
+      _syncPendingAttendance();
     } catch (e) {
       _isLoading = false;
       notifyListeners();
@@ -174,5 +183,12 @@ class AuthProvider extends ChangeNotifier {
       newPassword: newPassword,
       newPasswordConfirmation: newPasswordConfirmation,
     );
+  }
+
+  /// Trigger sync absensi offline yang tersimpan lokal
+  void _syncPendingAttendance() {
+    Future.delayed(const Duration(seconds: 2), () {
+      AttendanceSyncService().syncPendingAttendance();
+    });
   }
 }

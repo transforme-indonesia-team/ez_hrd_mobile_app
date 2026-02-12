@@ -56,6 +56,37 @@ class AttendanceService {
     return _api.postFormData('/attendance/absent', formData);
   }
 
+  /// Sama seperti [absent] tapi dengan waktu absen yang sudah ditentukan.
+  /// Digunakan untuk sync absensi offline yang sudah tersimpan lokal.
+  Future<Map<String, dynamic>> absentWithTime({
+    required double latitude,
+    required double longitude,
+    required File photo,
+    required String absentTime,
+  }) async {
+    final fileExists = await photo.exists();
+
+    if (!fileExists) {
+      throw Exception('File foto tidak ditemukan');
+    }
+
+    final fileName =
+        'attendance_${DateTime.now().millisecondsSinceEpoch}${path.extension(photo.path)}';
+    final location = '$latitude, $longitude';
+
+    final formData = FormData.fromMap({
+      'attendance_location': location,
+      'attendance_photo': await MultipartFile.fromFile(
+        photo.path,
+        filename: fileName,
+        contentType: DioMediaType('image', 'jpeg'),
+      ),
+      'absent': absentTime,
+    });
+
+    return _api.postFormData('/attendance/absent', formData);
+  }
+
   Future<Map<String, dynamic>> getSchedule({
     String? employeeId,
     DateTime? startDate,
