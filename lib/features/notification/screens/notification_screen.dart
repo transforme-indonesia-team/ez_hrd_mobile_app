@@ -40,10 +40,7 @@ class _NotificationScreenState extends State<NotificationScreen>
           icon: Icon(Icons.arrow_back, color: colors.textPrimary),
           onPressed: () => Navigator.pop(context),
         ),
-        title: Text(
-          'Notifikasi',
-          style: AppTextStyles.h3(colors.textPrimary),
-        ),
+        title: Text('Notifikasi', style: AppTextStyles.h3(colors.textPrimary)),
         bottom: PreferredSize(
           preferredSize: Size.fromHeight(48.h),
           child: Column(
@@ -61,7 +58,6 @@ class _NotificationScreenState extends State<NotificationScreen>
                 labelStyle: AppTextStyles.body(Colors.black),
                 unselectedLabelStyle: AppTextStyles.body(Colors.black),
                 tabs: const [
-                  Tab(text: 'Semua'),
                   Tab(text: 'Permintaan'),
                   Tab(text: 'Persetujuan'),
                 ],
@@ -74,10 +70,6 @@ class _NotificationScreenState extends State<NotificationScreen>
       body: TabBarView(
         controller: _tabController,
         children: const [
-          EmptyNotificationState(
-            title: 'Kamu tidak mendapat notifikasi apa pun',
-            subtitle: 'Jangan khawatir, notifikasi apa pun akan muncul di sini',
-          ),
           EmptyNotificationState(
             title: 'Tidak ada Permintaan',
             subtitle: 'Kamu belum mengajukan permintaan apa pun',

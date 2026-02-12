@@ -5,7 +5,9 @@ import 'package:hrd_app/core/constants/app_constants.dart';
 import 'package:hrd_app/core/theme/app_text_styles.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:hrd_app/data/models/attendance_location_model.dart';
 import 'package:hrd_app/data/services/attendance_service.dart';
+import 'package:hrd_app/data/services/employee_service.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import 'package:hrd_app/core/theme/app_colors.dart';
@@ -30,11 +32,21 @@ class _RekamWaktuConfirmScreenState extends State<RekamWaktuConfirmScreen> {
   bool _isMapLoading = true;
   LatLng? _initialPosition;
 
+  // State untuk lokasi kehadiran & validasi radius
+  List<LocationAreaModel> _locationAreas = [];
+  bool _isLoadingLocations = true;
+  bool _isWithinRadius = false;
+  bool _hasLocationRestriction = false;
+  double? _nearestDistanceMeters;
+
   @override
   void initState() {
     super.initState();
     _getInitialPosition();
+    _loadAttendanceLocations();
   }
+
+  // ============ Data Loading ============
 
   Future<void> _getInitialPosition() async {
     try {
@@ -50,14 +62,156 @@ class _RekamWaktuConfirmScreenState extends State<RekamWaktuConfirmScreen> {
         setState(() {
           _initialPosition = LatLng(position!.latitude, position.longitude);
         });
+        _validateRadiusIfReady();
         _mapController?.animateCamera(
           CameraUpdate.newLatLng(_initialPosition!),
         );
       }
     } catch (e) {
-      debugPrint('RekamWaktuConfirmScreen: Failed to get initial position: $e');
+      debugPrint('RekamWaktuConfirmScreen: Gagal ambil posisi awal: $e');
     }
   }
+
+  Future<void> _loadAttendanceLocations() async {
+    try {
+      debugPrint('=== REKAM WAKTU: Memuat lokasi kehadiran... ===');
+      final response = await EmployeeService().getRelation(
+        relation: 'ATTENDANCE_LOCATION',
+      );
+
+      if (!mounted) return;
+
+      debugPrint(
+        '=== REKAM WAKTU: Response diterima, keys: ${response.keys} ===',
+      );
+      final locations = AttendanceLocationModel.parseFromApiResponse(response);
+      debugPrint('=== REKAM WAKTU: Total lokasi: ${locations.length} ===');
+
+      for (final loc in locations) {
+        debugPrint(
+          '=== REKAM WAKTU: Lokasi "${loc.attendanceLocationName}" '
+          '(${loc.startDate} ~ ${loc.endDate}), '
+          'jumlah area: ${loc.locationAreas.length} ===',
+        );
+      }
+
+      // Kumpulkan semua area dari semua lokasi
+      final areas = <LocationAreaModel>[];
+      for (final location in locations) {
+        areas.addAll(location.locationAreas);
+      }
+
+      debugPrint('=== REKAM WAKTU: Total area: ${areas.length} ===');
+      for (final area in areas) {
+        debugPrint(
+          '=== REKAM WAKTU: Area "${area.areaName}" '
+          'lat=${area.lat}, lng=${area.lng}, '
+          'radius=${area.maxRadiusKm}km (${area.maxRadiusMeters}m) ===',
+        );
+      }
+
+      setState(() {
+        _locationAreas = areas;
+        _hasLocationRestriction = areas.isNotEmpty;
+        _isLoadingLocations = false;
+      });
+
+      _validateRadiusIfReady();
+      _fitMapToShowAllAreas();
+    } catch (e) {
+      debugPrint('=== REKAM WAKTU: GAGAL memuat lokasi: $e ===');
+      if (mounted) {
+        setState(() {
+          _isLoadingLocations = false;
+          _hasLocationRestriction = false;
+        });
+      }
+    }
+  }
+
+  // ============ Validasi Radius ============
+
+  void _validateRadiusIfReady() {
+    if (_initialPosition == null || _isLoadingLocations) return;
+    if (!_hasLocationRestriction) return;
+
+    double nearestDistance = double.infinity;
+    bool withinAny = false;
+
+    for (final area in _locationAreas) {
+      final distance = Geolocator.distanceBetween(
+        _initialPosition!.latitude,
+        _initialPosition!.longitude,
+        area.lat,
+        area.lng,
+      );
+
+      if (distance < nearestDistance) {
+        nearestDistance = distance;
+      }
+
+      if (distance <= area.maxRadiusMeters) {
+        withinAny = true;
+      }
+    }
+
+    setState(() {
+      _isWithinRadius = withinAny;
+      _nearestDistanceMeters = nearestDistance;
+    });
+  }
+
+  void _fitMapToShowAllAreas() {
+    if (_mapController == null || _locationAreas.isEmpty) return;
+
+    // Kumpulkan semua titik (area + posisi user)
+    final points = <LatLng>[];
+    for (final area in _locationAreas) {
+      points.add(LatLng(area.lat, area.lng));
+    }
+    if (_initialPosition != null) {
+      points.add(_initialPosition!);
+    }
+
+    if (points.length == 1) {
+      _mapController?.animateCamera(
+        CameraUpdate.newLatLngZoom(points.first, 16),
+      );
+      return;
+    }
+
+    // Hitung bounds
+    double minLat = points.first.latitude;
+    double maxLat = points.first.latitude;
+    double minLng = points.first.longitude;
+    double maxLng = points.first.longitude;
+
+    for (final point in points) {
+      if (point.latitude < minLat) minLat = point.latitude;
+      if (point.latitude > maxLat) maxLat = point.latitude;
+      if (point.longitude < minLng) minLng = point.longitude;
+      if (point.longitude > maxLng) maxLng = point.longitude;
+    }
+
+    _mapController?.animateCamera(
+      CameraUpdate.newLatLngBounds(
+        LatLngBounds(
+          southwest: LatLng(minLat, minLng),
+          northeast: LatLng(maxLat, maxLng),
+        ),
+        60, // padding
+      ),
+    );
+  }
+
+  /// Apakah tombol simpan boleh ditekan
+  bool get _canSave {
+    if (_isLoadingLocations) return false;
+    if (!_hasLocationRestriction) return true; // Tidak ada restriksi lokasi
+    return _isWithinRadius;
+  }
+
+  // ============ Build Methods ============
 
   @override
   Widget build(BuildContext context) {
@@ -78,6 +232,7 @@ class _RekamWaktuConfirmScreenState extends State<RekamWaktuConfirmScreen> {
               child: Column(
                 children: [
                   _buildMapSection(colors),
+                  _buildRadiusStatus(colors),
                   _buildDivider(colors),
                   SizedBox(height: 16.h),
                   _buildUserName(userName, colors),
@@ -113,6 +268,44 @@ class _RekamWaktuConfirmScreenState extends State<RekamWaktuConfirmScreen> {
     );
   }
 
+  // ============ Map Section ============
+
+  Set<Circle> _buildMapCircles() {
+    if (_locationAreas.isEmpty || _isLoadingLocations) return {};
+
+    final isInside = _isWithinRadius;
+
+    return _locationAreas.asMap().entries.map((entry) {
+      final area = entry.value;
+      return Circle(
+        circleId: CircleId('area_${entry.key}'),
+        center: LatLng(area.lat, area.lng),
+        radius: area.maxRadiusMeters,
+        fillColor: isInside
+            ? Colors.green.withValues(alpha: 0.15)
+            : Colors.red.withValues(alpha: 0.15),
+        strokeColor: isInside
+            ? Colors.green.withValues(alpha: 0.6)
+            : Colors.red.withValues(alpha: 0.6),
+        strokeWidth: 2,
+      );
+    }).toSet();
+  }
+
+  Set<Marker> _buildMapMarkers() {
+    return _locationAreas.asMap().entries.map((entry) {
+      final area = entry.value;
+      return Marker(
+        markerId: MarkerId('area_marker_${entry.key}'),
+        position: LatLng(area.lat, area.lng),
+        infoWindow: InfoWindow(
+          title: area.areaName,
+          snippet: 'Radius: ${(area.maxRadiusKm * 1000).toInt()}m',
+        ),
+      );
+    }).toSet();
+  }
+
   Widget _buildMapSection(ThemeColors colors) {
     return SizedBox(
       height: 220.h,
@@ -121,9 +314,10 @@ class _RekamWaktuConfirmScreenState extends State<RekamWaktuConfirmScreen> {
           GoogleMap(
             initialCameraPosition: CameraPosition(
               target: _initialPosition ?? const LatLng(0, 0),
-              zoom: 18,
+              zoom: 15,
             ),
-            markers: {},
+            circles: _buildMapCircles(),
+            markers: _buildMapMarkers(),
             myLocationEnabled: true,
             myLocationButtonEnabled: false,
             zoomControlsEnabled: false,
@@ -134,6 +328,10 @@ class _RekamWaktuConfirmScreenState extends State<RekamWaktuConfirmScreen> {
                 setState(() => _isMapLoading = false);
               }
               _moveCameraToCurrentLocation();
+              // Setelah map siap, fit ke semua area jika ada
+              Future.delayed(const Duration(milliseconds: 500), () {
+                _fitMapToShowAllAreas();
+              });
             },
           ),
           if (_isMapLoading)
@@ -149,6 +347,83 @@ class _RekamWaktuConfirmScreenState extends State<RekamWaktuConfirmScreen> {
     );
   }
 
+  // ============ Radius Status ============
+
+  Widget _buildRadiusStatus(ThemeColors colors) {
+    if (_isLoadingLocations) {
+      return Padding(
+        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            SizedBox(
+              width: 14.w,
+              height: 14.w,
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                color: colors.primaryBlue,
+              ),
+            ),
+            SizedBox(width: 8.w),
+            Text(
+              'Memeriksa area kehadiran...',
+              style: AppTextStyles.caption(colors.textSecondary),
+            ),
+          ],
+        ),
+      );
+    }
+
+    if (!_hasLocationRestriction) {
+      return const SizedBox.shrink();
+    }
+
+    final isInside = _isWithinRadius;
+    final icon = isInside ? Icons.check_circle : Icons.cancel;
+    final color = isInside ? Colors.green : Colors.red;
+    final text = isInside ? 'Dalam area kehadiran' : _buildOutsideRadiusText();
+
+    return Container(
+      margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+      padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(8.r),
+        border: Border.all(color: color.withValues(alpha: 0.3)),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, color: color, size: 16.sp),
+          SizedBox(width: 6.w),
+          Flexible(
+            child: Text(
+              text,
+              style: AppTextStyles.caption(color),
+              textAlign: TextAlign.center,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  String _buildOutsideRadiusText() {
+    if (_nearestDistanceMeters == null) {
+      return 'Di luar area kehadiran';
+    }
+
+    final distance = _nearestDistanceMeters!;
+    if (distance >= 1000) {
+      final km = (distance / 1000).toStringAsFixed(1);
+      return 'Di luar area kehadiran (${km}km dari area terdekat)';
+    }
+    return 'Di luar area kehadiran (${distance.toInt()}m dari area terdekat)';
+  }
+
+  // ============ Existing UI Methods (tidak berubah) ============
+
   Future<void> _moveCameraToCurrentLocation() async {
     try {
       final position = await Geolocator.getLastKnownPosition();
@@ -158,7 +433,7 @@ class _RekamWaktuConfirmScreenState extends State<RekamWaktuConfirmScreen> {
         );
       }
     } catch (e) {
-      debugPrint('RekamWaktuConfirmScreen: Failed to move camera: $e');
+      debugPrint('RekamWaktuConfirmScreen: Gagal pindah kamera: $e');
     }
   }
 
@@ -350,6 +625,8 @@ class _RekamWaktuConfirmScreenState extends State<RekamWaktuConfirmScreen> {
     );
   }
 
+  // ============ Bottom Button ============
+
   Widget _buildBottomButton(ThemeColors colors) {
     return Container(
       padding: EdgeInsets.all(16.w),
@@ -368,15 +645,21 @@ class _RekamWaktuConfirmScreenState extends State<RekamWaktuConfirmScreen> {
         child: SizedBox(
           width: double.infinity,
           child: ElevatedButton(
-            onPressed: _isLoading ? null : _handleSaveAttendance,
+            onPressed: (_isLoading || !_canSave) ? null : _handleSaveAttendance,
             style: ElevatedButton.styleFrom(
-              backgroundColor: colors.primaryBlue,
+              backgroundColor: _canSave
+                  ? colors.primaryBlue
+                  : colors.inactiveGray,
               foregroundColor: Colors.white,
               padding: EdgeInsets.symmetric(vertical: 14.h),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(8.r),
               ),
               elevation: 0,
+              disabledBackgroundColor: colors.inactiveGray.withValues(
+                alpha: 0.5,
+              ),
+              disabledForegroundColor: Colors.white.withValues(alpha: 0.7),
             ),
             child: _isLoading
                 ? SizedBox(
@@ -389,13 +672,19 @@ class _RekamWaktuConfirmScreenState extends State<RekamWaktuConfirmScreen> {
                   )
                 : Text(
                     'Simpan Kehadiran',
-                    style: AppTextStyles.body(colors.buttonTextOnPrimary),
+                    style: AppTextStyles.body(
+                      _canSave
+                          ? colors.buttonTextOnPrimary
+                          : Colors.white.withValues(alpha: 0.7),
+                    ),
                   ),
           ),
         ),
       ),
     );
   }
+
+  // ============ Save Attendance ============
 
   Future<void> _handleSaveAttendance() async {
     setState(() => _isLoading = true);
@@ -417,7 +706,6 @@ class _RekamWaktuConfirmScreenState extends State<RekamWaktuConfirmScreen> {
       );
       if (mounted) {
         context.showSuccessSnackbar('Kehadiran berhasil disimpan!');
-        // Pop dengan result true, agar CameraScreen tahu harus pop juga
         Navigator.of(context).pop(true);
       }
     } catch (e) {
