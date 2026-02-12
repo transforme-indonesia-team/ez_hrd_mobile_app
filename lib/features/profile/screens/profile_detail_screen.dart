@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hrd_app/core/theme/app_text_styles.dart';
 import 'package:hrd_app/core/utils/snackbar_utils.dart';
+import 'package:hrd_app/features/profile/widgets/qr_code_bottom_sheet.dart';
 import 'package:hrd_app/features/profile/detail/ketenagakerjaan/ketenagakerjaan_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:hrd_app/core/providers/auth_provider.dart';
@@ -114,7 +115,16 @@ class _ProfileDetailScreenState extends State<ProfileDetailScreen> {
   }
 
   void _onQRTap() {
-    context.showFeatureNotAvailable('QR Code');
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => QrCodeBottomSheet(
+        username: _profile.username ?? '-',
+        name: _profile.name,
+        role: _profile.role,
+      ),
+    );
   }
 
   void _onMoreMenuTap() {

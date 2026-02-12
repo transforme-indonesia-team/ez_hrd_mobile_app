@@ -55,6 +55,16 @@ class ProfileHeader extends StatelessWidget {
               ],
             ),
           ),
+          if (onQRTap != null)
+            IconButton(
+              onPressed: onQRTap,
+              icon: Icon(
+                Icons.qr_code_2,
+                color: colors.textSecondary,
+                size: 24.sp,
+              ),
+              tooltip: 'QR Code',
+            ),
         ],
       ),
     );
