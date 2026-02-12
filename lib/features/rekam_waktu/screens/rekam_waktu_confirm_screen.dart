@@ -322,6 +322,13 @@ class _RekamWaktuConfirmScreenState extends State<RekamWaktuConfirmScreen> {
   }
 
   Widget _buildMapSection(ThemeColors colors) {
+    final isOnline = context.watch<ConnectivityProvider>().isOnline;
+
+    // Saat offline, tampilkan koordinat sebagai pengganti peta
+    if (!isOnline) {
+      return _buildOfflineMapPlaceholder(colors);
+    }
+
     return SizedBox(
       height: 220.h,
       child: Stack(
@@ -356,6 +363,77 @@ class _RekamWaktuConfirmScreenState extends State<RekamWaktuConfirmScreen> {
             bottom: 16.h,
             right: 16.w,
             child: _buildCenterButton(colors),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildOfflineMapPlaceholder(ThemeColors colors) {
+    final lat = _initialPosition?.latitude;
+    final lng = _initialPosition?.longitude;
+
+    return Container(
+      height: 220.h,
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: colors.surface,
+        border: Border(bottom: BorderSide(color: colors.divider, width: 1)),
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.location_on_rounded,
+            size: 40.sp,
+            color: colors.primaryBlue,
+          ),
+          SizedBox(height: 12.h),
+          Text(
+            'Lokasi Terdeteksi',
+            style: AppTextStyles.body(
+              colors.textPrimary,
+            ).copyWith(fontWeight: FontWeight.w600),
+          ),
+          SizedBox(height: 8.h),
+          if (lat != null && lng != null) ...[
+            Text(
+              'Lat: ${lat.toStringAsFixed(6)}',
+              style: AppTextStyles.caption(colors.textSecondary),
+            ),
+            SizedBox(height: 2.h),
+            Text(
+              'Lng: ${lng.toStringAsFixed(6)}',
+              style: AppTextStyles.caption(colors.textSecondary),
+            ),
+          ] else
+            SizedBox(
+              width: 16.w,
+              height: 16.w,
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                color: colors.primaryBlue,
+              ),
+            ),
+          SizedBox(height: 12.h),
+          Container(
+            padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 4.h),
+            decoration: BoxDecoration(
+              color: Colors.orange.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(12.r),
+              border: Border.all(color: Colors.orange.withValues(alpha: 0.3)),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.wifi_off_rounded, size: 14.sp, color: Colors.orange),
+                SizedBox(width: 6.w),
+                Text(
+                  'Peta tidak tersedia (offline)',
+                  style: AppTextStyles.caption(Colors.orange),
+                ),
+              ],
+            ),
           ),
         ],
       ),
