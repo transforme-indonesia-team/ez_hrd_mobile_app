@@ -36,6 +36,7 @@ dependencies:
   connectivity_plus: ^6.1.4
   qr_flutter: ^4.1.0
   barcode_widget: ^2.0.4
+  mobile_scanner: ^6.0.2
 
 dev_dependencies:
   flutter_test:

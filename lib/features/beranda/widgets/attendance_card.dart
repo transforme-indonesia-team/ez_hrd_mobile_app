@@ -22,6 +22,7 @@ class AttendanceCard extends StatefulWidget {
   final String? avatarUrl;
   final String? photoIn;
   final String? photoOut;
+  final bool isQrLoading;
 
   const AttendanceCard({
     super.key,
@@ -38,6 +39,7 @@ class AttendanceCard extends StatefulWidget {
     this.avatarUrl,
     this.photoIn,
     this.photoOut,
+    this.isQrLoading = false,
   });
 
   @override
@@ -279,15 +281,24 @@ class _AttendanceCardState extends State<AttendanceCard> {
                 border: Border.all(color: colors.divider),
                 borderRadius: BorderRadius.circular(8.r),
               ),
-              child: IconButton(
-                onPressed: widget.onBarcodeTap,
-                padding: EdgeInsets.zero,
-                icon: Icon(
-                  Icons.qr_code_scanner,
-                  color: colors.textSecondary,
-                  size: 22.sp,
-                ),
-              ),
+              child: widget.isQrLoading
+                  ? SizedBox(
+                      width: 18.sp,
+                      height: 18.sp,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: colors.primaryBlue,
+                      ),
+                    )
+                  : IconButton(
+                      onPressed: widget.onBarcodeTap,
+                      padding: EdgeInsets.zero,
+                      icon: Icon(
+                        Icons.qr_code_scanner,
+                        color: colors.textSecondary,
+                        size: 22.sp,
+                      ),
+                    ),
             ),
           ),
         ],

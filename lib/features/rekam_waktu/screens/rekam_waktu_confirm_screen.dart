@@ -20,8 +20,17 @@ import 'package:hrd_app/core/utils/image_url_extension.dart';
 
 class RekamWaktuConfirmScreen extends StatefulWidget {
   final File photo;
+  final String? scannedEmployeeCode;
+  final String? scannedEmployeeName;
+  final String? scannedProfileUrl;
 
-  const RekamWaktuConfirmScreen({super.key, required this.photo});
+  const RekamWaktuConfirmScreen({
+    super.key,
+    required this.photo,
+    this.scannedEmployeeCode,
+    this.scannedEmployeeName,
+    this.scannedProfileUrl,
+  });
 
   @override
   State<RekamWaktuConfirmScreen> createState() =>
@@ -233,8 +242,13 @@ class _RekamWaktuConfirmScreenState extends State<RekamWaktuConfirmScreen> {
   Widget build(BuildContext context) {
     final colors = context.colors;
     final user = context.read<AuthProvider>().user;
-    final userName = (user?.name ?? 'USER').toUpperCase();
-    final profilePhotoUrl = user?.avatarUrl;
+    final isScannedMode = widget.scannedEmployeeCode != null;
+    final userName = isScannedMode
+        ? (widget.scannedEmployeeName ?? 'KARYAWAN').toUpperCase()
+        : (user?.name ?? 'USER').toUpperCase();
+    final profilePhotoUrl = isScannedMode
+        ? widget.scannedProfileUrl
+        : user?.avatarUrl;
     final now = DateTime.now();
     final dateTimeFormatted = DateFormat("MMM, dd yyyy, HH:mm").format(now);
 
@@ -794,6 +808,8 @@ class _RekamWaktuConfirmScreenState extends State<RekamWaktuConfirmScreen> {
       }
 
       final user = context.read<AuthProvider>().user;
+      final employeeCode =
+          widget.scannedEmployeeCode ?? user?.employeeCode ?? '';
 
       final isOnline = context.read<ConnectivityProvider>().isOnline;
 
@@ -803,7 +819,7 @@ class _RekamWaktuConfirmScreenState extends State<RekamWaktuConfirmScreen> {
           latitude: position.latitude,
           longitude: position.longitude,
           photo: widget.photo,
-          employeeCode: user?.employeeCode ?? '',
+          employeeCode: employeeCode,
         );
         if (mounted) {
           context.showSuccessSnackbar('Kehadiran berhasil disimpan!');

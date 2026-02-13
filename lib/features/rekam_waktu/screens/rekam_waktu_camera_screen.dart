@@ -8,7 +8,16 @@ import 'package:hrd_app/core/utils/snackbar_utils.dart';
 import 'package:hrd_app/features/rekam_waktu/screens/rekam_waktu_confirm_screen.dart';
 
 class RekamWaktuCameraScreen extends StatefulWidget {
-  const RekamWaktuCameraScreen({super.key});
+  final String? scannedEmployeeCode;
+  final String? scannedEmployeeName;
+  final String? scannedProfileUrl;
+
+  const RekamWaktuCameraScreen({
+    super.key,
+    this.scannedEmployeeCode,
+    this.scannedEmployeeName,
+    this.scannedProfileUrl,
+  });
 
   @override
   State<RekamWaktuCameraScreen> createState() => _RekamWaktuCameraScreenState();
@@ -138,8 +147,12 @@ class _RekamWaktuCameraScreenState extends State<RekamWaktuCameraScreen> {
         final result = await Navigator.push<bool>(
           context,
           MaterialPageRoute(
-            builder: (context) =>
-                RekamWaktuConfirmScreen(photo: File(photo.path)),
+            builder: (context) => RekamWaktuConfirmScreen(
+              photo: File(photo.path),
+              scannedEmployeeCode: widget.scannedEmployeeCode,
+              scannedEmployeeName: widget.scannedEmployeeName,
+              scannedProfileUrl: widget.scannedProfileUrl,
+            ),
           ),
         );
 

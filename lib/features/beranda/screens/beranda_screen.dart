@@ -24,7 +24,10 @@ import 'package:hrd_app/features/notification/screens/notification_screen.dart';
 import 'package:hrd_app/features/schedule/screens/schedule_screen.dart';
 import 'package:hrd_app/features/beranda/widgets/riwayat_kehadiran_bottom_sheet.dart';
 import 'package:hrd_app/features/rekam_waktu/screens/rekam_waktu_camera_screen.dart';
+import 'package:hrd_app/features/rekam_waktu/screens/qr_scanner_screen.dart';
 import 'package:hrd_app/features/fitur/lembur/screens/daftar_lembur_screen.dart';
+import 'package:hrd_app/data/services/employee_service.dart';
+import 'package:hrd_app/core/utils/image_url_extension.dart';
 
 class BerandaScreen extends StatefulWidget {
   const BerandaScreen({super.key});
@@ -41,6 +44,7 @@ class _BerandaScreenState extends State<BerandaScreen>
   bool _isLoadingShift = true;
   EmployeeShiftModel? _shiftData;
   List<Map<String, dynamic>> _attendanceRecords = [];
+  bool _isQrLoading = false;
 
   @override
   void initState() {
@@ -167,6 +171,136 @@ class _BerandaScreenState extends State<BerandaScreen>
     }
   }
 
+  Future<void> _onBarcodeTap() async {
+    final result = await _checkGPSAndPermission();
+    if (!result || !mounted) return;
+
+    // Buka QR scanner
+    final scannedCode = await Navigator.push<String>(
+      context,
+      MaterialPageRoute(builder: (context) => const QrScannerScreen()),
+    );
+
+    if (scannedCode == null || scannedCode.isEmpty || !mounted) return;
+
+    // Loading state
+    setState(() => _isQrLoading = true);
+
+    try {
+      final response = await EmployeeService().getDetail(
+        employeeCode: scannedCode,
+      );
+
+      if (!mounted) return;
+
+      final records = response['records'];
+      if (records == null) {
+        setState(() => _isQrLoading = false);
+        _showQrErrorDialog('Karyawan tidak ditemukan');
+        return;
+      }
+
+      final employeeName = records['employee_name'] as String?;
+      final employeeCode = records['employee_code'] as String?;
+      final profilePath = records['profile'] as String?;
+
+      setState(() => _isQrLoading = false);
+
+      // Navigate ke kamera rekam waktu dengan data karyawan dari scan
+      if (!mounted) return;
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => RekamWaktuCameraScreen(
+            scannedEmployeeCode: employeeCode ?? scannedCode,
+            scannedEmployeeName: employeeName,
+            scannedProfileUrl: profilePath?.asFullImageUrl,
+          ),
+        ),
+      ).then((_) {
+        if (mounted) {
+          setState(() => _isLoadingShift = true);
+          _loadShiftInfo();
+        }
+      });
+    } catch (e) {
+      if (mounted) {
+        setState(() => _isQrLoading = false);
+        final errorMsg = e.toString();
+        _showQrErrorDialog(errorMsg);
+      }
+    }
+  }
+
+  void _showQrErrorDialog(String message) {
+    final colors = context.colors;
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) => Dialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        backgroundColor: colors.background,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 28),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Warning icon with circle
+              Container(
+                width: 80,
+                height: 80,
+                decoration: BoxDecoration(
+                  color: Colors.lightBlue.shade50,
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  Icons.warning_rounded,
+                  size: 48,
+                  color: Colors.orange.shade400,
+                ),
+              ),
+              const SizedBox(height: 20),
+              Text(
+                'Gagal',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: colors.textPrimary,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                message,
+                style: TextStyle(fontSize: 14, color: colors.textSecondary),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 24),
+              SizedBox(
+                width: 120,
+                child: ElevatedButton(
+                  onPressed: () => Navigator.pop(ctx),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.orange,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(24),
+                    ),
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    elevation: 0,
+                  ),
+                  child: const Text(
+                    'OKE',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   Future<bool> _checkGPSAndPermission() async {
     bool serviceEnabled = await LocationUtils.isLocationServiceEnabled();
     if (!mounted) return false;
@@ -250,6 +384,8 @@ class _BerandaScreenState extends State<BerandaScreen>
               photoIn: _shiftData?.formattedPhotoIn,
               photoOut: _shiftData?.formattedPhotoOut,
               onRekamWaktuTap: _onRekamWaktuTap,
+              onBarcodeTap: _onBarcodeTap,
+              isQrLoading: _isQrLoading,
               onLainnyaTap: () {
                 RiwayatKehadiranBottomSheet.show(
                   context,
