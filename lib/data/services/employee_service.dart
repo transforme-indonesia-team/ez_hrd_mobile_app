@@ -19,7 +19,7 @@ class EmployeeService {
 
   Future<Map<String, dynamic>> getDetail({String? employeeCode}) async {
     return _api.get(
-      'employee/get-detail',
+      '/employee/get-detail',
       queryParameters: {'employee_code': employeeCode},
     );
   }

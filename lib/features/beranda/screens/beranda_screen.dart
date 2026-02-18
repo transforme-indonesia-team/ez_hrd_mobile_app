@@ -27,7 +27,6 @@ import 'package:hrd_app/features/rekam_waktu/screens/rekam_waktu_camera_screen.d
 import 'package:hrd_app/features/rekam_waktu/screens/qr_scanner_screen.dart';
 import 'package:hrd_app/features/fitur/lembur/screens/daftar_lembur_screen.dart';
 import 'package:hrd_app/data/services/employee_service.dart';
-import 'package:hrd_app/core/utils/image_url_extension.dart';
 
 class BerandaScreen extends StatefulWidget {
   const BerandaScreen({super.key});
@@ -193,10 +192,11 @@ class _BerandaScreenState extends State<BerandaScreen>
 
       if (!mounted) return;
 
-      final records = response['records'];
+      final original = response['original'] as Map<String, dynamic>?;
+      final records = original?['records'] as Map<String, dynamic>?;
       if (records == null) {
         setState(() => _isQrLoading = false);
-        _showQrErrorDialog('Karyawan tidak ditemukan');
+        _showQrErrorDialog(original?['message'] ?? 'Karyawan tidak ditemukan');
         return;
       }
 
@@ -214,7 +214,7 @@ class _BerandaScreenState extends State<BerandaScreen>
           builder: (context) => RekamWaktuCameraScreen(
             scannedEmployeeCode: employeeCode ?? scannedCode,
             scannedEmployeeName: employeeName,
-            scannedProfileUrl: profilePath?.asFullImageUrl,
+            scannedProfileUrl: profilePath,
           ),
         ),
       ).then((_) {

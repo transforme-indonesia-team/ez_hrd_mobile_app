@@ -286,9 +286,11 @@ class BaseApiService {
       }
 
       // Log more details for debugging
-      debugPrint('DEBUG-API-ERROR: No encrypted response for $endpoint');
-      debugPrint('DEBUG-API-ERROR: Raw data: $responseData');
-      throw Exception('Response tidak memiliki data terenkripsi');
+      debugPrint(
+        'DEBUG-API: No encrypted response for $endpoint, returning raw data',
+      );
+      debugPrint('DEBUG-API: Raw data: $responseData');
+      return {'original': responseData};
     }
 
     // Try to decrypt, with error handling
