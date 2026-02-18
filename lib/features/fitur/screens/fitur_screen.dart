@@ -20,6 +20,7 @@ import 'package:hrd_app/features/fitur/widgets/fitur_item_grid.dart';
 import 'package:hrd_app/features/fitur/widgets/fitur_item_list.dart';
 import 'package:hrd_app/features/fitur/widgets/fitur_bottom_sheet.dart';
 import 'package:hrd_app/features/fitur/lembur/screens/daftar_lembur_screen.dart';
+import 'package:hrd_app/features/fitur/permohonan/screens/permohonan_karyawan_screen.dart';
 import 'package:hrd_app/features/profile/screens/profile_detail_screen.dart';
 
 class FiturScreen extends StatefulWidget {
@@ -98,6 +99,14 @@ class _FiturScreenState extends State<FiturScreen> {
           context,
           MaterialPageRoute(
             builder: (context) => const DaftarKehadiranScreen(),
+          ),
+        );
+        break;
+      case 'permohonan_karyawan':
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const PermohonanKaryawanScreen(),
           ),
         );
         break;

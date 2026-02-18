@@ -4,6 +4,7 @@ import 'package:hrd_app/core/theme/app_text_styles.dart';
 import 'package:hrd_app/core/utils/snackbar_utils.dart';
 import 'package:hrd_app/features/profile/widgets/qr_code_bottom_sheet.dart';
 import 'package:hrd_app/features/profile/detail/ketenagakerjaan/ketenagakerjaan_screen.dart';
+import 'package:hrd_app/features/fitur/permohonan/screens/permohonan_karyawan_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:hrd_app/core/providers/auth_provider.dart';
 import 'package:hrd_app/core/theme/app_colors.dart';
@@ -103,7 +104,12 @@ class _ProfileDetailScreenState extends State<ProfileDetailScreen> {
           'Permintaan Khusus Kehadiran',
           'Permohonan Karyawan',
         ],
-        onTap: () => context.showMenuNotAvailable('Permohonan Karyawan'),
+        onTap: () => Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const PermohonanKaryawanScreen(),
+          ),
+        ),
       ),
       ProfileMenuItemModel(
         icon: Icons.beach_access_outlined,
