@@ -58,11 +58,7 @@ class PengaturanPersonalScreen extends StatelessWidget {
       padding: EdgeInsets.all(20.w),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
-          colors: [
-            Color(0xFF38BDF8),
-            Color(0xFF0EA5E9),
-            Color(0xFF0284C7),
-          ],
+          colors: [Color(0xFF38BDF8), Color(0xFF0EA5E9), Color(0xFF0284C7)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -168,7 +164,7 @@ class PengaturanPersonalScreen extends StatelessWidget {
               color: item.backgroundColor,
               borderRadius: BorderRadius.circular(10.r),
             ),
-            child: Icon(item.icon, color: item.iconColor, size: 22.sp),
+            child: Icon(item.icon, color: item.iconColor, size: 20.sp),
           ),
           SizedBox(height: 6.h),
           Expanded(
@@ -177,7 +173,7 @@ class PengaturanPersonalScreen extends StatelessWidget {
               textAlign: TextAlign.center,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
-              style: AppTextStyles.body(colors.textPrimary),
+              style: AppTextStyles.caption(colors.textPrimary),
             ),
           ),
         ],
