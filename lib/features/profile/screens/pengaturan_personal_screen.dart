@@ -5,6 +5,7 @@ import 'package:hrd_app/core/theme/app_colors.dart';
 import 'package:hrd_app/core/theme/color_palette.dart';
 import 'package:hrd_app/core/utils/snackbar_utils.dart';
 import 'package:hrd_app/features/profile/pengaturan/ganti_password_screen.dart';
+import 'package:hrd_app/features/profile/pengaturan/sesi_aktif_screen.dart';
 
 class PengaturanPersonalScreen extends StatelessWidget {
   const PengaturanPersonalScreen({super.key});
@@ -146,6 +147,14 @@ class PengaturanPersonalScreen extends StatelessWidget {
                 ),
               );
               break;
+            case 'sesi_aktif':
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const SesiAktifScreen(),
+                ),
+              );
+              break;
             default:
               context.showMenuNotAvailable(item.label);
           }
@@ -194,6 +203,7 @@ class PengaturanPersonalScreen extends StatelessWidget {
       label: 'Sesi Aktif',
       iconColor: ColorPalette.blue600,
       backgroundColor: ColorPalette.blue100,
+      route: 'sesi_aktif',
     ),
     _MenuItem(
       icon: Icons.link,
