@@ -18,31 +18,30 @@ class FiturItemModel {
 class FiturCategoryModel {
   final String name;
   final List<FiturItemModel> items;
+  final List<FiturCategoryModel>? subCategories;
   final Color? backgroundColor;
   final Color? iconColor;
 
   const FiturCategoryModel({
     required this.name,
-    required this.items,
+    this.items = const [],
+    this.subCategories,
     this.backgroundColor,
     this.iconColor,
   });
+
+  /// Semua items (flatten dari subCategories jika ada, otherwise direct items)
+  List<FiturItemModel> get allItems {
+    if (subCategories != null && subCategories!.isNotEmpty) {
+      return subCategories!.expand((sub) => sub.items).toList();
+    }
+    return items;
+  }
 }
 
 class FiturSectionModel {
   final String name;
   final List<FiturCategoryModel> categories;
-  final bool hasLainnya;
-  final String?
-  lainnyaTitle;
-  final List<FiturCategoryModel>
-  directCategories;
 
-  const FiturSectionModel({
-    required this.name,
-    required this.categories,
-    this.hasLainnya = false,
-    this.lainnyaTitle,
-    this.directCategories = const [],
-  });
+  const FiturSectionModel({required this.name, required this.categories});
 }

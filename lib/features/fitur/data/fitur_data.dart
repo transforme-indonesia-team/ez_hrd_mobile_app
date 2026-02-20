@@ -115,59 +115,56 @@ class FiturData {
 
     FiturSectionModel(
       name: 'Aktivitas',
-      hasLainnya: true,
-      lainnyaTitle: 'Tugas & Saran',
       categories: [
         FiturCategoryModel(
-          name: 'Aktivitas',
+          name: 'Tugas & Saran',
           backgroundColor: Colors.green.withValues(alpha: 0.2),
           iconColor: Colors.green,
-          items: [
-            FiturItemModel(
-              id: 'tugas',
-              title: 'Tugas',
-              icon: Icons.task_outlined,
+          subCategories: [
+            FiturCategoryModel(
+              name: 'Aktivitas',
+              items: [
+                FiturItemModel(
+                  id: 'tugas',
+                  title: 'Tugas',
+                  icon: Icons.task_outlined,
+                ),
+                FiturItemModel(
+                  id: 'saran',
+                  title: 'Saran',
+                  icon: Icons.chat_bubble_outline,
+                ),
+              ],
             ),
-            FiturItemModel(
-              id: 'saran',
-              title: 'Saran',
-              icon: Icons.chat_bubble_outline,
+            FiturCategoryModel(
+              name: 'Manajemen',
+              items: [
+                FiturItemModel(
+                  id: 'manajemen_tugas',
+                  title: 'Manajemen Jenis Tugas',
+                  icon: Icons.task_alt_outlined,
+                ),
+              ],
+            ),
+            FiturCategoryModel(
+              name: 'Laporan',
+              items: [
+                FiturItemModel(
+                  id: 'laporan_tugas',
+                  title: 'Laporan Tugas',
+                  icon: Icons.list_alt,
+                ),
+                FiturItemModel(
+                  id: 'laporan_saran',
+                  title: 'Laporan Saran',
+                  icon: Icons.list_alt,
+                ),
+              ],
             ),
           ],
         ),
         FiturCategoryModel(
-          name: 'Manajemen',
-          backgroundColor: Colors.green.withValues(alpha: 0.2),
-          iconColor: Colors.green,
-          items: [
-            FiturItemModel(
-              id: 'manajemen_tugas',
-              title: 'Manajemen Jenis Tugas',
-              icon: Icons.task_alt_outlined,
-            ),
-          ],
-        ),
-        FiturCategoryModel(
-          name: 'Laporan',
-          backgroundColor: Colors.green.withValues(alpha: 0.2),
-          iconColor: Colors.green,
-          items: [
-            FiturItemModel(
-              id: 'laporan_tugas',
-              title: 'Laporan Tugas',
-              icon: Icons.list_alt,
-            ),
-            FiturItemModel(
-              id: 'laporan_saran',
-              title: 'Laporan Saran',
-              icon: Icons.list_alt,
-            ),
-          ],
-        ),
-      ],
-      directCategories: [
-        FiturCategoryModel(
-          name: "Aktivitas Harian",
+          name: 'Aktivitas Harian',
           backgroundColor: Colors.green.withValues(alpha: 0.2),
           iconColor: Colors.green,
           items: [
@@ -189,7 +186,7 @@ class FiturData {
           ],
         ),
         FiturCategoryModel(
-          name: "Pooling",
+          name: 'Pooling',
           backgroundColor: Colors.blue.withValues(alpha: 0.2),
           iconColor: const Color.fromARGB(255, 101, 191, 244),
           items: [
@@ -236,7 +233,7 @@ class FiturData {
       final filteredCategories = <FiturCategoryModel>[];
 
       for (final category in section.categories) {
-        final filteredItems = category.items
+        final filteredItems = category.allItems
             .where((item) => item.title.toLowerCase().contains(lowerQuery))
             .toList();
 
@@ -254,13 +251,7 @@ class FiturData {
 
       if (filteredCategories.isNotEmpty) {
         result.add(
-          FiturSectionModel(
-            name: section.name,
-            categories: filteredCategories,
-            hasLainnya: section.hasLainnya,
-            lainnyaTitle: section.lainnyaTitle,
-            directCategories: section.directCategories,
-          ),
+          FiturSectionModel(name: section.name, categories: filteredCategories),
         );
       }
     }
@@ -272,15 +263,8 @@ class FiturData {
   /// Returns null jika tidak ditemukan
   static FiturItemModel? findItemById(String id) {
     for (final section in sections) {
-      // Cari di categories
       for (final category in section.categories) {
-        for (final item in category.items) {
-          if (item.id == id) return item;
-        }
-      }
-      // Cari di directCategories
-      for (final category in section.directCategories) {
-        for (final item in category.items) {
+        for (final item in category.allItems) {
           if (item.id == id) return item;
         }
       }
@@ -292,15 +276,8 @@ class FiturData {
   /// Returns null jika tidak ditemukan
   static FiturCategoryModel? findCategoryByItemId(String id) {
     for (final section in sections) {
-      // Cari di categories
       for (final category in section.categories) {
-        for (final item in category.items) {
-          if (item.id == id) return category;
-        }
-      }
-      // Cari di directCategories
-      for (final category in section.directCategories) {
-        for (final item in category.items) {
+        for (final item in category.allItems) {
           if (item.id == id) return category;
         }
       }

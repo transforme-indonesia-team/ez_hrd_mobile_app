@@ -7,20 +7,20 @@ import 'package:hrd_app/features/fitur/widgets/fitur_item_grid.dart';
 
 class FiturBottomSheet extends StatefulWidget {
   final String title;
-  final List<FiturCategoryModel> categories;
+  final FiturCategoryModel category;
   final Function(FiturItemModel) onItemTap;
 
   const FiturBottomSheet({
     super.key,
     required this.title,
-    required this.categories,
+    required this.category,
     required this.onItemTap,
   });
 
   static void show(
     BuildContext context, {
     required String title,
-    required List<FiturCategoryModel> categories,
+    required FiturCategoryModel category,
     required Function(FiturItemModel) onItemTap,
   }) {
     showModalBottomSheet(
@@ -29,7 +29,7 @@ class FiturBottomSheet extends StatefulWidget {
       backgroundColor: Colors.transparent,
       builder: (context) => FiturBottomSheet(
         title: title,
-        categories: categories,
+        category: category,
         onItemTap: onItemTap,
       ),
     );
@@ -45,10 +45,15 @@ class _FiturBottomSheetState extends State<FiturBottomSheet> {
   @override
   void initState() {
     super.initState();
-    if (widget.categories.isNotEmpty) {
+    // Expand first sub-category by default
+    if (_hasSubCategories) {
       _expandedCategories.add(0);
     }
   }
+
+  bool get _hasSubCategories =>
+      widget.category.subCategories != null &&
+      widget.category.subCategories!.isNotEmpty;
 
   void _toggleCategory(int index) {
     setState(() {
@@ -117,18 +122,25 @@ class _FiturBottomSheetState extends State<FiturBottomSheet> {
                 ),
               ),
 
-              SliverList(
-                delegate: SliverChildBuilderDelegate((context, index) {
-                  final category = widget.categories[index];
-                  final isExpanded = _expandedCategories.contains(index);
-                  return _buildCategoryTile(
-                    category,
-                    index,
-                    isExpanded,
-                    colors,
-                  );
-                }, childCount: widget.categories.length),
-              ),
+              // Jika ada subCategories → tampilkan accordion
+              // Jika tidak → tampilkan semua items langsung
+              if (_hasSubCategories)
+                SliverList(
+                  delegate: SliverChildBuilderDelegate((context, index) {
+                    final subCat = widget.category.subCategories![index];
+                    final isExpanded = _expandedCategories.contains(index);
+                    return _buildCategoryTile(
+                      subCat,
+                      index,
+                      isExpanded,
+                      colors,
+                    );
+                  }, childCount: widget.category.subCategories!.length),
+                )
+              else
+                SliverToBoxAdapter(
+                  child: _buildItemsGrid(context, widget.category, colors),
+                ),
 
               const SliverToBoxAdapter(child: SizedBox(height: 20)),
             ],
@@ -139,7 +151,7 @@ class _FiturBottomSheetState extends State<FiturBottomSheet> {
   }
 
   Widget _buildCategoryTile(
-    FiturCategoryModel category,
+    FiturCategoryModel subCategory,
     int index,
     bool isExpanded,
     ThemeColors colors,
@@ -154,7 +166,7 @@ class _FiturBottomSheetState extends State<FiturBottomSheet> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  category.name,
+                  subCategory.name,
                   style: AppTextStyles.h4(colors.textPrimary),
                 ),
                 Icon(
@@ -171,7 +183,7 @@ class _FiturBottomSheetState extends State<FiturBottomSheet> {
 
         AnimatedCrossFade(
           firstChild: const SizedBox.shrink(),
-          secondChild: _buildItemsGrid(category, colors),
+          secondChild: _buildItemsGrid(context, subCategory, colors),
           crossFadeState: isExpanded
               ? CrossFadeState.showSecond
               : CrossFadeState.showFirst,
@@ -181,7 +193,15 @@ class _FiturBottomSheetState extends State<FiturBottomSheet> {
     );
   }
 
-  Widget _buildItemsGrid(FiturCategoryModel category, ThemeColors colors) {
+  Widget _buildItemsGrid(
+    BuildContext context,
+    FiturCategoryModel category,
+    ThemeColors colors,
+  ) {
+    // Gunakan backgroundColor/iconColor dari parent jika sub-category tidak punya
+    final bgColor = category.backgroundColor ?? widget.category.backgroundColor;
+    final icColor = category.iconColor ?? widget.category.iconColor;
+
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
       child: Align(
@@ -195,8 +215,8 @@ class _FiturBottomSheetState extends State<FiturBottomSheet> {
               height: 90,
               child: FiturItemGrid(
                 item: item,
-                categoryBackgroundColor: category.backgroundColor,
-                categoryIconColor: category.iconColor,
+                categoryBackgroundColor: bgColor,
+                categoryIconColor: icColor,
                 onTap: () {
                   Navigator.pop(context);
                   widget.onItemTap(item);

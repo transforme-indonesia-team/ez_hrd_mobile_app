@@ -15,7 +15,6 @@ import 'package:hrd_app/features/fitur/kehadiran/screens/daftar_kehadiran_screen
 import 'package:hrd_app/features/fitur/models/fitur_item_model.dart';
 import 'package:hrd_app/features/fitur/widgets/fitur_search_bar.dart';
 import 'package:hrd_app/features/fitur/widgets/fitur_section_header.dart';
-import 'package:hrd_app/features/fitur/widgets/fitur_category_header.dart';
 import 'package:hrd_app/features/fitur/widgets/fitur_item_grid.dart';
 import 'package:hrd_app/features/fitur/widgets/fitur_item_list.dart';
 import 'package:hrd_app/features/fitur/widgets/fitur_bottom_sheet.dart';
@@ -199,34 +198,9 @@ class _FiturScreenState extends State<FiturScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           for (final section in sections) ...[
-            if (section.hasLainnya) ...[
-              _buildSectionWithLainnya(section, colors),
-            ] else ...[
-              FiturSectionHeader(title: section.name),
-              for (final category in section.categories) ...[
-                Container(
-                  margin: const EdgeInsets.symmetric(vertical: 2),
-                  decoration: BoxDecoration(color: colors.background),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      FiturCategoryHeader(title: category.name),
-                      if (_isGridView)
-                        _buildGridItems(
-                          category.items,
-                          category.backgroundColor,
-                          category.iconColor,
-                        )
-                      else
-                        _buildListItems(
-                          category.items,
-                          category.backgroundColor,
-                          category.iconColor,
-                        ),
-                    ],
-                  ),
-                ),
-              ],
+            FiturSectionHeader(title: section.name),
+            for (final category in section.categories) ...[
+              _buildCategory(category, colors),
             ],
           ],
           const SizedBox(height: 16),
@@ -235,114 +209,75 @@ class _FiturScreenState extends State<FiturScreen> {
     );
   }
 
-  Widget _buildSectionWithLainnya(
-    FiturSectionModel section,
-    ThemeColors colors,
-  ) {
-    final allItems = <FiturItemModel>[];
-    Color? bgColor;
-    Color? iconColor;
+  Widget _buildCategory(FiturCategoryModel category, ThemeColors colors) {
+    final items = category.allItems;
+    final hasLainnya = items.length > 4;
+    final displayItems = hasLainnya ? items.take(4).toList() : items;
 
-    for (final category in section.categories) {
-      allItems.addAll(category.items);
-      bgColor ??= category.backgroundColor;
-      iconColor ??= category.iconColor;
-    }
-
-    final displayItems = allItems.take(4).toList();
-
-    final lainnyaDisplayTitle = section.lainnyaTitle ?? section.name;
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        FiturSectionHeader(title: section.name),
-
-        Container(
-          margin: const EdgeInsets.symmetric(vertical: 2),
-          padding: const EdgeInsets.only(bottom: 12),
-          decoration: BoxDecoration(color: colors.background),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 12, 8, 8),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      lainnyaDisplayTitle,
-                      style: AppTextStyles.bodyMedium(colors.textPrimary),
-                    ),
-                    TextButton(
-                      onPressed: () => _showLainnyaBottomSheet(section),
-                      style: TextButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(horizontal: 8),
-                        minimumSize: Size.zero,
-                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            'Lainnya',
-                            style: AppTextStyles.bodyMedium(colors.primaryBlue),
-                          ),
-                          const SizedBox(width: 4),
-                          Icon(
-                            Icons.chevron_right_rounded,
-                            color: colors.primaryBlue,
-                            size: 20,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 8),
-              if (_isGridView)
-                _buildGridItems(displayItems, bgColor, iconColor)
-              else
-                _buildListItems(displayItems, bgColor, iconColor),
-            ],
-          ),
-        ),
-        for (final category in section.directCategories) ...[
-          Container(
-            margin: const EdgeInsets.symmetric(vertical: 2),
-            padding: const EdgeInsets.only(bottom: 12),
-            decoration: BoxDecoration(color: colors.background),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 2),
+      decoration: BoxDecoration(color: colors.background),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 12, 8, 8),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                FiturCategoryHeader(title: category.name),
-                const SizedBox(height: 16),
-                if (_isGridView)
-                  _buildGridItems(
-                    category.items,
-                    category.backgroundColor,
-                    category.iconColor,
-                  )
-                else
-                  _buildListItems(
-                    category.items,
-                    category.backgroundColor,
-                    category.iconColor,
+                Text(
+                  category.name,
+                  style: AppTextStyles.bodyMedium(colors.textPrimary),
+                ),
+                if (hasLainnya)
+                  TextButton(
+                    onPressed: () => _showLainnyaBottomSheet(category),
+                    style: TextButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                      minimumSize: Size.zero,
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          'Lainnya',
+                          style: AppTextStyles.bodyMedium(colors.primaryBlue),
+                        ),
+                        const SizedBox(width: 4),
+                        Icon(
+                          Icons.chevron_right_rounded,
+                          color: colors.primaryBlue,
+                          size: 20,
+                        ),
+                      ],
+                    ),
                   ),
               ],
             ),
           ),
+          if (_isGridView)
+            _buildGridItems(
+              displayItems,
+              category.backgroundColor,
+              category.iconColor,
+            )
+          else
+            _buildListItems(
+              displayItems,
+              category.backgroundColor,
+              category.iconColor,
+            ),
         ],
-      ],
+      ),
     );
   }
 
-  void _showLainnyaBottomSheet(FiturSectionModel section) {
+  void _showLainnyaBottomSheet(FiturCategoryModel category) {
     FiturBottomSheet.show(
       context,
-      title: section.name.toUpperCase(),
-      categories: section.categories,
+      title: category.name.toUpperCase(),
+      category: category,
       onItemTap: _onItemTap,
     );
   }

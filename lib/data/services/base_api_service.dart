@@ -85,6 +85,7 @@ class BaseApiService {
         extraHeaders.forEach((key, value) {
           cleanHeaders[key] = value;
         });
+        cleanHeaders['env'] = 'POSTMAN'; //buat debug
         options = Options(
           headers: cleanHeaders,
           // Prevent Dio from wrapping header values in lists
@@ -94,7 +95,8 @@ class BaseApiService {
 
       final response = await _dio.post(
         endpoint,
-        data: {'payload': encryptedPayload},
+        // data: {'payload': encryptedPayload},
+        data: payload,
         options: options,
       );
       debugPrint(
