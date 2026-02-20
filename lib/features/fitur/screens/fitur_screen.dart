@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:hrd_app/core/providers/auth_provider.dart';
 import 'package:hrd_app/core/theme/app_colors.dart';
 import 'package:hrd_app/core/theme/app_text_styles.dart';
 import 'package:hrd_app/core/utils/snackbar_utils.dart';
@@ -21,6 +22,7 @@ import 'package:hrd_app/features/fitur/widgets/fitur_bottom_sheet.dart';
 import 'package:hrd_app/features/fitur/lembur/screens/daftar_lembur_screen.dart';
 import 'package:hrd_app/features/fitur/permohonan/screens/permohonan_karyawan_screen.dart';
 import 'package:hrd_app/features/profile/screens/profile_detail_screen.dart';
+import 'package:provider/provider.dart';
 
 class FiturScreen extends StatefulWidget {
   const FiturScreen({super.key});
@@ -117,7 +119,9 @@ class _FiturScreenState extends State<FiturScreen> {
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
-    final filteredSections = FiturData.search(_searchQuery);
+    final role = context.read<AuthProvider>().user?.role ?? '';
+    debugPrint("APAROLESAATINI $role");
+    final filteredSections = FiturData.search(_searchQuery, role);
 
     return Scaffold(
       backgroundColor: colors.surface,

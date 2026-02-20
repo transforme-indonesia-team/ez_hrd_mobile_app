@@ -4,7 +4,7 @@ import 'package:hrd_app/features/fitur/models/fitur_item_model.dart';
 class FiturData {
   FiturData._();
 
-  static final List<FiturSectionModel> sections = [
+  static List<FiturSectionModel> getSections(String role) => [
     FiturSectionModel(
       name: 'Inti',
       categories: [
@@ -62,17 +62,69 @@ class FiturData {
           name: 'Kehadiran',
           backgroundColor: Colors.green.withValues(alpha: 0.2),
           iconColor: Colors.green,
-          items: [
-            FiturItemModel(
-              id: 'daftar_kehadiran',
-              title: 'Daftar Kehadiran',
-              icon: Icons.checklist_outlined,
+          subCategories: [
+            FiturCategoryModel(
+              name: "Aktivitas",
+              items: [
+                FiturItemModel(
+                  id: 'daftar_kehadiran',
+                  title: 'Daftar Kehadiran',
+                  icon: Icons.checklist_outlined,
+                ),
+                FiturItemModel(
+                  id: 'permintaan_koreksi_kehadiran',
+                  title: 'Permintaan Koreksi Kehadiran',
+                  icon: Icons.edit_calendar_outlined,
+                ),
+                if (role.toLowerCase() == 'admin')
+                  FiturItemModel(
+                    id: 'jadwal_shift',
+                    title: 'Jadwal Shift',
+                    icon: Icons.calendar_month,
+                  ),
+              ],
             ),
-            FiturItemModel(
-              id: 'permintaan_koreksi_kehadiran',
-              title: 'Permintaan Koreksi Kehadiran',
-              icon: Icons.edit_calendar_outlined,
-            ),
+            if (role.toLowerCase() == 'admin')
+              FiturCategoryModel(
+                name: 'Laporan',
+                items: [
+                  FiturItemModel(
+                    id: 'laporan_kehadiran',
+                    title: 'Laporan Kehadiran',
+                    icon: Icons.assignment_outlined,
+                  ),
+                  FiturItemModel(
+                    id: 'laporan_ringkasan_kehadiran',
+                    title: 'Laporan Ringkasan Kehadiran',
+                    icon: Icons.assessment_sharp,
+                  ),
+                  FiturItemModel(
+                    id: 'laporan_lokasi_kehadiran',
+                    title: 'Laporan Lokasi Kehadiran',
+                    icon: Icons.location_on_outlined,
+                  ),
+                  FiturItemModel(
+                    id: 'laporan_kehadiran_yang_dicurigai',
+                    title: 'Laporan Kehadiran yang Dicurigai',
+                    icon: Icons.warning_amber_rounded,
+                  ),
+                  FiturItemModel(
+                    id: 'laporan_kehadiran_wajah_yang_dicurigai',
+                    title: 'Laporan Kehadiran Wajah yang Dicurigai',
+                    icon: Icons.face_retouching_natural,
+                  ),
+                  FiturItemModel(
+                    id: 'laporan_koreksi_kehadiran',
+                    title: 'Laporan Koreksi Kehadiran',
+                    icon: Icons.edit_calendar_outlined,
+                  ),
+                  FiturItemModel(
+                    id: 'laporan_log_kehadiran',
+                    title: 'Laporan Log Kehadiran',
+                    icon: Icons.history_outlined,
+                  ),
+                ],
+              ),
           ],
         ),
 
@@ -80,22 +132,43 @@ class FiturData {
           name: 'Cuti',
           backgroundColor: Colors.blue.withValues(alpha: 0.2),
           iconColor: const Color.fromARGB(255, 101, 191, 244),
-          items: [
-            FiturItemModel(
-              id: 'permintaan_cuti',
-              title: 'Permintaan Cuti',
-              icon: Icons.calendar_month_outlined,
+          subCategories: [
+            FiturCategoryModel(
+              name: "Aktivitas",
+              items: [
+                FiturItemModel(
+                  id: 'permintaan_cuti',
+                  title: 'Permintaan Cuti',
+                  icon: Icons.calendar_month_outlined,
+                ),
+                FiturItemModel(
+                  id: 'jatah_cuti',
+                  title: 'Jatah Cuti',
+                  icon: Icons.event_available_outlined,
+                ),
+                FiturItemModel(
+                  id: 'kalender_cuti',
+                  title: 'Kalender Cuti',
+                  icon: Icons.event_note_outlined,
+                ),
+              ],
             ),
-            FiturItemModel(
-              id: 'jatah_cuti',
-              title: 'Jatah Cuti',
-              icon: Icons.event_available_outlined,
-            ),
-            FiturItemModel(
-              id: 'kalender_cuti',
-              title: 'Kalender Cuti',
-              icon: Icons.event_note_outlined,
-            ),
+            if (role.toLowerCase() == 'admin')
+              FiturCategoryModel(
+                name: "Laporan",
+                items: [
+                  FiturItemModel(
+                    id: 'laporan_cuti',
+                    title: 'Laporan Cuti',
+                    icon: Icons.report_outlined,
+                  ),
+                  FiturItemModel(
+                    id: 'laporan_jatah_cuti',
+                    title: 'Laporan Jatah Cuti',
+                    icon: Icons.report_off,
+                  ),
+                ],
+              ),
           ],
         ),
         FiturCategoryModel(
@@ -223,7 +296,8 @@ class FiturData {
     ),
   ];
 
-  static List<FiturSectionModel> search(String query) {
+  static List<FiturSectionModel> search(String query, String role) {
+    final sections = getSections(role);
     if (query.isEmpty) return sections;
 
     final lowerQuery = query.toLowerCase();
@@ -261,8 +335,8 @@ class FiturData {
 
   /// Mencari item berdasarkan ID dari semua sections dan categories
   /// Returns null jika tidak ditemukan
-  static FiturItemModel? findItemById(String id) {
-    for (final section in sections) {
+  static FiturItemModel? findItemById(String id, {String role = ''}) {
+    for (final section in getSections(role)) {
       for (final category in section.categories) {
         for (final item in category.allItems) {
           if (item.id == id) return item;
@@ -274,8 +348,11 @@ class FiturData {
 
   /// Mencari category yang berisi item dengan ID tertentu
   /// Returns null jika tidak ditemukan
-  static FiturCategoryModel? findCategoryByItemId(String id) {
-    for (final section in sections) {
+  static FiturCategoryModel? findCategoryByItemId(
+    String id, {
+    String role = '',
+  }) {
+    for (final section in getSections(role)) {
       for (final category in section.categories) {
         for (final item in category.allItems) {
           if (item.id == id) return category;
@@ -287,10 +364,13 @@ class FiturData {
 
   /// Mengambil list items berdasarkan list ID
   /// Item yang tidak ditemukan akan di-skip
-  static List<FiturItemModel> getItemsByIds(List<String> ids) {
+  static List<FiturItemModel> getItemsByIds(
+    List<String> ids, {
+    String role = '',
+  }) {
     final result = <FiturItemModel>[];
     for (final id in ids) {
-      final item = findItemById(id);
+      final item = findItemById(id, role: role);
       if (item != null) {
         result.add(item);
       }
