@@ -20,6 +20,7 @@ import 'package:hrd_app/features/fitur/widgets/fitur_item_grid.dart';
 import 'package:hrd_app/features/fitur/widgets/fitur_item_list.dart';
 import 'package:hrd_app/features/fitur/widgets/fitur_bottom_sheet.dart';
 import 'package:hrd_app/features/fitur/lembur/screens/daftar_lembur_screen.dart';
+import 'package:hrd_app/features/fitur/koreksi_kehadiran/screens/daftar_koreksi_kehadiran_screen.dart';
 import 'package:hrd_app/features/fitur/permohonan/screens/permohonan_karyawan_screen.dart';
 import 'package:hrd_app/features/profile/screens/profile_detail_screen.dart';
 import 'package:provider/provider.dart';
@@ -100,6 +101,14 @@ class _FiturScreenState extends State<FiturScreen> {
           context,
           MaterialPageRoute(
             builder: (context) => const DaftarKehadiranScreen(),
+          ),
+        );
+        break;
+      case 'permintaan_koreksi_kehadiran':
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const DaftarKoreksiKehadiranScreen(),
           ),
         );
         break;

@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:hrd_app/core/config/env_config.dart';
 import 'package:hrd_app/core/constants/app_constants.dart';
 import 'package:hrd_app/core/utils/crypto_utils.dart';
+// import 'package:shared_preferences/shared_preferences.dart';
 
 typedef UnauthorizedCallback = void Function();
 
@@ -54,6 +55,7 @@ class BaseApiService {
         },
         onError: (DioException error, ErrorInterceptorHandler handler) {
           if (error.response?.statusCode == 401 && _hasAuthToken()) {
+            // _refreshToHardcodedToken();
             _onUnauthorized?.call();
           }
           handler.next(error);
@@ -65,6 +67,20 @@ class BaseApiService {
   bool _hasAuthToken() {
     return _dio.options.headers['Authorization'] != null;
   }
+
+  // Future<void> _refreshToHardcodedToken() async {
+  //   const hardcodedToken =
+  //       '560|mhXLxX4X8mHiu4vHLKWLSnCy3JKgu26sLOswjeA013d9b6af';
+
+  //   // Simpan ke SharedPreferences
+  //   final prefs = await SharedPreferences.getInstance();
+  //   await prefs.setString('saved_user', hardcodedToken);
+
+  //   // Update token di Dio header
+  //   setAuthToken(hardcodedToken);
+
+  //   debugPrint('DEBUG-API: Token replaced with hardcoded token');
+  // }
 
   Future<Map<String, dynamic>> post(
     String endpoint,
@@ -245,6 +261,28 @@ class BaseApiService {
     }
   }
 
+  Future<Map<String, dynamic>> delete(
+    String endpoint, {
+    Map<String, dynamic>? queryParameters,
+    String? errorMessage,
+  }) async {
+    try {
+      final response = await _dio.delete(
+        endpoint,
+        queryParameters: queryParameters,
+      );
+      return _decryptResponse(
+        response,
+        errorMessage: errorMessage,
+        endpoint: endpoint,
+      );
+    } on DioException catch (e) {
+      throw _handleDioError(e, errorMessage);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   Map<String, dynamic> _decryptResponse(
     Response response, {
     String? errorMessage,
@@ -316,6 +354,7 @@ class BaseApiService {
     }
 
     if (original['code'] == 401 && _hasAuthToken()) {
+      // _refreshToHardcodedToken();
       _onUnauthorized?.call();
       throw Exception(original['message'] ?? 'Sesi Anda telah berakhir');
     }

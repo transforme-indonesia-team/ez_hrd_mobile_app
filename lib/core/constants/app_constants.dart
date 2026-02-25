@@ -7,10 +7,10 @@ class AppConstants {
   static const int passwordMinLength = 8;
 
   // ============ Timeouts ============
-  static const int apiConnectTimeoutSeconds = 15;
-  static const int apiReceiveTimeoutSeconds = 15;
-  static const int locationTimeoutSeconds = 15;
-  static const int geocodingTimeoutSeconds = 5;
+  static const int apiConnectTimeoutSeconds = 20;
+  static const int apiReceiveTimeoutSeconds = 20;
+  static const int locationTimeoutSeconds = 20;
+  static const int geocodingTimeoutSeconds = 10;
 
   // ============ Design ============
   static const double designWidth = 375;
