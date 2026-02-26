@@ -125,4 +125,24 @@ class AttendanceService {
       },
     );
   }
+
+  Future<Map<String, dynamic>> getScheduleCorrectionByEmployee({
+    DateTime? startDate,
+    DateTime? endDate,
+    String? employeeId,
+  }) async {
+    final dateFormat = DateFormat('yyyy-MM-dd');
+    final now = DateTime.now();
+
+    return _api.post('/attendance/get-schedule-by-employee', {
+      'employee_id': employeeId,
+      'type': 'CORRECTION',
+      'start_date': startDate != null
+          ? dateFormat.format(startDate)
+          : dateFormat.format(now.subtract(const Duration(days: 30))),
+      'end_date': endDate != null
+          ? dateFormat.format(endDate)
+          : dateFormat.format(now),
+    });
+  }
 }

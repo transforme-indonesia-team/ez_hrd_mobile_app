@@ -8,6 +8,7 @@ import 'package:hrd_app/core/utils/format_date.dart';
 import 'package:hrd_app/core/widgets/user_avatar.dart';
 import 'package:hrd_app/data/models/attendance_employee_model.dart';
 import 'package:hrd_app/features/fitur/kehadiran/widgets/attendance_log_bottom_sheet.dart';
+import 'package:hrd_app/features/fitur/koreksi_kehadiran/screens/form_koreksi_kehadiran_screen.dart';
 
 class DetailKehadiranScreen extends StatefulWidget {
   final AttendanceEmployeeModel attendance;
@@ -238,7 +239,22 @@ class _DetailKehadiranScreenState extends State<DetailKehadiranScreen> {
             width: double.infinity,
             child: ElevatedButton(
               onPressed: () {
-                // TODO: Navigate to attendance correction
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) {
+                      final date = _att.dateSchedule != null
+                          ? DateTime.tryParse(_att.dateSchedule!)
+                          : null;
+                      return FormKoreksiKehadiranScreen(
+                        initialStartDate: date,
+                        initialEndDate: date,
+                        employeeProfile: _att.profile,
+                        employeeName: _att.displayEmployeeName,
+                      );
+                    },
+                  ),
+                );
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: colors.primaryBlue,

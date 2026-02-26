@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hrd_app/core/theme/app_colors.dart';
 import 'package:hrd_app/core/theme/app_text_styles.dart';
-import 'package:hrd_app/core/utils/snackbar_utils.dart';
+import 'package:hrd_app/core/utils/format_date.dart';
 import 'package:hrd_app/data/models/attendance_correction_model.dart';
 import 'package:hrd_app/data/services/attendance_correction_service.dart';
 import 'package:hrd_app/features/fitur/koreksi_kehadiran/widgets/attendance_correction_card.dart';
+import 'package:hrd_app/features/fitur/koreksi_kehadiran/widgets/koreksi_filter_bottom_sheet.dart';
 import 'package:hrd_app/features/fitur/koreksi_kehadiran/screens/detail_koreksi_kehadiran_screen.dart';
+import 'package:hrd_app/features/fitur/koreksi_kehadiran/screens/form_koreksi_kehadiran_screen.dart';
 import 'package:hrd_app/features/fitur/lembur/widgets/pagination_widget.dart';
 
 class DaftarKoreksiKehadiranScreen extends StatefulWidget {
@@ -27,6 +29,11 @@ class _DaftarKoreksiKehadiranScreenState
   int _totalPages = 1;
   int _totalItems = 0;
 
+  // Filter state
+  DateTime? _filterStartDate;
+  DateTime? _filterEndDate;
+  String? _filterStatus;
+
   @override
   void initState() {
     super.initState();
@@ -37,7 +44,17 @@ class _DaftarKoreksiKehadiranScreenState
     setState(() => _isLoading = true);
     try {
       final response = await AttendanceCorrectionService()
-          .getAttendanceCorrection(pages: _currentPage.toString(), sizes: '10');
+          .getAttendanceCorrection(
+            pages: _currentPage.toString(),
+            sizes: '10',
+            startDate: _filterStartDate != null
+                ? FormatDate.apiFormat(_filterStartDate!)
+                : null,
+            endDate: _filterEndDate != null
+                ? FormatDate.apiFormat(_filterEndDate!)
+                : null,
+            status: _filterStatus,
+          );
 
       final recordsRaw = response['original']['records'];
 
@@ -80,10 +97,39 @@ class _DaftarKoreksiKehadiranScreenState
     }
   }
 
+  bool get _hasActiveFilters =>
+      _filterStartDate != null ||
+      _filterEndDate != null ||
+      _filterStatus != null;
+
+  void _showFilter() {
+    KoreksiFilterBottomSheet.show(
+      context,
+      startDate: _filterStartDate,
+      endDate: _filterEndDate,
+      status: _filterStatus,
+      onApply: (result) {
+        setState(() {
+          _filterStartDate = result.startDate;
+          _filterEndDate = result.endDate;
+          _filterStatus = result.status;
+          _currentPage = 1;
+        });
+        _fetchData();
+      },
+    );
+  }
+
   Future<void> _navigateToForm() async {
-    // TODO: Navigate to form screen when implemented
-    if (mounted) {
-      context.showInfoSnackbar('Form Koreksi Kehadiran belum tersedia');
+    final result = await Navigator.push<bool>(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const FormKoreksiKehadiranScreen(),
+      ),
+    );
+    if (result == true && mounted) {
+      _currentPage = 1;
+      _fetchData();
     }
   }
 
@@ -105,11 +151,29 @@ class _DaftarKoreksiKehadiranScreenState
           style: AppTextStyles.h3(colors.textPrimary),
         ),
         actions: [
-          IconButton(
-            icon: Icon(Icons.filter_alt_outlined, color: colors.textPrimary),
-            onPressed: () {
-              context.showInfoSnackbar('Filter belum tersedia');
-            },
+          Stack(
+            children: [
+              IconButton(
+                icon: Icon(
+                  Icons.filter_alt_outlined,
+                  color: colors.textPrimary,
+                ),
+                onPressed: () => _showFilter(),
+              ),
+              if (_hasActiveFilters)
+                Positioned(
+                  right: 8,
+                  top: 8,
+                  child: Container(
+                    width: 8.w,
+                    height: 8.w,
+                    decoration: BoxDecoration(
+                      color: colors.primaryBlue,
+                      shape: BoxShape.circle,
+                    ),
+                  ),
+                ),
+            ],
           ),
         ],
       ),

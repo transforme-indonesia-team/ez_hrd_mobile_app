@@ -14,6 +14,9 @@ class AttendanceCorrectionService {
     String? sizes,
     bool? search,
     String? employeeId,
+    String? startDate,
+    String? endDate,
+    String? status,
   }) async {
     return _api.get(
       '/attendance-correction',
@@ -22,6 +25,9 @@ class AttendanceCorrectionService {
         'sizes': sizes,
         'search': search,
         'employee_id': employeeId,
+        'start_date': startDate,
+        'end_date': endDate,
+        'status': status,
       },
     );
   }
