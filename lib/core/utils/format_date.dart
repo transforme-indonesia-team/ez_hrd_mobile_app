@@ -4,7 +4,7 @@ class FormatDate {
   static String todayWithDayName(DateTime date) {
     final dayName = DateFormat('EEE', 'id_ID').format(date);
     final formatted = DateFormat('dd MMM yyyy', 'id_ID').format(date);
-    return '($dayName, $formatted)';
+    return '$dayName, $formatted';
   }
 
   static String fullDate(DateTime date) {

@@ -75,6 +75,9 @@ class _AttendanceCardState extends State<AttendanceCard> {
 
           _buildRekamWaktuButton(colors),
 
+          // gap
+          SizedBox(height: 8.h),
+
           if (_isExpanded) ...[
             _buildAttendancePhotoList(colors),
 
@@ -443,10 +446,7 @@ class _AttendanceCardState extends State<AttendanceCard> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    date,
-                    style: AppTextStyles.smallMedium(colors.textPrimary),
-                  ),
+                  Text(date, style: AppTextStyles.caption(colors.textPrimary)),
                   SizedBox(height: 4.h),
                   Row(
                     children: [
@@ -475,10 +475,10 @@ class _AttendanceCardState extends State<AttendanceCard> {
             ),
             Container(
               padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 4.h),
-              decoration: BoxDecoration(
-                color: ColorPalette.green100,
-                borderRadius: BorderRadius.circular(12.r),
-              ),
+              // decoration: BoxDecoration(
+              //   color: ColorPalette.green100,
+              //   borderRadius: BorderRadius.circular(12.r),
+              // ),
               child: Text(
                 'Telah diproses',
                 style: AppTextStyles.xxSmall(ColorPalette.green700),

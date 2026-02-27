@@ -376,7 +376,7 @@ class _BerandaScreenState extends State<BerandaScreen>
             AttendanceCard(
               name: userName,
               avatarUrl: userAvatar,
-              date: 'Hari ini ${FormatDate.todayWithDayName(date)}',
+              date: FormatDate.todayWithDayName(date),
               shiftInfo: _shiftData?.displayShiftInfo ?? 'Shift tidak tersedia',
               isLoading: _isLoadingShift,
               jamMasuk: _shiftData?.formattedCheckIn,
