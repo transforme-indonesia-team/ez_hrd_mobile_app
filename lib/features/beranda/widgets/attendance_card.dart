@@ -177,82 +177,100 @@ class _AttendanceCardState extends State<AttendanceCard> {
     required String? attendancePhoto,
     required bool isCheckIn,
   }) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 8.h),
-      child: Row(
-        children: [
-          attendancePhoto != null
-              ? Container(
-                  width: 32.w,
-                  height: 32.w,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    border: Border.all(
-                      color: isCheckIn
-                          ? ColorPalette.green500
-                          : ColorPalette.red500,
-                      width: 2,
+    return GestureDetector(
+      onTap: () {
+        if (attendancePhoto != null && time != null) {
+          AttendancePhotoDetailBottomSheet.show(
+            context: context,
+            photoUrl: attendancePhoto,
+            date: widget.date,
+            time: time,
+            isCheckIn: isCheckIn,
+          );
+        }
+      },
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 8.h),
+        child: Row(
+          children: [
+            attendancePhoto != null
+                ? Container(
+                    width: 32.w,
+                    height: 32.w,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: isCheckIn
+                            ? ColorPalette.green500
+                            : ColorPalette.red500,
+                        width: 2,
+                      ),
                     ),
+                    child: ClipOval(
+                      child: Image.network(
+                        attendancePhoto.asFullImageUrl ?? attendancePhoto,
+                        width: 32.w,
+                        height: 32.w,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) {
+                          return UserAvatar(
+                            name: widget.name,
+                            size: 32,
+                            fontSize: 10,
+                          );
+                        },
+                      ),
+                    ),
+                  )
+                : UserAvatar(name: widget.name, size: 32, fontSize: 10),
+            SizedBox(width: 8.w),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    label,
+                    style: AppTextStyles.xSmall(colors.textSecondary),
                   ),
-                  child: ClipOval(
-                    child: Image.network(
-                      attendancePhoto.asFullImageUrl ?? attendancePhoto,
-                      width: 32.w,
-                      height: 32.w,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) {
-                        return UserAvatar(
-                          name: widget.name,
-                          size: 32,
-                          fontSize: 10,
-                        );
-                      },
-                    ),
-                  ),
-                )
-              : UserAvatar(name: widget.name, size: 32, fontSize: 10),
-          SizedBox(width: 8.w),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(label, style: AppTextStyles.xSmall(colors.textSecondary)),
-                Row(
-                  children: [
-                    Text(
-                      time ?? '--:--',
-                      style: AppTextStyles.captionMedium(colors.textSecondary),
-                    ),
-                    SizedBox(width: 4.w),
-                    GestureDetector(
-                      onTap: () {
-                        AttendanceLocationBottomSheet.show(
-                          context: context,
-                          date: DateTime.now(),
-                          type: isCheckIn ? 'CHECK_IN' : 'CHECK_OUT',
-                        );
-                      },
-                      child: Icon(
-                        Icons.location_on,
+                  Row(
+                    children: [
+                      Text(
+                        time ?? '--:--',
+                        style: AppTextStyles.captionMedium(
+                          colors.textSecondary,
+                        ),
+                      ),
+                      SizedBox(width: 4.w),
+                      GestureDetector(
+                        onTap: () {
+                          AttendanceLocationBottomSheet.show(
+                            context: context,
+                            date: DateTime.now(),
+                            type: isCheckIn ? 'CHECK_IN' : 'CHECK_OUT',
+                          );
+                        },
+                        child: Icon(
+                          Icons.location_on,
+                          size: 12.sp,
+                          color: isCheckIn
+                              ? ColorPalette.green500
+                              : ColorPalette.red500,
+                        ),
+                      ),
+                      Icon(
+                        Icons.people,
                         size: 12.sp,
                         color: isCheckIn
                             ? ColorPalette.green500
                             : ColorPalette.red500,
                       ),
-                    ),
-                    Icon(
-                      Icons.people,
-                      size: 12.sp,
-                      color: isCheckIn
-                          ? ColorPalette.green500
-                          : ColorPalette.red500,
-                    ),
-                  ],
-                ),
-              ],
+                    ],
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -463,7 +481,9 @@ class _AttendanceCardState extends State<AttendanceCard> {
                       Text(
                         time,
                         style: AppTextStyles.captionMedium(
-                          ColorPalette.green500,
+                          isCheckIn
+                              ? ColorPalette.green500
+                              : ColorPalette.red500,
                         ),
                       ),
                       SizedBox(width: 6.w),
@@ -478,14 +498,18 @@ class _AttendanceCardState extends State<AttendanceCard> {
                         child: Icon(
                           Icons.location_on,
                           size: 14.sp,
-                          color: ColorPalette.green500,
+                          color: isCheckIn
+                              ? ColorPalette.green500
+                              : ColorPalette.red500,
                         ),
                       ),
                       SizedBox(width: 4.w),
                       Icon(
                         Icons.camera_alt,
                         size: 14.sp,
-                        color: ColorPalette.green500,
+                        color: isCheckIn
+                            ? ColorPalette.green500
+                            : ColorPalette.red500,
                       ),
                     ],
                   ),
