@@ -4,12 +4,14 @@ import 'package:hrd_app/core/theme/app_colors.dart';
 import 'package:hrd_app/core/theme/app_text_styles.dart';
 import 'package:hrd_app/core/theme/color_palette.dart';
 import 'package:hrd_app/core/utils/image_url_extension.dart';
+import 'package:hrd_app/features/beranda/widgets/attendance_location_bottom_sheet.dart';
 
 class AttendancePhotoDetailBottomSheet extends StatelessWidget {
   final String photoUrl;
   final String date;
   final String time;
   final bool isCheckIn;
+  final String? employeeId;
 
   const AttendancePhotoDetailBottomSheet({
     super.key,
@@ -17,6 +19,7 @@ class AttendancePhotoDetailBottomSheet extends StatelessWidget {
     required this.date,
     required this.time,
     this.isCheckIn = true,
+    this.employeeId,
   });
 
   static void show({
@@ -25,6 +28,7 @@ class AttendancePhotoDetailBottomSheet extends StatelessWidget {
     required String date,
     required String time,
     bool isCheckIn = true,
+    String? employeeId,
   }) {
     showModalBottomSheet(
       context: context,
@@ -35,6 +39,7 @@ class AttendancePhotoDetailBottomSheet extends StatelessWidget {
         date: date,
         time: time,
         isCheckIn: isCheckIn,
+        employeeId: employeeId,
       ),
     );
   }
@@ -43,138 +48,172 @@ class AttendancePhotoDetailBottomSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.colors;
 
-    return Container(
-      height: MediaQuery.of(context).size.height * 0.85,
-      decoration: BoxDecoration(
-        color: colors.background,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16.r)),
-      ),
-      child: Column(
-        children: [
-          _buildHeader(context, colors),
-
-          Expanded(child: _buildPhoto(colors)),
-
-          _buildInfoSection(colors),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildHeader(BuildContext context, ThemeColors colors) {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
-      decoration: BoxDecoration(
-        border: Border(bottom: BorderSide(color: colors.divider, width: 1)),
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            child: Text(
-              isCheckIn ? 'Masuk - $date' : 'Keluar - $date',
-              style: AppTextStyles.h4(colors.textPrimary),
-            ),
+    return DraggableScrollableSheet(
+      initialChildSize: 0.4,
+      minChildSize: 0.3,
+      maxChildSize: 0.85,
+      builder: (context, scrollController) {
+        return Container(
+          decoration: BoxDecoration(
+            color: colors.background,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(16.r)),
           ),
-          IconButton(
-            onPressed: () => Navigator.pop(context),
-            icon: Icon(Icons.close, color: colors.textSecondary),
+          child: ListView(
+            controller: scrollController,
             padding: EdgeInsets.zero,
-            constraints: const BoxConstraints(),
+            children: [
+              // Drag handle
+              Center(
+                child: Container(
+                  margin: EdgeInsets.only(top: 10.h, bottom: 12.h),
+                  width: 40.w,
+                  height: 4.h,
+                  decoration: BoxDecoration(
+                    color: colors.divider,
+                    borderRadius: BorderRadius.circular(2.r),
+                  ),
+                ),
+              ),
+
+              // Content: Photo left, Info right
+              Padding(
+                padding: EdgeInsets.fromLTRB(20.w, 0, 20.w, 20.h),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Photo
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(8.r),
+                      child: Image.network(
+                        photoUrl.asFullImageUrl ?? photoUrl,
+                        width: 120.w,
+                        height: 160.h,
+                        fit: BoxFit.cover,
+                        loadingBuilder: (context, child, loadingProgress) {
+                          if (loadingProgress == null) return child;
+                          return Container(
+                            width: 120.w,
+                            height: 160.h,
+                            color: colors.surface,
+                            child: Center(
+                              child: CircularProgressIndicator(
+                                color: colors.primaryBlue,
+                                strokeWidth: 2,
+                              ),
+                            ),
+                          );
+                        },
+                        errorBuilder: (context, error, stackTrace) {
+                          return Container(
+                            width: 120.w,
+                            height: 160.h,
+                            decoration: BoxDecoration(
+                              color: ColorPalette.slate200,
+                              borderRadius: BorderRadius.circular(8.r),
+                            ),
+                            child: Icon(
+                              Icons.broken_image_outlined,
+                              color: ColorPalette.slate400,
+                              size: 40.sp,
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                    SizedBox(width: 16.w),
+
+                    // Info
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Date
+                          Text(
+                            date,
+                            style: AppTextStyles.bodyMedium(colors.textPrimary),
+                          ),
+                          SizedBox(height: 6.h),
+
+                          // Time + icons
+                          Row(
+                            children: [
+                              Text(
+                                time,
+                                style: AppTextStyles.h4(
+                                  isCheckIn
+                                      ? ColorPalette.green500
+                                      : ColorPalette.red500,
+                                ),
+                              ),
+                              SizedBox(width: 8.w),
+                              // Location icon - tappable
+                              GestureDetector(
+                                onTap: () => _openLocationSheet(context),
+                                child: Icon(
+                                  Icons.location_on,
+                                  size: 16.sp,
+                                  color: isCheckIn
+                                      ? ColorPalette.green500
+                                      : ColorPalette.red500,
+                                ),
+                              ),
+                              SizedBox(width: 4.w),
+                              Icon(
+                                Icons.people,
+                                size: 16.sp,
+                                color: isCheckIn
+                                    ? ColorPalette.green500
+                                    : ColorPalette.red500,
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 10.h),
+
+                          // Status
+                          Text(
+                            'Status',
+                            style: AppTextStyles.small(colors.textSecondary),
+                          ),
+                          SizedBox(height: 4.h),
+                          Container(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 12.w,
+                              vertical: 4.h,
+                            ),
+                            decoration: BoxDecoration(
+                              color: ColorPalette.green100,
+                              borderRadius: BorderRadius.circular(12.r),
+                            ),
+                            child: Text(
+                              'Telah diproses',
+                              style: AppTextStyles.xSmallMedium(
+                                ColorPalette.green700,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 
-  Widget _buildPhoto(ThemeColors colors) {
-    return Container(
-      width: double.infinity,
-      color: Colors.black,
-      child: InteractiveViewer(
-        minScale: 0.5,
-        maxScale: 4.0,
-        child: Image.network(
-          photoUrl.asFullImageUrl!,
-          fit: BoxFit.contain,
-          loadingBuilder: (context, child, loadingProgress) {
-            if (loadingProgress == null) return child;
-            return Center(
-              child: CircularProgressIndicator(
-                color: colors.primaryBlue,
-                value: loadingProgress.expectedTotalBytes != null
-                    ? loadingProgress.cumulativeBytesLoaded /
-                          loadingProgress.expectedTotalBytes!
-                    : null,
-              ),
-            );
-          },
-          errorBuilder: (context, error, stackTrace) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.broken_image_outlined,
-                    size: 64.sp,
-                    color: Colors.grey,
-                  ),
-                  SizedBox(height: 16.h),
-                  Text(
-                    'Gagal memuat foto',
-                    style: AppTextStyles.body(Colors.grey),
-                  ),
-                ],
-              ),
-            );
-          },
-        ),
-      ),
-    );
-  }
+  void _openLocationSheet(BuildContext context) {
+    // Close current bottom sheet first
+    Navigator.pop(context);
 
-  Widget _buildInfoSection(ThemeColors colors) {
-    return Container(
-      padding: EdgeInsets.all(16.w),
-      decoration: BoxDecoration(
-        border: Border(top: BorderSide(color: colors.divider, width: 1)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Text(time, style: AppTextStyles.h4(ColorPalette.green500)),
-              SizedBox(width: 8.w),
-              Icon(
-                Icons.location_on,
-                size: 16.sp,
-                color: ColorPalette.green500,
-              ),
-              SizedBox(width: 4.w),
-              Icon(Icons.camera_alt, size: 16.sp, color: ColorPalette.green500),
-            ],
-          ),
-          SizedBox(height: 12.h),
-
-          Row(
-            children: [
-              Text('Status', style: AppTextStyles.small(colors.textSecondary)),
-              SizedBox(width: 8.w),
-              Container(
-                padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 4.h),
-                decoration: BoxDecoration(
-                  color: ColorPalette.green100,
-                  borderRadius: BorderRadius.circular(12.r),
-                ),
-                child: Text(
-                  'Telah diproses',
-                  style: AppTextStyles.xSmallMedium(ColorPalette.green700),
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
+    // Open location bottom sheet
+    AttendanceLocationBottomSheet.show(
+      context: context,
+      employeeId: employeeId,
+      date: DateTime.now(),
+      type: isCheckIn ? 'CHECK_IN' : 'CHECK_OUT',
     );
   }
 }

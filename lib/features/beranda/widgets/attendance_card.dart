@@ -6,6 +6,7 @@ import 'package:hrd_app/core/theme/color_palette.dart';
 import 'package:hrd_app/core/utils/image_url_extension.dart';
 import 'package:hrd_app/core/widgets/skeleton_widget.dart';
 import 'package:hrd_app/core/widgets/user_avatar.dart';
+import 'package:hrd_app/features/beranda/widgets/attendance_location_bottom_sheet.dart';
 import 'package:hrd_app/features/beranda/widgets/attendance_photo_detail_bottom_sheet.dart';
 
 class AttendanceCard extends StatefulWidget {
@@ -223,12 +224,21 @@ class _AttendanceCardState extends State<AttendanceCard> {
                       style: AppTextStyles.captionMedium(colors.textSecondary),
                     ),
                     SizedBox(width: 4.w),
-                    Icon(
-                      Icons.location_on,
-                      size: 12.sp,
-                      color: isCheckIn
-                          ? ColorPalette.green500
-                          : ColorPalette.red500,
+                    GestureDetector(
+                      onTap: () {
+                        AttendanceLocationBottomSheet.show(
+                          context: context,
+                          date: DateTime.now(),
+                          type: isCheckIn ? 'CHECK_IN' : 'CHECK_OUT',
+                        );
+                      },
+                      child: Icon(
+                        Icons.location_on,
+                        size: 12.sp,
+                        color: isCheckIn
+                            ? ColorPalette.green500
+                            : ColorPalette.red500,
+                      ),
                     ),
                     Icon(
                       Icons.people,
@@ -457,10 +467,19 @@ class _AttendanceCardState extends State<AttendanceCard> {
                         ),
                       ),
                       SizedBox(width: 6.w),
-                      Icon(
-                        Icons.location_on,
-                        size: 14.sp,
-                        color: ColorPalette.green500,
+                      GestureDetector(
+                        onTap: () {
+                          AttendanceLocationBottomSheet.show(
+                            context: context,
+                            date: DateTime.now(),
+                            type: isCheckIn ? 'CHECK_IN' : 'CHECK_OUT',
+                          );
+                        },
+                        child: Icon(
+                          Icons.location_on,
+                          size: 14.sp,
+                          color: ColorPalette.green500,
+                        ),
                       ),
                       SizedBox(width: 4.w),
                       Icon(

@@ -145,4 +145,22 @@ class AttendanceService {
           : dateFormat.format(now),
     });
   }
+
+  Future<Map<String, dynamic>> getLocation({
+    String? employeeId,
+    DateTime? date,
+    String? type,
+  }) async {
+    final dateFormat = DateFormat('yyyy-MM-dd');
+    final now = DateTime.now();
+
+    return _api.get(
+      '/attendance/get-location',
+      queryParameters: {
+        'employee_id': employeeId,
+        'date': date != null ? dateFormat.format(date) : dateFormat.format(now),
+        'type': type,
+      },
+    );
+  }
 }
