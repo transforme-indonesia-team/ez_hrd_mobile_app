@@ -165,7 +165,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                 Text(
                   'Lokasi Kerja Hari Ini',
                   style: AppTextStyles.body(colors.textSecondary),
-                ),
+                ),  
                 Text(
                   'LOKASI BARU PARKIR',
                   style: AppTextStyles.bodySemiBold(colors.textPrimary),
