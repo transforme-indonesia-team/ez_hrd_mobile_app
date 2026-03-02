@@ -15,4 +15,8 @@ class NotificationService {
       queryParameters: {'notif_type': notifType},
     );
   }
+
+  Future<Map<String, dynamic>> getCountNotification() async {
+    return _api.get('/notification/get-count');
+  }
 }

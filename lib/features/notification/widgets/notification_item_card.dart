@@ -19,28 +19,24 @@ class NotificationItemCard extends StatelessWidget {
       onTap: onTap,
       child: Container(
         margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 6.h),
-        padding: EdgeInsets.all(14.w),
+        padding: EdgeInsets.all(16.w),
         decoration: BoxDecoration(
-          color: item.isRead
-              ? colors.background
-              : colors.primaryBlue.withValues(alpha: 0.03),
+          color: colors.background,
           borderRadius: BorderRadius.circular(12.r),
-          border: Border.all(color: colors.divider),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.03),
-              blurRadius: 6,
-              offset: const Offset(0, 2),
-            ),
-          ],
+          border: Border.all(
+            color: item.isRead
+                ? colors.divider
+                : colors.primaryBlue.withValues(alpha: 0.3),
+          ),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Header: avatar, name, time
+            // Row 1: Avatar + Name/Position + Date
             Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                UserAvatar(name: item.displayName, size: 36.w, fontSize: 14.sp),
+                UserAvatar(name: item.displayName, size: 40.w, fontSize: 16.sp),
                 SizedBox(width: 10.w),
                 Expanded(
                   child: Column(
@@ -48,9 +44,14 @@ class NotificationItemCard extends StatelessWidget {
                     children: [
                       Text(
                         item.displayName,
-                        style: AppTextStyles.bodySemiBold(colors.textPrimary),
+                        style: AppTextStyles.bodyMedium(colors.textPrimary),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
+                      ),
+                      SizedBox(height: 2.h),
+                      Text(
+                        'LEADER',
+                        style: AppTextStyles.caption(colors.textSecondary),
                       ),
                     ],
                   ),
@@ -61,9 +62,12 @@ class NotificationItemCard extends StatelessWidget {
                 ),
               ],
             ),
-            SizedBox(height: 10.h),
 
-            // Request number + status
+            SizedBox(height: 12.h),
+            Divider(height: 1, color: colors.divider),
+            SizedBox(height: 12.h),
+
+            // Row 2: Request number + Status
             Row(
               children: [
                 Expanded(
@@ -74,71 +78,56 @@ class NotificationItemCard extends StatelessWidget {
                     ).copyWith(fontSize: 13.sp),
                   ),
                 ),
-                _buildStatusFromTitle(colors),
+                _buildStatusText(),
               ],
             ),
 
-            // Body text
+            // Row 3: Body text
             if (item.bodyNotification != null &&
-                item.bodyNotification!.isNotEmpty)
-              Padding(
-                padding: EdgeInsets.only(top: 6.h),
-                child: Text(
-                  item.bodyNotification!,
-                  style: AppTextStyles.caption(colors.textSecondary),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
+                item.bodyNotification!.isNotEmpty) ...[
+              SizedBox(height: 6.h),
+              Text(
+                item.bodyNotification!,
+                style: AppTextStyles.caption(colors.textSecondary),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
               ),
+            ],
           ],
         ),
       ),
     );
   }
 
-  Widget _buildStatusFromTitle(ThemeColors colors) {
+  Widget _buildStatusText() {
     final title = (item.titleNotification ?? '').toLowerCase();
 
     String label;
     Color textColor;
-    Color bgColor;
 
     if (title.contains('approved') || title.contains('approve')) {
-      label = 'Disetujui';
+      label = 'Disetujui Sepenuhnya';
       textColor = const Color(0xFF28A745);
-      bgColor = const Color(0xFFD4EDDA);
     } else if (title.contains('rejected') || title.contains('reject')) {
       label = 'Ditolak';
       textColor = const Color(0xFFDC3545);
-      bgColor = const Color(0xFFF8D7DA);
     } else if (title.contains('revised') || title.contains('revise')) {
       label = 'Direvisi';
       textColor = const Color(0xFFD68910);
-      bgColor = const Color(0xFFFFF3CD);
     } else if (title.contains('cancelled') || title.contains('cancel')) {
       label = 'Dibatalkan';
       textColor = const Color(0xFFDC3545);
-      bgColor = const Color(0xFFF8D7DA);
     } else if (title.contains('unverified')) {
       label = 'Belum diverifikasi';
-      textColor = const Color(0xFF4338CA);
-      bgColor = const Color(0xFFE0E7FF);
+      textColor = const Color(0xFFD68910);
     } else {
       label = 'Menunggu';
       textColor = const Color(0xFFD68910);
-      bgColor = const Color(0xFFFFF3CD);
     }
 
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 3.h),
-      decoration: BoxDecoration(
-        color: bgColor,
-        borderRadius: BorderRadius.circular(4.r),
-      ),
-      child: Text(
-        label,
-        style: AppTextStyles.caption(textColor).copyWith(fontSize: 11.sp),
-      ),
+    return Text(
+      label,
+      style: AppTextStyles.bodyMedium(textColor).copyWith(fontSize: 13.sp),
     );
   }
 }

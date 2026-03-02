@@ -68,8 +68,8 @@ class NotificationListScreen extends StatelessWidget {
                     },
                   ),
                 ),
-                // "Tampilkan Semua" button
-                _buildShowAllButton(context, colors),
+                // \"Tampilkan Semua\" button - commented out for now
+                // _buildShowAllButton(context, colors),
               ],
             ),
     );

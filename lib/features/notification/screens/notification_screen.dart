@@ -109,7 +109,7 @@ class _NotificationScreenState extends State<NotificationScreen>
                         const Text('Permintaan'),
                         if (_requestUnread > 0) ...[
                           SizedBox(width: 6.w),
-                          _buildBadge(),
+                          _buildBadge(_requestUnread),
                         ],
                       ],
                     ),
@@ -122,7 +122,7 @@ class _NotificationScreenState extends State<NotificationScreen>
                         const Text('Persetujuan'),
                         if (_approvalUnread > 0) ...[
                           SizedBox(width: 6.w),
-                          _buildBadge(),
+                          _buildBadge(_approvalUnread),
                         ],
                       ],
                     ),
@@ -144,24 +144,22 @@ class _NotificationScreenState extends State<NotificationScreen>
     );
   }
 
-  Widget _buildBadge() {
+  Widget _buildBadge(int count) {
     return Container(
-      width: 16.w,
-      height: 16.w,
-      decoration: const BoxDecoration(
-        color: Color(0xFFE8751A),
-        shape: BoxShape.circle,
+      padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 1.h),
+      decoration: BoxDecoration(
+        color: const Color(0xFFE8751A),
+        borderRadius: BorderRadius.circular(10.r),
       ),
-      child: Center(
-        child: Text(
-          '!',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 10.sp,
-            fontWeight: FontWeight.bold,
-            height: 1,
-          ),
+      constraints: BoxConstraints(minWidth: 18.w, minHeight: 16.h),
+      child: Text(
+        count > 99 ? '99+' : '$count',
+        style: TextStyle(
+          color: Colors.white,
+          fontSize: 9.sp,
+          fontWeight: FontWeight.bold,
         ),
+        textAlign: TextAlign.center,
       ),
     );
   }

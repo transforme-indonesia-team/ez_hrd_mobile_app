@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hrd_app/core/theme/app_text_styles.dart';
 import 'package:hrd_app/core/utils/snackbar_utils.dart';
+import 'package:hrd_app/features/fitur/cuti/screens/jatah_cuti_screen.dart';
+import 'package:hrd_app/features/fitur/kehadiran/screens/daftar_kehadiran_screen.dart';
 import 'package:hrd_app/features/profile/widgets/qr_code_bottom_sheet.dart';
 import 'package:hrd_app/features/profile/detail/ketenagakerjaan/ketenagakerjaan_screen.dart';
 import 'package:hrd_app/features/fitur/permohonan/screens/permohonan_karyawan_screen.dart';
@@ -92,7 +94,14 @@ class _ProfileDetailScreenState extends State<ProfileDetailScreen> {
         icon: Icons.calendar_today_outlined,
         title: 'Daftar Kehadiran',
         subItems: ['Kehadiran Karyawan'],
-        onTap: () => context.showMenuNotAvailable('Daftar Kehadiran'),
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const DaftarKehadiranScreen(),
+            ),
+          );
+        },
       ),
       ProfileMenuItemModel(
         icon: Icons.description_outlined,
@@ -115,7 +124,10 @@ class _ProfileDetailScreenState extends State<ProfileDetailScreen> {
         icon: Icons.beach_access_outlined,
         title: 'Jatah Cuti',
         subItems: ['Cuti Kehadiran Karyawan'],
-        onTap: () => context.showMenuNotAvailable('Jatah Cuti'),
+        onTap: () => Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const JatahCutiScreen()),
+        ),
       ),
     ];
   }

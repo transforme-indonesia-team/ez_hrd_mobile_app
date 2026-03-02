@@ -178,7 +178,7 @@ class _KoreksiFilterBottomSheetState extends State<KoreksiFilterBottomSheet> {
               final label = opt['label'] as String;
               final isSelected = _status == value;
               return GestureDetector(
-                onTap: () => setState(() => _status = value as String?),
+                onTap: () => setState(() => _status = value),
                 child: Container(
                   padding: EdgeInsets.symmetric(
                     horizontal: 14.w,
