@@ -136,9 +136,19 @@ class _NotificationScreenState extends State<NotificationScreen>
       ),
       body: TabBarView(
         controller: _tabController,
-        children: const [
-          NotificationCategoryTab(notifType: 'REQUEST'),
-          NotificationCategoryTab(notifType: 'APPROVAL'),
+        children: [
+          NotificationCategoryTab(
+            notifType: 'REQUEST',
+            onUnreadChanged: (count) {
+              if (mounted) setState(() => _requestUnread = count);
+            },
+          ),
+          NotificationCategoryTab(
+            notifType: 'APPROVAL',
+            onUnreadChanged: (count) {
+              if (mounted) setState(() => _approvalUnread = count);
+            },
+          ),
         ],
       ),
     );

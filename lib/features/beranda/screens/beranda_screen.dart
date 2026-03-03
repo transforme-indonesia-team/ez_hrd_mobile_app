@@ -364,13 +364,15 @@ class _BerandaScreenState extends State<BerandaScreen>
               name: userName,
               avatarUrl: userAvatar,
               position: userPosition,
-              onNotificationTap: () {
-                Navigator.push(
+              onNotificationTap: () async {
+                await Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (context) => const NotificationScreen(),
                   ),
                 );
+                // Trigger rebuild to refresh notification count
+                if (mounted) setState(() {});
               },
             ),
             AttendanceCard(

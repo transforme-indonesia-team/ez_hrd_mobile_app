@@ -11,7 +11,7 @@ class UserProfileHeader extends StatefulWidget {
   final String? avatarUrl;
   final String position;
   final String? avatarInitials;
-  final VoidCallback? onNotificationTap;
+  final Future<void> Function()? onNotificationTap;
 
   const UserProfileHeader({
     super.key,
@@ -38,8 +38,7 @@ class _UserProfileHeaderState extends State<UserProfileHeader> {
   Future<void> _fetchNotifCount() async {
     try {
       final response = await NotificationService().getCountNotification();
-      final count =
-          response['original']?['records'] ?? response['records'] ?? 0;
+      final count = response['original']?['records']?['total'] ?? 0;
       if (mounted) {
         setState(() {
           _notifCount = count is int ? count : 0;
@@ -81,7 +80,10 @@ class _UserProfileHeaderState extends State<UserProfileHeader> {
           ),
           // Bell icon with badge
           GestureDetector(
-            onTap: widget.onNotificationTap ?? () {},
+            onTap: () async {
+              await widget.onNotificationTap?.call();
+              _fetchNotifCount();
+            },
             child: SizedBox(
               width: 40.w,
               height: 40.w,

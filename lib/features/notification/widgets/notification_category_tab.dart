@@ -10,8 +10,13 @@ import 'package:hrd_app/features/notification/widgets/notification_category_tile
 
 class NotificationCategoryTab extends StatefulWidget {
   final String notifType;
+  final ValueChanged<int>? onUnreadChanged;
 
-  const NotificationCategoryTab({super.key, required this.notifType});
+  const NotificationCategoryTab({
+    super.key,
+    required this.notifType,
+    this.onUnreadChanged,
+  });
 
   @override
   State<NotificationCategoryTab> createState() =>
@@ -66,6 +71,9 @@ class _NotificationCategoryTabState extends State<NotificationCategoryTab>
           _categories = categories;
           _isLoading = false;
         });
+        // Notify parent of updated unread count
+        final totalUnread = categories.fold(0, (sum, c) => sum + c.unreadCount);
+        widget.onUnreadChanged?.call(totalUnread);
       }
     } catch (e) {
       debugPrint('Error fetching notifications: $e');
@@ -132,13 +140,15 @@ class _NotificationCategoryTabState extends State<NotificationCategoryTab>
             icon: category.icon,
             label: category.label,
             unreadCount: category.unreadCount,
-            onTap: () {
-              Navigator.push(
+            onTap: () async {
+              await Navigator.push(
                 context,
                 MaterialPageRoute(
                   builder: (_) => NotificationListScreen(category: category),
                 ),
               );
+              // Refresh data when coming back
+              _fetchData();
             },
           );
         },

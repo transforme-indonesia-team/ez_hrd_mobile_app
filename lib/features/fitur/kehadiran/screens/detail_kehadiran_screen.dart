@@ -9,6 +9,8 @@ import 'package:hrd_app/core/widgets/user_avatar.dart';
 import 'package:hrd_app/data/models/attendance_employee_model.dart';
 import 'package:hrd_app/features/fitur/kehadiran/widgets/attendance_log_bottom_sheet.dart';
 import 'package:hrd_app/features/fitur/koreksi_kehadiran/screens/form_koreksi_kehadiran_screen.dart';
+import 'package:hrd_app/features/fitur/lembur/screens/form_lembur_screen.dart';
+import 'package:hrd_app/features/fitur/cuti/screens/form_permintaan_cuti.dart';
 
 class DetailKehadiranScreen extends StatefulWidget {
   final AttendanceEmployeeModel attendance;
@@ -524,7 +526,19 @@ class _DetailKehadiranScreenState extends State<DetailKehadiranScreen> {
             colors,
             title: 'Attendance Correction',
             onTap: () {
-              // TODO: Navigate to attendance correction
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => FormKoreksiKehadiranScreen(
+                    initialStartDate: _att.dateSchedule != null
+                        ? DateTime.tryParse(_att.dateSchedule!)
+                        : null,
+                    initialEndDate: _att.dateSchedule != null
+                        ? DateTime.tryParse(_att.dateSchedule!)
+                        : null,
+                  ),
+                ),
+              );
             },
           ),
           Divider(height: 1, indent: 16.w, color: colors.divider),
@@ -532,7 +546,10 @@ class _DetailKehadiranScreenState extends State<DetailKehadiranScreen> {
             colors,
             title: 'Overtime',
             onTap: () {
-              // TODO: Navigate to overtime
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const FormLemburScreen()),
+              );
             },
           ),
           Divider(height: 1, indent: 16.w, color: colors.divider),
@@ -540,7 +557,12 @@ class _DetailKehadiranScreenState extends State<DetailKehadiranScreen> {
             colors,
             title: 'Leave',
             onTap: () {
-              // TODO: Navigate to leave
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const FormPermintaanCutiScreeen(),
+                ),
+              );
             },
           ),
         ],

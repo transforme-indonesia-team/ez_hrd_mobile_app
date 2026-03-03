@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hrd_app/core/theme/app_colors.dart';
 import 'package:hrd_app/core/theme/app_text_styles.dart';
 import 'package:hrd_app/core/utils/format_date.dart';
+import 'package:hrd_app/features/fitur/kehadiran/widgets/employee_picker_bottom_sheet.dart';
 
 class KehadiranFilterBottomSheet extends StatefulWidget {
   final DateTime? startDate;
@@ -79,6 +80,7 @@ class _KehadiranFilterBottomSheetState
   bool _showWithoutFaceRecognition = false;
   bool _showWithoutLocation = false;
   bool _showWithoutPhoto = false;
+  List<MemberModel> _selectedEmployees = [];
 
   @override
   void initState() {
@@ -134,6 +136,7 @@ class _KehadiranFilterBottomSheetState
       _showWithoutFaceRecognition = false;
       _showWithoutLocation = false;
       _showWithoutPhoto = false;
+      _selectedEmployees = [];
     });
   }
 
@@ -197,12 +200,7 @@ class _KehadiranFilterBottomSheetState
             SizedBox(height: 12.h),
 
             // Pilih Karyawan
-            _buildTextField(
-              colors,
-              controller: _employeeController,
-              hint: 'Pilih Karyawan',
-              suffixIcon: Icons.people_outline,
-            ),
+            _buildEmployeeSelector(colors),
             SizedBox(height: 12.h),
 
             // Rentang Tanggal
@@ -306,6 +304,58 @@ class _KehadiranFilterBottomSheetState
               ],
             ),
             SizedBox(height: MediaQuery.of(context).padding.bottom + 8.h),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildEmployeeSelector(ThemeColors colors) {
+    final hasSelected = _selectedEmployees.isNotEmpty;
+    final displayText = hasSelected
+        ? _selectedEmployees.map((e) => e.name).join(', ')
+        : 'Pilih Karyawan';
+
+    return GestureDetector(
+      onTap: () async {
+        final result = await EmployeePickerBottomSheet.show(
+          context,
+          selectedEmployees: _selectedEmployees,
+        );
+        if (result != null) {
+          setState(() {
+            _selectedEmployees = result;
+            _employeeController.text = result.map((e) => e.name).join(', ');
+          });
+        }
+      },
+      child: Container(
+        width: double.infinity,
+        padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 12.h),
+        decoration: BoxDecoration(
+          color: colors.surface,
+          borderRadius: BorderRadius.circular(8.r),
+          border: Border.all(
+            color: hasSelected ? colors.primaryBlue : colors.divider,
+          ),
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: Text(
+                displayText,
+                style: AppTextStyles.body(
+                  hasSelected ? colors.textPrimary : colors.textSecondary,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            Icon(
+              Icons.people_outline,
+              color: colors.textSecondary,
+              size: 16.sp,
+            ),
           ],
         ),
       ),

@@ -19,4 +19,12 @@ class NotificationService {
   Future<Map<String, dynamic>> getCountNotification() async {
     return _api.get('/notification/get-count');
   }
+
+  Future<Map<String, dynamic>> markAsRead({
+    List<String>? notificationIds,
+  }) async {
+    return _api.post('/notification/mark-as-read', {
+      'notification_id': notificationIds,
+    });
+  }
 }

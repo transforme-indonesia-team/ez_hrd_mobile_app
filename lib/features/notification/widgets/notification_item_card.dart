@@ -14,86 +14,139 @@ class NotificationItemCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
+    final isUnread = !item.isRead;
 
     return GestureDetector(
       onTap: onTap,
       child: Container(
         margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 6.h),
-        padding: EdgeInsets.all(16.w),
         decoration: BoxDecoration(
-          color: colors.background,
+          color: isUnread
+              ? colors.primaryBlue.withValues(alpha: 0.04)
+              : colors.background,
           borderRadius: BorderRadius.circular(12.r),
           border: Border.all(
-            color: item.isRead
-                ? colors.divider
-                : colors.primaryBlue.withValues(alpha: 0.3),
+            color: isUnread
+                ? colors.primaryBlue.withValues(alpha: 0.3)
+                : colors.divider,
           ),
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Row 1: Avatar + Name/Position + Date
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                UserAvatar(name: item.displayName, size: 40.w, fontSize: 16.sp),
-                SizedBox(width: 10.w),
-                Expanded(
+        child: IntrinsicHeight(
+          child: Row(
+            children: [
+              // Left accent bar for unread
+              if (isUnread)
+                Container(
+                  width: 4.w,
+                  decoration: BoxDecoration(
+                    color: colors.primaryBlue,
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(12.r),
+                      bottomLeft: Radius.circular(12.r),
+                    ),
+                  ),
+                ),
+
+              // Main content
+              Expanded(
+                child: Padding(
+                  padding: EdgeInsets.all(16.w),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        item.displayName,
-                        style: AppTextStyles.bodyMedium(colors.textPrimary),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
+                      // Row 1: Avatar + Name/Position + Unread dot + Date
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          UserAvatar(
+                            name: item.displayName,
+                            size: 40.w,
+                            fontSize: 16.sp,
+                          ),
+                          SizedBox(width: 10.w),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  item.displayName,
+                                  style: AppTextStyles.bodyMedium(
+                                    colors.textPrimary,
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                SizedBox(height: 2.h),
+                                Text(
+                                  'LEADER',
+                                  style: AppTextStyles.caption(
+                                    colors.textSecondary,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              Text(
+                                item.timeNotification ?? '',
+                                style: AppTextStyles.caption(
+                                  colors.textSecondary,
+                                ),
+                              ),
+                              if (isUnread) ...[
+                                SizedBox(height: 6.h),
+                                Container(
+                                  width: 8.w,
+                                  height: 8.w,
+                                  decoration: BoxDecoration(
+                                    color: colors.primaryBlue,
+                                    shape: BoxShape.circle,
+                                  ),
+                                ),
+                              ],
+                            ],
+                          ),
+                        ],
                       ),
-                      SizedBox(height: 2.h),
-                      Text(
-                        'LEADER',
-                        style: AppTextStyles.caption(colors.textSecondary),
+
+                      SizedBox(height: 12.h),
+                      Divider(height: 1, color: colors.divider),
+                      SizedBox(height: 12.h),
+
+                      // Row 2: Request number + Status
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              item.displayRequestNo,
+                              style: AppTextStyles.bodyMedium(
+                                colors.textPrimary,
+                              ).copyWith(fontSize: 13.sp),
+                            ),
+                          ),
+                          _buildStatusText(),
+                        ],
                       ),
+
+                      // Row 3: Body text
+                      if (item.bodyNotification != null &&
+                          item.bodyNotification!.isNotEmpty) ...[
+                        SizedBox(height: 6.h),
+                        Text(
+                          item.bodyNotification!,
+                          style: AppTextStyles.caption(colors.textSecondary),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
                     ],
                   ),
                 ),
-                Text(
-                  item.timeNotification ?? '',
-                  style: AppTextStyles.caption(colors.textSecondary),
-                ),
-              ],
-            ),
-
-            SizedBox(height: 12.h),
-            Divider(height: 1, color: colors.divider),
-            SizedBox(height: 12.h),
-
-            // Row 2: Request number + Status
-            Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    item.displayRequestNo,
-                    style: AppTextStyles.bodyMedium(
-                      colors.textPrimary,
-                    ).copyWith(fontSize: 13.sp),
-                  ),
-                ),
-                _buildStatusText(),
-              ],
-            ),
-
-            // Row 3: Body text
-            if (item.bodyNotification != null &&
-                item.bodyNotification!.isNotEmpty) ...[
-              SizedBox(height: 6.h),
-              Text(
-                item.bodyNotification!,
-                style: AppTextStyles.caption(colors.textSecondary),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
               ),
             ],
-          ],
+          ),
         ),
       ),
     );

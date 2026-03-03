@@ -23,4 +23,11 @@ class EmployeeService {
       queryParameters: {'employee_code': employeeCode},
     );
   }
+
+  Future<Map<String, dynamic>> getMember({String? employeeId}) async {
+    return _api.get(
+      '/employee/get-member',
+      queryParameters: {'employee_id': employeeId},
+    );
+  }
 }
