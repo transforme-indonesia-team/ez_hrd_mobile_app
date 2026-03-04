@@ -11,6 +11,7 @@ import 'package:hrd_app/features/fitur/kehadiran/widgets/attendance_log_bottom_s
 import 'package:hrd_app/features/fitur/koreksi_kehadiran/screens/form_koreksi_kehadiran_screen.dart';
 import 'package:hrd_app/features/fitur/lembur/screens/form_lembur_screen.dart';
 import 'package:hrd_app/features/fitur/cuti/screens/form_permintaan_cuti.dart';
+import 'package:hrd_app/features/beranda/widgets/attendance_location_bottom_sheet.dart';
 
 class DetailKehadiranScreen extends StatefulWidget {
   final AttendanceEmployeeModel attendance;
@@ -187,7 +188,8 @@ class _DetailKehadiranScreenState extends State<DetailKehadiranScreen> {
           _buildInfoLabel(colors, 'Keterangan'),
           SizedBox(height: 4.h),
           Text(
-            _att.remarkSchedule ?? '-',
+            '-',
+            // _att.remarkSchedule ?? '-',
             style: AppTextStyles.body(colors.textPrimary),
           ),
         ],
@@ -200,16 +202,24 @@ class _DetailKehadiranScreenState extends State<DetailKehadiranScreen> {
   }
 
   Widget _buildStatusBadge(ThemeColors colors) {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
-      decoration: BoxDecoration(
-        color: _statusBadgeColor(colors),
-        borderRadius: BorderRadius.circular(4.r),
-      ),
-      child: Text(
-        _statusLabel,
-        style: AppTextStyles.captionMedium(_statusTextColor(colors)),
-      ),
+    final remark = _att.remarkSchedule ?? '-';
+    return Wrap(
+      spacing: 6.w,
+      runSpacing: 4.h,
+      children: remark.split(',').map((code) {
+        final trimmed = code.trim();
+        return Container(
+          padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
+          decoration: BoxDecoration(
+            color: _statusBadgeColor(colors),
+            borderRadius: BorderRadius.circular(4.r),
+          ),
+          child: Text(
+            trimmed,
+            style: AppTextStyles.captionMedium(_statusTextColor(colors)),
+          ),
+        );
+      }).toList(),
     );
   }
 
@@ -301,7 +311,10 @@ class _DetailKehadiranScreenState extends State<DetailKehadiranScreen> {
             label: 'Jam Masuk',
             time: _att.displayCheckIn,
             photo: _att.attendancePhotoIn,
+            location: _att.attendanceLocationIn,
             hasData: _att.hasCheckIn,
+            hasPhoto: _att.hasPhotoIn,
+            isCheckOut: false,
           ),
           SizedBox(height: 24.h),
           _buildAttendanceEntry(
@@ -309,7 +322,10 @@ class _DetailKehadiranScreenState extends State<DetailKehadiranScreen> {
             label: 'Jam Keluar',
             time: _att.displayCheckOut,
             photo: _att.attendancePhotoOut,
+            location: _att.attendanceLocationOut,
             hasData: _att.hasCheckOut,
+            hasPhoto: _att.hasPhotoOut,
+            isCheckOut: true,
           ),
         ],
       ),
@@ -321,7 +337,10 @@ class _DetailKehadiranScreenState extends State<DetailKehadiranScreen> {
     required String label,
     required String time,
     required String? photo,
+    required String? location,
     required bool hasData,
+    required bool hasPhoto,
+    required bool isCheckOut,
   }) {
     final photoUrl = _fullPhotoUrl(photo);
 
@@ -376,9 +395,18 @@ class _DetailKehadiranScreenState extends State<DetailKehadiranScreen> {
               SizedBox(height: 4.h),
               Text(time, style: AppTextStyles.h2(colors.textPrimary)),
               SizedBox(height: 8.h),
-              _buildFaceRecognitionStatus(colors, hasData: hasData),
+              _buildFaceRecognitionStatus(
+                colors,
+                hasPhoto: hasPhoto,
+                isCheckOut: isCheckOut,
+              ),
               SizedBox(height: 4.h),
-              _buildLocationStatus(colors, hasData: hasData),
+              _buildLocationStatus(
+                colors,
+                location: location,
+                hasData: hasData,
+                isCheckOut: isCheckOut,
+              ),
             ],
           ),
         ),
@@ -430,16 +458,18 @@ class _DetailKehadiranScreenState extends State<DetailKehadiranScreen> {
 
   Widget _buildFaceRecognitionStatus(
     ThemeColors colors, {
-    required bool hasData,
+    required bool hasPhoto,
+    required bool isCheckOut,
   }) {
-    final success = hasData;
+    final success = hasPhoto;
+    final iconColor = isCheckOut ? const Color(0xFFE8751A) : colors.success;
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Icon(
           success ? Icons.face_retouching_natural : Icons.face_retouching_off,
           size: 16.sp,
-          color: success ? colors.success : colors.primaryBlue,
+          color: iconColor,
         ),
         SizedBox(width: 6.w),
         Expanded(
@@ -447,31 +477,63 @@ class _DetailKehadiranScreenState extends State<DetailKehadiranScreen> {
             success
                 ? 'Identifikasi Wajah: Berhasil'
                 : 'Identifikasi Wajah:\nGagal (Wajah Tidak Ditemukan)',
-            style: AppTextStyles.xSmall(
-              success ? colors.success : colors.textSecondary,
-            ),
+            style: AppTextStyles.xSmall(colors.textSecondary),
           ),
         ),
       ],
     );
   }
 
-  Widget _buildLocationStatus(ThemeColors colors, {required bool hasData}) {
-    return Row(
-      children: [
-        Icon(
-          Icons.location_on,
-          size: 16.sp,
-          color: hasData ? colors.success : colors.primaryBlue,
-        ),
-        SizedBox(width: 6.w),
-        Text(
-          hasData ? 'Lokasi terdeteksi' : '-',
-          style: AppTextStyles.xSmall(
-            hasData ? colors.success : colors.textSecondary,
+  Widget _buildLocationStatus(
+    ThemeColors colors, {
+    required String? location,
+    required bool hasData,
+    required bool isCheckOut,
+  }) {
+    final hasLocation = location != null && location.isNotEmpty;
+    final iconColor = isCheckOut ? const Color(0xFFE8751A) : colors.success;
+
+    return GestureDetector(
+      onTap: hasLocation
+          ? () {
+              final date = _att.dateSchedule != null
+                  ? DateTime.tryParse(_att.dateSchedule!)
+                  : null;
+              AttendanceLocationBottomSheet.show(
+                context: context,
+                employeeId: _att.employeeId,
+                date: date,
+                type: isCheckOut ? 'CHECK_OUT' : 'CHECK_IN',
+              );
+            }
+          : null,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(
+            Icons.location_on,
+            size: 16.sp,
+            color: hasLocation ? iconColor : colors.textSecondary,
           ),
-        ),
-      ],
+          SizedBox(width: 6.w),
+          Expanded(
+            child: Text(
+              hasLocation
+                  ? location
+                  : (hasData ? 'Lokasi tidak tersedia' : '-'),
+              style:
+                  AppTextStyles.xSmall(
+                    hasLocation ? colors.primaryBlue : colors.textPrimary,
+                  ).copyWith(
+                    decoration: hasLocation ? TextDecoration.underline : null,
+                    decorationColor: colors.primaryBlue,
+                  ),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ],
+      ),
     );
   }
 

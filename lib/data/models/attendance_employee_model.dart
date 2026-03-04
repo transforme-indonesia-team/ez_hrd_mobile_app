@@ -16,6 +16,8 @@ class AttendanceEmployeeModel {
   final String? checkOut;
   final String? attendancePhotoIn;
   final String? attendancePhotoOut;
+  final String? attendanceLocationIn;
+  final String? attendanceLocationOut;
   final int? overtimeMinutes;
   final String? remarkSchedule;
 
@@ -35,6 +37,8 @@ class AttendanceEmployeeModel {
     this.checkOut,
     this.attendancePhotoIn,
     this.attendancePhotoOut,
+    this.attendanceLocationIn,
+    this.attendanceLocationOut,
     this.overtimeMinutes,
     this.remarkSchedule,
   });
@@ -56,6 +60,8 @@ class AttendanceEmployeeModel {
       checkOut: _parseTimeValue(json['check_out']),
       attendancePhotoIn: _parsePhotoValue(json['attendance_photo_in']),
       attendancePhotoOut: _parsePhotoValue(json['attendance_photo_out']),
+      attendanceLocationIn: json['attendance_location_in'] as String?,
+      attendanceLocationOut: json['attendance_location_out'] as String?,
       overtimeMinutes: json['overtime_minutes'] as int? ?? 0,
       remarkSchedule: json['remark_schedule'] as String?,
     );

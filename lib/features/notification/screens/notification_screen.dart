@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hrd_app/core/theme/app_text_styles.dart';
 import 'package:hrd_app/core/theme/app_colors.dart';
-import 'package:hrd_app/data/models/notification_model.dart';
 import 'package:hrd_app/data/services/notification_service.dart';
 import 'package:hrd_app/features/notification/widgets/notification_category_tab.dart';
 
@@ -17,14 +16,14 @@ class _NotificationScreenState extends State<NotificationScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
-  int _requestUnread = 0;
-  int _approvalUnread = 0;
+  int _requestCount = 0;
+  int _approvalCount = 0;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
-    _fetchUnreadCounts();
+    _fetchCounts();
   }
 
   @override
@@ -33,40 +32,19 @@ class _NotificationScreenState extends State<NotificationScreen>
     super.dispose();
   }
 
-  Future<void> _fetchUnreadCounts() async {
+  Future<void> _fetchCounts() async {
     try {
-      final responses = await Future.wait([
-        NotificationService().getNotification(notifType: 'REQUEST'),
-        NotificationService().getNotification(notifType: 'APPROVAL'),
-      ]);
+      final response = await NotificationService().getCountNotification();
+      final records = response['original']?['records'] ?? response['records'];
 
-      int requestUnread = 0;
-      int approvalUnread = 0;
-
-      // Parse REQUEST
-      final reqRecords =
-          responses[0]['original']?['records'] ?? responses[0]['records'];
-      if (reqRecords != null && reqRecords is Map<String, dynamic>) {
-        final cats = NotificationCategory.fromApiRecords(reqRecords);
-        requestUnread = cats.fold(0, (sum, c) => sum + c.unreadCount);
-      }
-
-      // Parse APPROVAL
-      final appRecords =
-          responses[1]['original']?['records'] ?? responses[1]['records'];
-      if (appRecords != null && appRecords is Map<String, dynamic>) {
-        final cats = NotificationCategory.fromApiRecords(appRecords);
-        approvalUnread = cats.fold(0, (sum, c) => sum + c.unreadCount);
-      }
-
-      if (mounted) {
+      if (records != null && records is Map<String, dynamic> && mounted) {
         setState(() {
-          _requestUnread = requestUnread;
-          _approvalUnread = approvalUnread;
+          _requestCount = records['total_request'] as int? ?? 0;
+          _approvalCount = records['total_approval'] as int? ?? 0;
         });
       }
     } catch (e) {
-      debugPrint('Error fetching unread counts: $e');
+      debugPrint('Error fetching notification counts: $e');
     }
   }
 
@@ -107,9 +85,9 @@ class _NotificationScreenState extends State<NotificationScreen>
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         const Text('Permintaan'),
-                        if (_requestUnread > 0) ...[
+                        if (_requestCount > 0) ...[
                           SizedBox(width: 6.w),
-                          _buildBadge(_requestUnread),
+                          _buildBadge(_requestCount),
                         ],
                       ],
                     ),
@@ -120,9 +98,9 @@ class _NotificationScreenState extends State<NotificationScreen>
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         const Text('Persetujuan'),
-                        if (_approvalUnread > 0) ...[
+                        if (_approvalCount > 0) ...[
                           SizedBox(width: 6.w),
-                          _buildBadge(_approvalUnread),
+                          _buildBadge(_approvalCount),
                         ],
                       ],
                     ),
@@ -139,14 +117,14 @@ class _NotificationScreenState extends State<NotificationScreen>
         children: [
           NotificationCategoryTab(
             notifType: 'REQUEST',
-            onUnreadChanged: (count) {
-              if (mounted) setState(() => _requestUnread = count);
+            onCountChanged: (count) {
+              if (mounted) setState(() => _requestCount = count);
             },
           ),
           NotificationCategoryTab(
             notifType: 'APPROVAL',
-            onUnreadChanged: (count) {
-              if (mounted) setState(() => _approvalUnread = count);
+            onCountChanged: (count) {
+              if (mounted) setState(() => _approvalCount = count);
             },
           ),
         ],

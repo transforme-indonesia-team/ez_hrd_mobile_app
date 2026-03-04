@@ -40,23 +40,7 @@ class _NotificationListScreenState extends State<NotificationListScreen> {
         setState(() {
           final index = _items.indexWhere((i) => i.id == item.id);
           if (index != -1) {
-            _items[index] = NotificationItem(
-              id: item.id,
-              attendanceCorrectionRequestId: item.attendanceCorrectionRequestId,
-              leaveEmployeeId: item.leaveEmployeeId,
-              overtimeEmployeeId: item.overtimeEmployeeId,
-              leaveCancellationId: item.leaveCancellationId,
-              employeeId: item.employeeId,
-              titleNotification: item.titleNotification,
-              bodyNotification: item.bodyNotification,
-              isRead: true,
-              notifType: item.notifType,
-              employeeName: item.employeeName,
-              leaveRequestNo: item.leaveRequestNo,
-              overtimeRequestNo: item.overtimeRequestNo,
-              attendanceCorrectionRequestNo: item.attendanceCorrectionRequestNo,
-              timeNotification: item.timeNotification,
-            );
+            _items[index] = item.copyWithRead();
           }
         });
       }
@@ -65,9 +49,9 @@ class _NotificationListScreenState extends State<NotificationListScreen> {
     }
   }
 
-  void _onItemTap(NotificationItem item) {
-    _markAsRead(item);
-    _navigateToDetail(item);
+  void _onItemTap(NotificationItem item) async {
+    await _markAsRead(item);
+    if (mounted) _navigateToDetail(item);
   }
 
   @override
@@ -124,18 +108,28 @@ class _NotificationListScreenState extends State<NotificationListScreen> {
   void _navigateToDetail(NotificationItem item) {
     switch (widget.category.key) {
       case 'attendance_correction_request':
-        if (item.attendanceCorrectionRequestId != null) {
+        if (item.id != null) {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (_) => DetailKoreksiKehadiranScreen(
-                correctionId: item.attendanceCorrectionRequestId!,
-              ),
+              builder: (_) =>
+                  DetailKoreksiKehadiranScreen(correctionId: item.id!),
             ),
           );
         }
         break;
       case 'leave_employee':
+        if (item.id != null) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => DetailCutiScreen(
+                detailLeave: LeaveEmployeeModel(id: item.id!),
+              ),
+            ),
+          );
+        }
+        break;
       case 'leave_cancellation':
         if (item.leaveEmployeeId != null) {
           Navigator.push(
@@ -149,14 +143,12 @@ class _NotificationListScreenState extends State<NotificationListScreen> {
         }
         break;
       case 'overtime_employee':
-        if (item.overtimeEmployeeId != null) {
+        if (item.id != null) {
           Navigator.push(
             context,
             MaterialPageRoute(
               builder: (_) => DetailLemburScreen(
-                detailOvertime: OvertimeEmployeeModel(
-                  id: item.overtimeEmployeeId!,
-                ),
+                detailOvertime: OvertimeEmployeeModel(id: item.id!),
               ),
             ),
           );

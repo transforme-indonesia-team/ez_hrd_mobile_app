@@ -54,12 +54,13 @@ class NotificationItemCard extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Row 1: Avatar + Name/Position + Unread dot + Date
+                      // Row 1: Avatar + Name/Company + Status badge
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           UserAvatar(
                             name: item.displayName,
+                            avatarUrl: item.displayPhoto,
                             size: 40.w,
                             fontSize: 16.sp,
                           ),
@@ -78,7 +79,7 @@ class NotificationItemCard extends StatelessWidget {
                                 ),
                                 SizedBox(height: 2.h),
                                 Text(
-                                  'LEADER',
+                                  item.companyName ?? '-',
                                   style: AppTextStyles.caption(
                                     colors.textSecondary,
                                   ),
@@ -89,10 +90,23 @@ class NotificationItemCard extends StatelessWidget {
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
-                              Text(
-                                item.timeNotification ?? '',
-                                style: AppTextStyles.caption(
-                                  colors.textSecondary,
+                              // Status badge
+                              Container(
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 8.w,
+                                  vertical: 3.h,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: item.statusColor.withValues(
+                                    alpha: 0.1,
+                                  ),
+                                  borderRadius: BorderRadius.circular(6.r),
+                                ),
+                                child: Text(
+                                  item.displayStatus,
+                                  style: AppTextStyles.xSmall(
+                                    item.statusColor,
+                                  ).copyWith(fontWeight: FontWeight.w600),
                                 ),
                               ),
                               if (isUnread) ...[
@@ -115,7 +129,7 @@ class NotificationItemCard extends StatelessWidget {
                       Divider(height: 1, color: colors.divider),
                       SizedBox(height: 12.h),
 
-                      // Row 2: Request number + Status
+                      // Row 2: Request number + Created by
                       Row(
                         children: [
                           Expanded(
@@ -126,16 +140,21 @@ class NotificationItemCard extends StatelessWidget {
                               ).copyWith(fontSize: 13.sp),
                             ),
                           ),
-                          _buildStatusText(),
+                          if (item.createdBy != null)
+                            Text(
+                              'oleh ${item.createdBy}',
+                              style: AppTextStyles.caption(
+                                colors.textSecondary,
+                              ).copyWith(fontSize: 11.sp),
+                            ),
                         ],
                       ),
 
-                      // Row 3: Body text
-                      if (item.bodyNotification != null &&
-                          item.bodyNotification!.isNotEmpty) ...[
+                      // Row 3: Remark
+                      if (item.remark != null && item.remark!.isNotEmpty) ...[
                         SizedBox(height: 6.h),
                         Text(
-                          item.bodyNotification!,
+                          item.remark!,
                           style: AppTextStyles.caption(colors.textSecondary),
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
@@ -149,38 +168,6 @@ class NotificationItemCard extends StatelessWidget {
           ),
         ),
       ),
-    );
-  }
-
-  Widget _buildStatusText() {
-    final title = (item.titleNotification ?? '').toLowerCase();
-
-    String label;
-    Color textColor;
-
-    if (title.contains('approved') || title.contains('approve')) {
-      label = 'Disetujui Sepenuhnya';
-      textColor = const Color(0xFF28A745);
-    } else if (title.contains('rejected') || title.contains('reject')) {
-      label = 'Ditolak';
-      textColor = const Color(0xFFDC3545);
-    } else if (title.contains('revised') || title.contains('revise')) {
-      label = 'Direvisi';
-      textColor = const Color(0xFFD68910);
-    } else if (title.contains('cancelled') || title.contains('cancel')) {
-      label = 'Dibatalkan';
-      textColor = const Color(0xFFDC3545);
-    } else if (title.contains('unverified')) {
-      label = 'Belum diverifikasi';
-      textColor = const Color(0xFFD68910);
-    } else {
-      label = 'Menunggu';
-      textColor = const Color(0xFFD68910);
-    }
-
-    return Text(
-      label,
-      style: AppTextStyles.bodyMedium(textColor).copyWith(fontSize: 13.sp),
     );
   }
 }

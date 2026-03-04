@@ -6,14 +6,14 @@ import 'package:hrd_app/core/theme/app_text_styles.dart';
 class NotificationCategoryTile extends StatelessWidget {
   final IconData icon;
   final String label;
-  final int unreadCount;
+  final int itemCount;
   final VoidCallback? onTap;
 
   const NotificationCategoryTile({
     super.key,
     required this.icon,
     required this.label,
-    required this.unreadCount,
+    required this.itemCount,
     this.onTap,
   });
 
@@ -47,8 +47,8 @@ class NotificationCategoryTile extends StatelessWidget {
               ),
             ),
 
-            // Unread badge
-            if (unreadCount > 0)
+            // Item count badge
+            if (itemCount > 0)
               Container(
                 padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 2.h),
                 decoration: BoxDecoration(
@@ -56,7 +56,7 @@ class NotificationCategoryTile extends StatelessWidget {
                   borderRadius: BorderRadius.circular(12.r),
                 ),
                 child: Text(
-                  '$unreadCount',
+                  '$itemCount',
                   style: AppTextStyles.caption(Colors.white),
                 ),
               ),

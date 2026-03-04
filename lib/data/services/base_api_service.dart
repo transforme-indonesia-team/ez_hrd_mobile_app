@@ -3,7 +3,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:hrd_app/core/config/env_config.dart';
 import 'package:hrd_app/core/constants/app_constants.dart';
 import 'package:hrd_app/core/utils/crypto_utils.dart';
-// import 'package:shared_preferences/shared_preferences.dart';
 
 typedef UnauthorizedCallback = void Function();
 
@@ -13,6 +12,17 @@ class BaseApiService {
   BaseApiService._internal() {
     _setupInterceptors();
   }
+
+  // ======== DEBUG: Comment/uncomment baris ini untuk toggle env POSTMAN ========
+  // Jika POSTMAN  → payload & response TIDAK di-encrypt/decrypt (plain JSON)
+  // Jika null     → payload di-encrypt, response di-decrypt
+  // ignore: prefer_typing_uninitialized_variables
+  static const String? _debugEnv = 'POSTMAN';
+  // static const String? _debugEnv = null;
+  // ============================================================================
+
+  /// Apakah mode debug aktif (tanpa encrypt/decrypt)
+  static bool get _isDebugMode => _debugEnv != null;
 
   final Dio _dio = Dio(
     BaseOptions(
@@ -41,11 +51,15 @@ class BaseApiService {
     _onUnauthorized = callback;
   }
 
+  // ===========================================================================
+  // SETUP
+  // ===========================================================================
+
   void _setupInterceptors() {
     _dio.interceptors.add(
       InterceptorsWrapper(
         onRequest: (options, handler) {
-          // Ensure all header values are plain strings, not Lists
+          // Pastikan semua header value string (bukan List)
           options.headers.forEach((key, value) {
             if (value is List && value.isNotEmpty) {
               options.headers[key] = value.first.toString();
@@ -55,7 +69,6 @@ class BaseApiService {
         },
         onError: (DioException error, ErrorInterceptorHandler handler) {
           if (error.response?.statusCode == 401 && _hasAuthToken()) {
-            // _refreshToHardcodedToken();
             _onUnauthorized?.call();
           }
           handler.next(error);
@@ -68,19 +81,53 @@ class BaseApiService {
     return _dio.options.headers['Authorization'] != null;
   }
 
-  // Future<void> _refreshToHardcodedToken() async {
-  //   const hardcodedToken =
-  //       '560|mhXLxX4X8mHiu4vHLKWLSnCy3JKgu26sLOswjeA013d9b6af';
+  /// Buat Options dengan debug env header + extra headers
+  Options _buildOptions({
+    Map<String, String>? extraHeaders,
+    String? contentType,
+  }) {
+    final Map<String, dynamic> headers = {};
+    if (_debugEnv != null) headers['env'] = _debugEnv;
+    if (extraHeaders != null) {
+      extraHeaders.forEach((key, value) => headers[key] = value);
+    }
+    return Options(
+      headers: headers,
+      contentType: contentType,
+      listFormat: ListFormat.csv,
+    );
+  }
 
-  //   // Simpan ke SharedPreferences
-  //   final prefs = await SharedPreferences.getInstance();
-  //   await prefs.setString('saved_user', hardcodedToken);
+  // ===========================================================================
+  // GET
+  // ===========================================================================
 
-  //   // Update token di Dio header
-  //   setAuthToken(hardcodedToken);
+  Future<Map<String, dynamic>> get(
+    String endpoint, {
+    Map<String, dynamic>? queryParameters,
+    String? errorMessage,
+  }) async {
+    debugPrint('DEBUG-API: GET $endpoint (params: $queryParameters)');
+    try {
+      final response = await _dio.get(
+        endpoint,
+        queryParameters: queryParameters,
+        options: _buildOptions(),
+      );
+      return _handleResponse(
+        response,
+        errorMessage: errorMessage,
+        endpoint: endpoint,
+      );
+    } on DioException catch (e) {
+      debugPrint('DEBUG-API: GET $endpoint - DioException: ${e.type}');
+      throw _handleDioError(e, errorMessage);
+    }
+  }
 
-  //   debugPrint('DEBUG-API: Token replaced with hardcoded token');
-  // }
+  // ===========================================================================
+  // POST (JSON)
+  // ===========================================================================
 
   Future<Map<String, dynamic>> post(
     String endpoint,
@@ -89,37 +136,27 @@ class BaseApiService {
     Map<String, String>? extraHeaders,
   }) async {
     try {
-      final encryptedPayload = _crypto.encryptPayload(payload);
-      debugPrint(
-        'DEBUG-API: POST $endpoint - Payload encrypted (${encryptedPayload.length} chars)',
-      );
-
-      Options? options;
-      if (extraHeaders != null && extraHeaders.isNotEmpty) {
-        // Ensure header values are plain strings, not arrays
-        final Map<String, dynamic> cleanHeaders = {};
-        extraHeaders.forEach((key, value) {
-          cleanHeaders[key] = value;
-        });
-        // cleanHeaders['env'] = 'POSTMAN'; //buat debug
-        options = Options(
-          headers: cleanHeaders,
-          // Prevent Dio from wrapping header values in lists
-          listFormat: ListFormat.csv,
+      // Jika debug mode → kirim plain, kalau tidak → encrypt payload
+      final dynamic data;
+      if (_isDebugMode) {
+        data = payload;
+        debugPrint('DEBUG-API: POST $endpoint - Plain payload');
+      } else {
+        final encrypted = _crypto.encryptPayload(payload);
+        data = {'payload': encrypted};
+        debugPrint(
+          'DEBUG-API: POST $endpoint - Encrypted (${encrypted.length} chars)',
         );
       }
 
       final response = await _dio.post(
         endpoint,
-        data: {'payload': encryptedPayload},
-        // data: payload,
-        options: options,
+        data: data,
+        options: _buildOptions(extraHeaders: extraHeaders),
       );
-      debugPrint(
-        'DEBUG-API: POST $endpoint - Response received (status: ${response.statusCode})',
-      );
+      debugPrint('DEBUG-API: POST $endpoint - Status: ${response.statusCode}');
 
-      return _decryptResponse(
+      return _handleResponse(
         response,
         errorMessage: errorMessage,
         endpoint: endpoint,
@@ -129,29 +166,27 @@ class BaseApiService {
         'DEBUG-API: POST $endpoint - DioException: ${e.type} - ${e.message}',
       );
       throw _handleDioError(e, errorMessage);
-    } catch (e) {
-      debugPrint('DEBUG-API: POST $endpoint - Error: $e');
-      rethrow;
     }
   }
+
+  // ===========================================================================
+  // POST (FormData) — payload TIDAK di-encrypt, response tetap di-handle
+  // ===========================================================================
 
   Future<Map<String, dynamic>> postFormData(
     String endpoint,
     FormData formData, {
     String? errorMessage,
   }) async {
-    // DEBUG: Log all form fields being sent
+    // Debug log form fields
     debugPrint('========== DEBUG FORM DATA ==========');
     debugPrint('Endpoint: $endpoint');
     for (var field in formData.fields) {
       debugPrint('Field: ${field.key} = ${field.value}');
     }
     for (var file in formData.files) {
-      final multipartFile = file.value;
-      debugPrint('File: ${file.key}');
-      debugPrint('  - filename: ${multipartFile.filename}');
-      debugPrint('  - length: ${multipartFile.length} bytes');
-      debugPrint('  - contentType: ${multipartFile.contentType}');
+      final f = file.value;
+      debugPrint('File: ${file.key} (${f.filename}, ${f.length} bytes)');
     }
     debugPrint('======================================');
 
@@ -159,110 +194,23 @@ class BaseApiService {
       final response = await _dio.post(
         endpoint,
         data: formData,
-        options: Options(
-          contentType: 'multipart/form-data',
-          headers: {'env': 'POSTMAN'},
-        ),
+        options: _buildOptions(contentType: 'multipart/form-data'),
       );
 
-      // Check if response has encrypted format
-      if (response.data is Map<String, dynamic> &&
-          response.data['response'] != null) {
-        return _decryptResponse(
-          response,
-          errorMessage: errorMessage,
-          endpoint: endpoint,
-        );
-      }
-
-      // Handle non-encrypted response (raw JSON from server)
-      final statusCode = response.statusCode ?? 0;
-      if (statusCode >= 200 && statusCode < 300) {
-        // Wrap raw response in the expected format
-        final rawData = response.data as Map<String, dynamic>;
-        debugPrint('DEBUG-API: FormData raw response for $endpoint: $rawData');
-        return {'original': rawData};
-      } else {
-        throw Exception(
-          errorMessage ?? 'Request gagal: ${response.statusMessage}',
-        );
-      }
-    } on DioException catch (e) {
-      throw _handleDioError(e, errorMessage);
-    } catch (e) {
-      rethrow;
-    }
-  }
-
-  Future<Map<String, dynamic>> postRaw(
-    String endpoint,
-    Map<String, dynamic> data, {
-    String? errorMessage,
-  }) async {
-    try {
-      final response = await _dio.post(endpoint, data: data);
-
-      if (response.statusCode == 200) {
-        return response.data as Map<String, dynamic>;
-      } else {
-        throw Exception(
-          errorMessage ?? 'Request gagal: ${response.statusMessage}',
-        );
-      }
-    } on DioException catch (e) {
-      throw _handleDioError(e, errorMessage);
-    } catch (e) {
-      rethrow;
-    }
-  }
-
-  Future<Map<String, dynamic>> get(
-    String endpoint, {
-    Map<String, dynamic>? queryParameters,
-    String? errorMessage,
-  }) async {
-    debugPrint('DEBUG-API: Query Parameters: ${queryParameters.toString()}');
-    try {
-      final response = await _dio.get(
-        endpoint,
-        queryParameters: queryParameters,
-      );
-      return _decryptResponse(
+      return _handleResponse(
         response,
         errorMessage: errorMessage,
         endpoint: endpoint,
       );
     } on DioException catch (e) {
+      debugPrint('DEBUG-API: FormData $endpoint - DioException: ${e.type}');
       throw _handleDioError(e, errorMessage);
-    } catch (e) {
-      rethrow;
     }
   }
 
-  Future<Map<String, dynamic>> getRaw(
-    String endpoint, {
-    Map<String, dynamic>? queryParameters,
-    String? errorMessage,
-  }) async {
-    try {
-      final response = await _dio.get(
-        endpoint,
-        queryParameters: queryParameters,
-      );
-
-      if (response.statusCode == 200) {
-        return response.data as Map<String, dynamic>;
-      } else {
-        throw Exception(
-          errorMessage ?? 'Request gagal: ${response.statusMessage}',
-        );
-      }
-    } on DioException catch (e) {
-      throw _handleDioError(e, errorMessage);
-    } catch (e) {
-      rethrow;
-    }
-  }
+  // ===========================================================================
+  // DELETE
+  // ===========================================================================
 
   Future<Map<String, dynamic>> delete(
     String endpoint, {
@@ -273,27 +221,30 @@ class BaseApiService {
       final response = await _dio.delete(
         endpoint,
         queryParameters: queryParameters,
+        options: _buildOptions(),
       );
-      return _decryptResponse(
+      return _handleResponse(
         response,
         errorMessage: errorMessage,
         endpoint: endpoint,
       );
     } on DioException catch (e) {
+      debugPrint('DEBUG-API: DELETE $endpoint - DioException: ${e.type}');
       throw _handleDioError(e, errorMessage);
-    } catch (e) {
-      rethrow;
     }
   }
 
-  Map<String, dynamic> _decryptResponse(
+  // ===========================================================================
+  // RESPONSE HANDLER — otomatis detect encrypted vs plain
+  // ===========================================================================
+
+  Map<String, dynamic> _handleResponse(
     Response response, {
     String? errorMessage,
     String? endpoint,
   }) {
     final statusCode = response.statusCode ?? 0;
 
-    // Accept 2xx status codes as success
     if (statusCode < 200 || statusCode >= 300) {
       debugPrint('DEBUG-API-ERROR: Status $statusCode for $endpoint');
       throw Exception(
@@ -303,65 +254,68 @@ class BaseApiService {
 
     final responseData = response.data;
 
-    // Log raw response type for debugging intermittent issues
-    debugPrint(
-      'DEBUG-API: Response type for $endpoint: ${responseData.runtimeType}',
-    );
-
-    // Handle case where response is not a Map (e.g., String or null)
     if (responseData is! Map<String, dynamic>) {
-      debugPrint('DEBUG-API-ERROR: Unexpected response format for $endpoint');
-      debugPrint('DEBUG-API-ERROR: Raw data: $responseData');
+      debugPrint(
+        'DEBUG-API-ERROR: Unexpected format for $endpoint: ${responseData.runtimeType}',
+      );
       throw Exception('Response format tidak valid');
     }
 
+    // -----------------------------------------------------------------------
+    // Cek apakah response encrypted (ada field 'response')
+    // -----------------------------------------------------------------------
     final encryptedResponse = responseData['response'] as String?;
 
-    if (encryptedResponse == null) {
-      // Maybe server returned raw JSON (not encrypted) - check if it has 'code' and 'status'
-      if (responseData.containsKey('code') &&
-          responseData.containsKey('status')) {
-        debugPrint(
-          'DEBUG-API: Raw (unencrypted) response detected for $endpoint',
-        );
-        debugPrint("DEBUG-API: ISI RESPONSE RAW $endpoint: $responseData");
-        return {'original': responseData};
-      }
-
-      // Log more details for debugging
-      debugPrint(
-        'DEBUG-API: No encrypted response for $endpoint, returning raw data',
+    if (encryptedResponse != null) {
+      // Response encrypted → decrypt
+      debugPrint('DEBUG-API: Decrypting response for $endpoint');
+      return _decryptAndValidate(
+        encryptedResponse,
+        errorMessage: errorMessage,
+        endpoint: endpoint,
       );
-      debugPrint('DEBUG-API: Raw data: $responseData');
-      return {'original': responseData};
     }
 
-    // Try to decrypt, with error handling
+    // -----------------------------------------------------------------------
+    // Response TIDAK encrypted (plain JSON) — bisa karena:
+    // 1. Mode debug (env POSTMAN)
+    // 2. API tertentu memang tidak encrypt response
+    // -----------------------------------------------------------------------
+    debugPrint('DEBUG-API: Plain response for $endpoint');
+    return _validatePlainResponse(
+      responseData,
+      errorMessage: errorMessage,
+      endpoint: endpoint,
+    );
+  }
+
+  /// Decrypt dan validasi response encrypted
+  Map<String, dynamic> _decryptAndValidate(
+    String encryptedResponse, {
+    String? errorMessage,
+    String? endpoint,
+  }) {
     Map<String, dynamic> decryptedData;
     try {
       decryptedData = _crypto.decryptPayload(encryptedResponse);
     } catch (e) {
       debugPrint('DEBUG-API-ERROR: Decryption failed for $endpoint: $e');
-      debugPrint(
-        'DEBUG-API-ERROR: Encrypted length: ${encryptedResponse.length}',
-      );
       throw Exception('Gagal mendekripsi response: $e');
     }
 
     final original = decryptedData['original'] as Map<String, dynamic>?;
 
-    debugPrint('DEBUG-API: Response: ${original.toString()}');
-
     if (original == null) {
       throw Exception('Response tidak valid');
     }
 
+    // Cek 401 unauthorized
     if (original['code'] == 401 && _hasAuthToken()) {
-      // _refreshToHardcodedToken();
       _onUnauthorized?.call();
       throw Exception(original['message'] ?? 'Sesi Anda telah berakhir');
     }
 
+    // Validasi status
     final code = original['code'] as int?;
     if (original['status'] != true ||
         code == null ||
@@ -372,6 +326,40 @@ class BaseApiService {
 
     return decryptedData;
   }
+
+  /// Validasi response plain (tanpa decrypt)
+  Map<String, dynamic> _validatePlainResponse(
+    Map<String, dynamic> responseData, {
+    String? errorMessage,
+    String? endpoint,
+  }) {
+    // Cek format standar API (punya 'code' dan 'status')
+    if (responseData.containsKey('code') &&
+        responseData.containsKey('status')) {
+      // Cek 401
+      if (responseData['code'] == 401 && _hasAuthToken()) {
+        _onUnauthorized?.call();
+        throw Exception(responseData['message'] ?? 'Sesi Anda telah berakhir');
+      }
+
+      final code = responseData['code'] as int?;
+      if (responseData['status'] != true ||
+          code == null ||
+          code < 200 ||
+          code >= 300) {
+        throw Exception(
+          responseData['message'] ?? errorMessage ?? 'Request gagal',
+        );
+      }
+    }
+
+    // Wrap dalam format {'original': ...} supaya konsisten
+    return {'original': responseData};
+  }
+
+  // ===========================================================================
+  // ERROR HANDLER
+  // ===========================================================================
 
   Exception _handleDioError(DioException e, String? errorMessage) {
     if (e.type == DioExceptionType.connectionTimeout ||
@@ -393,6 +381,10 @@ class BaseApiService {
 
     return Exception('Tidak dapat terhubung ke server');
   }
+
+  // ===========================================================================
+  // AUTH TOKEN
+  // ===========================================================================
 
   void setAuthToken(String token) {
     _dio.options.headers['Authorization'] = 'Bearer $token';
