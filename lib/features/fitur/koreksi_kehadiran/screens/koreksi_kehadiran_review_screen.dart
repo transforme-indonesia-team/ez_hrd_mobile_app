@@ -122,24 +122,12 @@ class _KoreksiKehadiranReviewScreenState
       return;
     }
 
-    final companyId = user.companies?.isNotEmpty == true
-        ? user.companies!.first.companyId
-        : '';
-
-    if (companyId.isEmpty) {
-      context.showErrorSnackbar('Company tidak ditemukan');
-      return;
-    }
-
     setState(() => _isSubmitting = true);
 
     try {
       // Step 1: Get reservation number
       final reservationResponse = await ReservationService()
-          .getReservationNumber(
-            reservationType: 'ATTENDANCE',
-            companyId: companyId,
-          );
+          .getReservationNumber(reservationType: 'ATTENDANCE');
       final records =
           reservationResponse['original']?['records'] as Map<String, dynamic>?;
       final requestNumber = records?['request_number'] as String?;

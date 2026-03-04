@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:hrd_app/data/models/company_model.dart';
 import 'package:hrd_app/data/models/user_model.dart';
 import 'package:hrd_app/data/services/auth_service.dart';
 import 'package:hrd_app/data/services/base_api_service.dart';
@@ -8,17 +9,28 @@ import 'package:hrd_app/data/services/attendance_sync_service.dart';
 
 class AuthProvider extends ChangeNotifier {
   static const String _userKey = 'saved_user';
+  static const String _companyIndexKey = 'selected_company_index';
 
   final AuthService _authService = AuthService();
 
   UserModel? _user;
   bool _isLoading = false;
   bool _isInitialized = false;
+  int _selectedCompanyIndex = 0;
 
   UserModel? get user => _user;
   bool get isLoading => _isLoading;
   bool get isAuthenticated => _user != null;
   bool get isInitialized => _isInitialized;
+  int get selectedCompanyIndex => _selectedCompanyIndex;
+
+  /// Company yang sedang aktif, berdasarkan index yang dipilih user
+  CompanyModel? get selectedCompany {
+    final companies = _user?.companies;
+    if (companies == null || companies.isEmpty) return null;
+    if (_selectedCompanyIndex >= companies.length) return companies.first;
+    return companies[_selectedCompanyIndex];
+  }
 
   Future<void> initialize() async {
     if (_isInitialized) return;
@@ -35,8 +47,13 @@ class AuthProvider extends ChangeNotifier {
           if (_user?.token != null) {
             BaseApiService().setAuthToken(_user!.token!);
           }
+
+          // Load saved company index
+          _selectedCompanyIndex = prefs.getInt(_companyIndexKey) ?? 0;
+          _applyCompanyHeader();
         } else {
           await prefs.remove(_userKey);
+          await prefs.remove(_companyIndexKey);
         }
       }
     } catch (e) {
@@ -86,6 +103,11 @@ class AuthProvider extends ChangeNotifier {
         BaseApiService().setAuthToken(_user!.token!);
       }
 
+      // Set default company (index 0)
+      _selectedCompanyIndex = 0;
+      _applyCompanyHeader();
+      await _saveCompanyIndex();
+
       await _saveUser();
 
       _isLoading = false;
@@ -108,11 +130,14 @@ class AuthProvider extends ChangeNotifier {
 
   Future<void> logout() async {
     _user = null;
+    _selectedCompanyIndex = 0;
     BaseApiService().clearAuthToken();
+    BaseApiService().clearCompanyId();
 
     try {
       final prefs = await SharedPreferences.getInstance();
       await prefs.remove(_userKey);
+      await prefs.remove(_companyIndexKey);
     } catch (e) {
       debugPrint('AuthProvider: Failed to clear user from storage: $e');
     }
@@ -190,5 +215,36 @@ class AuthProvider extends ChangeNotifier {
     Future.delayed(const Duration(seconds: 2), () {
       AttendanceSyncService().syncPendingAttendance();
     });
+  }
+
+  // ===========================================================================
+  // COMPANY SELECTION
+  // ===========================================================================
+
+  /// Ganti company yang aktif
+  Future<void> setSelectedCompany(int index) async {
+    if (_user?.companies == null || index >= _user!.companies!.length) return;
+    _selectedCompanyIndex = index;
+    _applyCompanyHeader();
+    await _saveCompanyIndex();
+    notifyListeners();
+  }
+
+  /// Set header company-id di BaseApiService
+  void _applyCompanyHeader() {
+    final company = selectedCompany;
+    if (company != null && company.companyId.isNotEmpty) {
+      BaseApiService().setCompanyId(company.companyId);
+    }
+  }
+
+  /// Simpan index company ke SharedPreferences
+  Future<void> _saveCompanyIndex() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setInt(_companyIndexKey, _selectedCompanyIndex);
+    } catch (e) {
+      debugPrint('AuthProvider: Failed to save company index: $e');
+    }
   }
 }

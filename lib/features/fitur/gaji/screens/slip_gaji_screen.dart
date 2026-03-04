@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:hrd_app/core/providers/auth_provider.dart';
 import 'package:hrd_app/core/theme/app_colors.dart';
 import 'package:hrd_app/core/theme/app_text_styles.dart';
 import 'package:hrd_app/core/utils/snackbar_utils.dart';
@@ -12,7 +11,6 @@ import 'package:hrd_app/data/services/slip_gaji_service.dart';
 import 'package:hrd_app/features/fitur/gaji/screens/detail_slip_gaji_screen.dart';
 import 'package:hrd_app/features/fitur/gaji/widgets/password_dialog.dart';
 import 'package:hrd_app/features/fitur/gaji/widgets/payslip_card.dart';
-import 'package:provider/provider.dart';
 
 class SlipGajiScreen extends StatefulWidget {
   const SlipGajiScreen({super.key});
@@ -200,17 +198,6 @@ class _SlipGajiScreenState extends State<SlipGajiScreen> {
   }
 
   Future<void> _navigateToDetail(PayslipModel payslip) async {
-    // Get company ID
-    final user = context.read<AuthProvider>().user;
-    final companyId = user?.companies?.isNotEmpty == true
-        ? user!.companies!.first.companyId
-        : '';
-
-    if (companyId.isEmpty) {
-      context.showErrorSnackbar('Company tidak ditemukan');
-      return;
-    }
-
     // Show loading
     final loadingDialogContext = context;
     showDialog(
@@ -222,7 +209,6 @@ class _SlipGajiScreenState extends State<SlipGajiScreen> {
 
     try {
       final response = await SlipGajiService().payrollEmployeeDetail(
-        companyId: companyId,
         employeeId: payslip.employeeId ?? '',
         employeeName: payslip.employeeName,
         periodMonth: payslip.periodMonth?.toString() ?? '',

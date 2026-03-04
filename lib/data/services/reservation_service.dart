@@ -7,12 +7,9 @@ class ReservationService {
   final _api = BaseApiService();
   Future<Map<String, dynamic>> getReservationNumber({
     required String reservationType,
-    required String companyId,
   }) async {
-    return _api.post(
-      '/get-reservation-number',
-      {'reservation_type': reservationType},
-      extraHeaders: {'company-id': companyId},
-    );
+    return _api.post('/get-reservation-number', {
+      'reservation_type': reservationType,
+    });
   }
 }

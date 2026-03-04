@@ -388,17 +388,8 @@ class _FormPermintaanCutiScreeenState extends State<FormPermintaanCutiScreeen> {
       return;
     }
 
-    final companyId = user.companies?.isNotEmpty == true
-        ? user.companies!.first.companyId
-        : '';
-
     if (user.employeeId == null || user.employeeId!.isEmpty) {
       context.showErrorSnackbar('Employee ID tidak ditemukan');
-      return;
-    }
-
-    if (companyId.isEmpty) {
-      context.showErrorSnackbar('Company tidak ditemukan');
       return;
     }
 
@@ -432,10 +423,7 @@ class _FormPermintaanCutiScreeenState extends State<FormPermintaanCutiScreeen> {
         // Create new leave
         // Step 1: Get reservation number from API
         final reservationResponse = await ReservationService()
-            .getReservationNumber(
-              reservationType: 'LEAVE',
-              companyId: companyId,
-            );
+            .getReservationNumber(reservationType: 'LEAVE');
 
         final records =
             reservationResponse['original']?['records']

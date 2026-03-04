@@ -7,22 +7,17 @@ class SlipGajiService {
   final _api = BaseApiService();
 
   Future<Map<String, dynamic>> payrollEmployeeDetail({
-    required String companyId,
     required String employeeId,
     String? employeeName,
     required String periodMonth,
     required String periodYear,
   }) async {
-    return _api.post(
-      '/payroll/payslip-employee-detail',
-      {
-        'employee_id': employeeId,
-        'employee_name': employeeName,
-        'period_month': periodMonth,
-        'period_year': periodYear,
-      },
-      extraHeaders: {'company-id': companyId},
-    );
+    return _api.post('/payroll/payslip-employee-detail', {
+      'employee_id': employeeId,
+      'employee_name': employeeName,
+      'period_month': periodMonth,
+      'period_year': periodYear,
+    });
   }
 
   Future<Map<String, dynamic>> paySLipEmployee() async {

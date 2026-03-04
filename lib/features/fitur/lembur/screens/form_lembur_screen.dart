@@ -302,16 +302,8 @@ class _FormLemburScreenState extends State<FormLemburScreen> {
       return;
     }
 
-    final companyId = user.companies?.isNotEmpty == true
-        ? user.companies!.first.companyId
-        : '';
-
     if (user.employeeId == null || user.employeeId!.isEmpty) {
       throw Exception('Employee ID tidak ditemukan');
-    }
-
-    if (companyId.isEmpty) {
-      throw Exception('Company tidak ditemukan');
     }
 
     setState(() => _isSubmitting = true);
@@ -338,10 +330,7 @@ class _FormLemburScreenState extends State<FormLemburScreen> {
       } else {
         // Step 1: Get reservation number from API
         final reservationResponse = await ReservationService()
-            .getReservationNumber(
-              reservationType: 'OVERTIME',
-              companyId: companyId,
-            );
+            .getReservationNumber(reservationType: 'OVERTIME');
         final records =
             reservationResponse['original']?['records']
                 as Map<String, dynamic>?;

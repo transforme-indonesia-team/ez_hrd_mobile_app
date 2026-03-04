@@ -17,7 +17,7 @@ class BaseApiService {
   // Jika POSTMAN  → payload & response TIDAK di-encrypt/decrypt (plain JSON)
   // Jika null     → payload di-encrypt, response di-decrypt
   // ignore: prefer_typing_uninitialized_variables
-  static const String? _debugEnv = 'POSTMAN';
+  static const String _debugEnv = 'POSTMAN';
   // static const String? _debugEnv = null;
   // ============================================================================
 
@@ -392,5 +392,17 @@ class BaseApiService {
 
   void clearAuthToken() {
     _dio.options.headers.remove('Authorization');
+  }
+
+  // ===========================================================================
+  // COMPANY ID
+  // ===========================================================================
+
+  void setCompanyId(String companyId) {
+    _dio.options.headers['company-id'] = companyId;
+  }
+
+  void clearCompanyId() {
+    _dio.options.headers.remove('company-id');
   }
 }
