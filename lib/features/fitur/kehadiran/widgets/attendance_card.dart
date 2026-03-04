@@ -6,15 +6,18 @@ import 'package:hrd_app/core/theme/app_colors.dart';
 import 'package:hrd_app/core/theme/app_text_styles.dart';
 import 'package:hrd_app/core/theme/color_palette.dart';
 import 'package:hrd_app/data/models/attendance_employee_model.dart';
+import 'package:hrd_app/data/models/attendance_status_model.dart';
 
 class AttendanceCard extends StatelessWidget {
   final AttendanceEmployeeModel attendance;
+  final List<AttendanceStatusModel> statuses;
   final VoidCallback? onTap;
   final VoidCallback? onMorePressed;
 
   const AttendanceCard({
     super.key,
     required this.attendance,
+    this.statuses = const [],
     this.onTap,
     this.onMorePressed,
   });
@@ -22,6 +25,21 @@ class AttendanceCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
+
+    // Split remarkSchedule (bisa "NSI, EAO, UNPR") jadi list kode individual
+    final remarkCodes = (attendance.remarkSchedule ?? '')
+        .split(',')
+        .map((s) => s.trim())
+        .where((s) => s.isNotEmpty)
+        .toList();
+
+    // Cek apakah ada kode yang flag_incomplete = true
+    final isIncomplete = remarkCodes.isNotEmpty
+        ? remarkCodes.any((code) {
+            final status = AttendanceStatusModel.findByCode(statuses, code);
+            return status?.flagIncomplete ?? false;
+          })
+        : attendance.isAbsent;
 
     return GestureDetector(
       onTap: onTap,
@@ -52,7 +70,7 @@ class AttendanceCard extends StatelessWidget {
                   ),
                 ),
 
-                if (attendance.isAbsent) ...[
+                if (isIncomplete) ...[
                   GestureDetector(
                     onTap: () => _showAbsentActionSheet(context),
                     child: Container(
@@ -186,23 +204,49 @@ class AttendanceCard extends StatelessWidget {
             ),
 
             SizedBox(height: 12.h),
-            Container(
-              padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
-              decoration: BoxDecoration(
-                color: attendance.remarkSchedule == "ABS"
-                    ? ColorPalette.red50
-                    : ColorPalette.green50,
-                borderRadius: BorderRadius.circular(12.r),
+            // Badge per status code (dipisah)
+            if (remarkCodes.isEmpty)
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
+                decoration: BoxDecoration(
+                  color: ColorPalette.blue50,
+                  borderRadius: BorderRadius.circular(12.r),
+                ),
+                child: Text(
+                  '-',
+                  style: AppTextStyles.small(
+                    ColorPalette.blue500,
+                  ).copyWith(fontWeight: FontWeight.w600),
+                ),
+              )
+            else
+              Wrap(
+                spacing: 6.w,
+                runSpacing: 6.h,
+                children: remarkCodes.map((code) {
+                  final status = AttendanceStatusModel.findByCode(
+                    statuses,
+                    code,
+                  );
+                  return Container(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 12.w,
+                      vertical: 6.h,
+                    ),
+                    decoration: BoxDecoration(
+                      color:
+                          status?.badgeBackgroundColor ?? ColorPalette.blue50,
+                      borderRadius: BorderRadius.circular(12.r),
+                    ),
+                    child: Text(
+                      code,
+                      style: AppTextStyles.small(
+                        status?.badgeTextColor ?? ColorPalette.blue500,
+                      ).copyWith(fontWeight: FontWeight.w600),
+                    ),
+                  );
+                }).toList(),
               ),
-              child: Text(
-                attendance.remarkSchedule ?? "-",
-                style: AppTextStyles.small(
-                  attendance.remarkSchedule == "ABS"
-                      ? ColorPalette.red500
-                      : ColorPalette.green500,
-                ).copyWith(fontWeight: FontWeight.w600),
-              ),
-            ),
           ],
         ),
       ),

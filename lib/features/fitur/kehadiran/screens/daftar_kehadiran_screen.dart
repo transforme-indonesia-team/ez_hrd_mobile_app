@@ -5,7 +5,9 @@ import 'package:hrd_app/core/theme/app_text_styles.dart';
 import 'package:hrd_app/core/widgets/empty_state_widget.dart';
 import 'package:hrd_app/core/widgets/skeleton_widget.dart';
 import 'package:hrd_app/data/models/attendance_employee_model.dart';
+import 'package:hrd_app/data/models/attendance_status_model.dart';
 import 'package:hrd_app/data/services/attendance_service.dart';
+import 'package:hrd_app/data/services/option_service.dart';
 import 'package:hrd_app/features/fitur/kehadiran/screens/detail_kehadiran_screen.dart';
 import 'package:hrd_app/features/fitur/kehadiran/screens/riwayat_kehadiran_screen.dart';
 import 'package:hrd_app/features/fitur/kehadiran/widgets/attendance_action_bottom_sheet.dart';
@@ -25,6 +27,7 @@ class _DaftarKehadiranScreenState extends State<DaftarKehadiranScreen> {
   bool _isLoading = false;
   String? _errorMessage;
   List<AttendanceEmployeeModel> _attendances = [];
+  List<AttendanceStatusModel> _statuses = [];
 
   // Quick filter
   AttendanceFilterType _selectedFilter = AttendanceFilterType.today;
@@ -40,7 +43,27 @@ class _DaftarKehadiranScreenState extends State<DaftarKehadiranScreen> {
   @override
   void initState() {
     super.initState();
+    _fetchStatuses();
     _applyQuickFilter(_selectedFilter);
+  }
+
+  Future<void> _fetchStatuses() async {
+    try {
+      final response = await OptionService().getAttendaceStatus();
+      List<dynamic>? records;
+      if (response['original'] != null) {
+        records = response['original']['records'] as List<dynamic>?;
+      } else {
+        records = response['records'] as List<dynamic>?;
+      }
+      if (records != null && mounted) {
+        setState(() {
+          _statuses = AttendanceStatusModel.fromJsonList(records!);
+        });
+      }
+    } catch (e) {
+      debugPrint('Error fetching attendance statuses: $e');
+    }
   }
 
   void _applyQuickFilter(AttendanceFilterType filter) {
@@ -333,6 +356,7 @@ class _DaftarKehadiranScreenState extends State<DaftarKehadiranScreen> {
           final attendance = _attendances[index];
           return AttendanceCard(
             attendance: attendance,
+            statuses: _statuses,
             onTap: () => _showCardActionSheet(attendance),
             onMorePressed: () => _showCardActionSheet(attendance),
           );

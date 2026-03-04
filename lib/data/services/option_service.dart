@@ -10,4 +10,8 @@ class OptionService {
   Future<Map<String, dynamic>> getShiftDaily() async {
     return _api.get('/option/shift-daily');
   }
+
+  Future<Map<String, dynamic>> getAttendaceStatus() async {
+    return _api.get('/option/attendance-status');
+  }
 }
