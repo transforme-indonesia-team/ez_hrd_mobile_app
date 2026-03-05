@@ -52,7 +52,7 @@ class AttendanceService {
       ),
       'employee_code': employeeCode,
       'absent': absentTime,
-      // 'absent': '2026-03-04 10:15:00',
+      // 'absent': '2026-03-05 15:15:00', //hardcode
     });
 
     return _api.postFormData('/attendance/absent', formData);
@@ -134,7 +134,7 @@ class AttendanceService {
     final dateFormat = DateFormat('yyyy-MM-dd');
     final now = DateTime.now();
 
-    return _api.post('/attendance/get-schedule-by-employee', {
+    return _api.post('/attendance/get-schedule-correction-by-employee', {
       'employee_id': employeeId,
       'type': 'CORRECTION',
       'start_date': startDate != null
@@ -172,7 +172,7 @@ class AttendanceService {
     final dateFormat = DateFormat('yyyy-MM-dd');
     final now = DateTime.now();
 
-    return _api.post('/attendance/get-schedule-by-employee', {
+    return _api.post('/attendance/get-shift-schedule-by-employee', {
       'employee_id': employeeId,
       'start_date': startDate != null
           ? dateFormat.format(startDate)
