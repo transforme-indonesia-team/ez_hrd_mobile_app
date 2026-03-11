@@ -140,6 +140,32 @@ class _FormDetailBottomSheetState extends State<FormDetailBottomSheet> {
     }
   }
 
+  /// Build display label: "P_07_15 (07:00 - 15:00)" or just "SHIFT 1"
+  String _buildShiftLabel(Map<String, dynamic> opt) {
+    final label = opt['label'] as String? ?? '';
+    final other = opt['other'] as Map<String, dynamic>?;
+    if (other != null) {
+      final start = other['start_time_shift'] as String?;
+      final end = other['end_time_shift'] as String?;
+      if (start != null && end != null) {
+        return '$label ($start - $end)';
+      }
+    }
+    return label;
+  }
+
+  /// Get display label for current selected shift
+  String? get _selectedShiftDisplayLabel {
+    if (_shiftCode == null) return null;
+    // Try to find matching option to include time info
+    for (final opt in _shiftOptions) {
+      if (opt['value'] == _shiftId || opt['label'] == _shiftCode) {
+        return _buildShiftLabel(opt);
+      }
+    }
+    return _shiftCode;
+  }
+
   void _showShiftPicker() {
     showModalBottomSheet(
       context: context,
@@ -190,13 +216,13 @@ class _FormDetailBottomSheetState extends State<FormDetailBottomSheet> {
                       separatorBuilder: (_, __) => SizedBox(height: 8.h),
                       itemBuilder: (ctx, i) {
                         final opt = _shiftOptions[i];
-                        final label = opt['label'] as String? ?? '';
+                        final displayLabel = _buildShiftLabel(opt);
                         final value = opt['value'] as String? ?? '';
                         final isSelected = value == _shiftId;
                         return GestureDetector(
                           onTap: () {
                             setState(() {
-                              _shiftCode = label;
+                              _shiftCode = opt['label'] as String? ?? '';
                               _shiftId = value;
                             });
                             Navigator.pop(ctx);
@@ -211,12 +237,6 @@ class _FormDetailBottomSheetState extends State<FormDetailBottomSheet> {
                                   ? colors.primaryBlue.withValues(alpha: 0.05)
                                   : colors.background,
                               borderRadius: BorderRadius.circular(8.r),
-                              // border: Border.all(
-                              //   color: isSelected
-                              //       ? colors.primaryBlue
-                              //       : colors.divider,
-                              //   width: isSelected ? 1.5 : 1,
-                              // ),
                             ),
                             child: Row(
                               children: [
@@ -248,7 +268,7 @@ class _FormDetailBottomSheetState extends State<FormDetailBottomSheet> {
                                 SizedBox(width: 12.w),
                                 Expanded(
                                   child: Text(
-                                    label,
+                                    displayLabel,
                                     style: AppTextStyles.bodyMedium(
                                       isSelected
                                           ? colors.primaryBlue
@@ -549,7 +569,8 @@ class _FormDetailBottomSheetState extends State<FormDetailBottomSheet> {
                                         ),
                                       )
                                     : Text(
-                                        _shiftCode ?? 'Pilih Shift',
+                                        _selectedShiftDisplayLabel ??
+                                            'Pilih Shift',
                                         style: AppTextStyles.body(
                                           _shiftCode != null
                                               ? colors.textPrimary

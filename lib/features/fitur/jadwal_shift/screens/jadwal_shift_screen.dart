@@ -12,6 +12,8 @@ import 'package:hrd_app/data/models/schedule_shift_employee_model.dart';
 import 'package:hrd_app/data/services/attendance_service.dart';
 import 'package:hrd_app/features/fitur/jadwal_shift/widgets/employee_picker_bottom_sheet.dart';
 import 'package:hrd_app/features/fitur/jadwal_shift/widgets/jadwal_shift_filter_bottom_sheet.dart';
+import 'package:hrd_app/features/fitur/jadwal_shift/widgets/ambil_shift_bottom_sheet.dart';
+import 'package:hrd_app/features/fitur/jadwal_shift/widgets/shift_picker_bottom_sheet.dart';
 import 'package:provider/provider.dart';
 
 class JadwalShiftScreen extends StatefulWidget {
@@ -23,6 +25,7 @@ class JadwalShiftScreen extends StatefulWidget {
 
 class _JadwalShiftScreenState extends State<JadwalShiftScreen> {
   bool _isLoading = false;
+  bool _isSubmitting = false;
   String? _errorMessage;
   List<ScheduleShiftEmployeeModel> _employees = [];
 
@@ -33,6 +36,14 @@ class _JadwalShiftScreenState extends State<JadwalShiftScreen> {
 
   // Data dari user login
   String? _currentEmployeeId;
+
+  // Track changed shifts: key = "employeeId|date", value = shift info
+  final Map<String, _ShiftChange> _changedShifts = {};
+
+  // Quick-apply shift: selected via Ambil Shift bottom sheet
+  Map<String, dynamic>? _quickApplyShift;
+
+  bool get _hasChanges => _changedShifts.isNotEmpty;
 
   @override
   void initState() {
@@ -52,6 +63,8 @@ class _JadwalShiftScreenState extends State<JadwalShiftScreen> {
     setState(() {
       _isLoading = true;
       _errorMessage = null;
+      _changedShifts.clear();
+      _quickApplyShift = null;
     });
 
     try {
@@ -277,7 +290,12 @@ class _JadwalShiftScreenState extends State<JadwalShiftScreen> {
             // Shift days
             ...employee.shifts.asMap().entries.map((entry) {
               final isLast = entry.key == employee.shifts.length - 1;
-              return _buildShiftDayRow(entry.value, colors, isLast: isLast);
+              return _buildShiftDayRow(
+                entry.value,
+                employee.employeeId,
+                colors,
+                isLast: isLast,
+              );
             }),
           ],
         ),
@@ -285,8 +303,15 @@ class _JadwalShiftScreenState extends State<JadwalShiftScreen> {
     );
   }
 
+  /// Check if a specific day was changed
+  bool _isDayChanged(String? employeeId, String? date) {
+    if (employeeId == null || date == null) return false;
+    return _changedShifts.containsKey('$employeeId|$date');
+  }
+
   Widget _buildShiftDayRow(
     ScheduleShiftDay day,
+    String? employeeId,
     ThemeColors colors, {
     bool isLast = false,
   }) {
@@ -309,53 +334,195 @@ class _JadwalShiftScreenState extends State<JadwalShiftScreen> {
         ? day.shiftData.first.time ?? '-'
         : '-';
 
-    return Container(
-      padding: EdgeInsets.symmetric(vertical: 14.h),
-      decoration: BoxDecoration(
-        border: isLast
-            ? null
-            : Border(
-                bottom: BorderSide(
-                  color: colors.divider.withValues(alpha: 0.5),
-                  width: 0.5,
+    final isChanged = _isDayChanged(employeeId, day.date);
+
+    return GestureDetector(
+      onTap: () => _showShiftPicker(day, employeeId),
+      child: Container(
+        padding: EdgeInsets.symmetric(vertical: 14.h),
+        decoration: BoxDecoration(
+          border: isLast
+              ? null
+              : Border(
+                  bottom: BorderSide(
+                    color: colors.divider.withValues(alpha: 0.5),
+                    width: 0.5,
+                  ),
                 ),
-              ),
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Left: date + shift info
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Date + hours row
+            Row(
               children: [
-                Text(
-                  dateDisplay,
-                  style: AppTextStyles.bodyMedium(colors.textPrimary),
-                ),
-                SizedBox(height: 4.h),
-                Text(
-                  shiftName,
-                  style: AppTextStyles.small(colors.textSecondary),
+                Expanded(
+                  child: Text(
+                    dateDisplay,
+                    style: AppTextStyles.bodyMedium(colors.textPrimary),
+                  ),
                 ),
                 Text(
-                  shiftTime,
-                  style: AppTextStyles.caption(colors.textSecondary),
+                  day.displayHours,
+                  style: AppTextStyles.bodyMedium(colors.textSecondary),
                 ),
               ],
             ),
-          ),
-          // Right: hours
-          Padding(
-            padding: EdgeInsets.only(top: 2.h),
-            child: Text(
-              day.displayHours,
-              style: AppTextStyles.bodyMedium(colors.textSecondary),
+            SizedBox(height: 4.h),
+            // Shift info - full width border if changed
+            Container(
+              width: double.infinity,
+              padding: isChanged
+                  ? EdgeInsets.symmetric(horizontal: 10.w, vertical: 8.h)
+                  : null,
+              decoration: isChanged
+                  ? BoxDecoration(
+                      borderRadius: BorderRadius.circular(8.r),
+                      border: Border.all(
+                        color: colors.primaryBlue.withValues(alpha: 0.4),
+                        width: 1.2,
+                      ),
+                    )
+                  : null,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    shiftName,
+                    style: AppTextStyles.small(
+                      isChanged ? colors.textPrimary : colors.textSecondary,
+                    ),
+                  ),
+                  Text(
+                    shiftTime,
+                    style: AppTextStyles.caption(
+                      isChanged ? colors.textSecondary : colors.textSecondary,
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
+  }
+
+  Future<void> _showShiftPicker(
+    ScheduleShiftDay day,
+    String? employeeId,
+  ) async {
+    // Quick-apply mode: apply saved shift directly, no picker
+    if (_quickApplyShift != null) {
+      _applyShiftToDay(day, employeeId, _quickApplyShift!);
+      return;
+    }
+
+    final currentShiftId = day.shiftData.isNotEmpty
+        ? day.shiftData.first.shiftDailyId
+        : null;
+
+    final result = await ShiftPickerBottomSheet.show(
+      context,
+      selectedShiftId: currentShiftId,
+    );
+
+    if (result != null && mounted) {
+      _applyShiftToDay(day, employeeId, result);
+    }
+  }
+
+  /// Apply a shift map to a single day
+  void _applyShiftToDay(
+    ScheduleShiftDay day,
+    String? employeeId,
+    Map<String, dynamic> result,
+  ) {
+    final label = result['label'] as String? ?? '';
+    final value = result['value'] as String? ?? '';
+    final other = result['other'] as Map<String, dynamic>?;
+    final startTime = other?['start_time_shift'] as String?;
+    final endTime = other?['end_time_shift'] as String?;
+    final timeStr = (startTime != null && endTime != null)
+        ? '$startTime - $endTime'
+        : '-';
+
+    setState(() {
+      day.shiftData.clear();
+      day.shiftData.add(
+        ScheduleShiftData(shiftDailyId: value, shiftName: label, time: timeStr),
+      );
+
+      // Track the change
+      if (employeeId != null && day.date != null) {
+        final key = '$employeeId|${day.date}';
+        _changedShifts[key] = _ShiftChange(
+          employeeId: employeeId,
+          shiftId: value,
+          date: day.date!,
+        );
+      }
+    });
+  }
+
+  /// Submit all changes to API
+  Future<void> _submitChanges() async {
+    if (!_hasChanges) return;
+
+    setState(() => _isSubmitting = true);
+
+    try {
+      // Group changes by employee_id
+      final Map<String, List<Map<String, dynamic>>> grouped = {};
+      for (final change in _changedShifts.values) {
+        grouped.putIfAbsent(change.employeeId, () => []);
+        grouped[change.employeeId]!.add({
+          'shift_id': change.shiftId,
+          'date': change.date,
+        });
+      }
+
+      // Build payload
+      final schedules = grouped.entries.map((entry) {
+        return {'employee_id': entry.key, 'shift': entry.value};
+      }).toList();
+
+      await AttendanceService().updateSchedule(schedules: schedules);
+
+      if (mounted) {
+        context.showSuccessSnackbar('Jadwal shift berhasil diajukan');
+        _changedShifts.clear();
+        _fetchData(); // Refresh data
+      }
+    } catch (e) {
+      if (mounted) {
+        context.showErrorSnackbar(e.toString().replaceAll('Exception: ', ''));
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isSubmitting = false);
+      }
+    }
+  }
+
+  /// Open the "Ambil Shift" bottom sheet — save shift for quick-apply
+  Future<void> _showAmbilShift() async {
+    if (_employees.isEmpty) {
+      context.showInfoSnackbar('Tidak ada jadwal untuk diubah');
+      return;
+    }
+
+    final result = await AmbilShiftBottomSheet.show(context);
+
+    if (result != null && mounted) {
+      final label = result['label'] as String? ?? '';
+      setState(() {
+        _quickApplyShift = result;
+      });
+      context.showSuccessSnackbar(
+        'Shift "$label" dipilih. Tap jadwal untuk terapkan.',
+      );
+    }
   }
 
   Widget _buildBottomButton(ThemeColors colors) {
@@ -378,23 +545,61 @@ class _JadwalShiftScreenState extends State<JadwalShiftScreen> {
       ),
       child: SizedBox(
         width: double.infinity,
-        child: OutlinedButton(
-          onPressed: () {
-            context.showInfoSnackbar('Fitur "Ambil Shift" belum tersedia');
-          },
-          style: OutlinedButton.styleFrom(
-            foregroundColor: colors.primaryBlue,
-            side: BorderSide(color: colors.primaryBlue),
-            padding: EdgeInsets.symmetric(vertical: 14.h),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8.r),
-            ),
-          ),
-          child: Text(
-            'Ambil Shift',
-            style: AppTextStyles.button(colors.primaryBlue),
-          ),
-        ),
+        child: _hasChanges
+            ? DecoratedBox(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: _isSubmitting
+                        ? colors.buttonGradientDisabled
+                        : colors.buttonGradient,
+                  ),
+                  borderRadius: BorderRadius.circular(8.r),
+                ),
+                child: ElevatedButton(
+                  onPressed: _isSubmitting ? null : _submitChanges,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.transparent,
+                    shadowColor: Colors.transparent,
+                    foregroundColor: Colors.white,
+                    padding: EdgeInsets.symmetric(vertical: 14.h),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8.r),
+                    ),
+                  ),
+                  child: _isSubmitting
+                      ? SizedBox(
+                          height: 20.h,
+                          width: 20.h,
+                          child: const CircularProgressIndicator(
+                            strokeWidth: 2,
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              Colors.white,
+                            ),
+                          ),
+                        )
+                      : Text(
+                          'Ajukan',
+                          style: AppTextStyles.button(
+                            colors.buttonTextOnPrimary,
+                          ),
+                        ),
+                ),
+              )
+            : OutlinedButton(
+                onPressed: _showAmbilShift,
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: colors.primaryBlue,
+                  side: BorderSide(color: colors.primaryBlue),
+                  padding: EdgeInsets.symmetric(vertical: 14.h),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8.r),
+                  ),
+                ),
+                child: Text(
+                  'Ambil Shift',
+                  style: AppTextStyles.button(colors.primaryBlue),
+                ),
+              ),
       ),
     );
   }
@@ -476,4 +681,17 @@ class _JadwalShiftScreenState extends State<JadwalShiftScreen> {
       ),
     );
   }
+}
+
+/// Internal model for tracking a shift change
+class _ShiftChange {
+  final String employeeId;
+  final String shiftId;
+  final String date;
+
+  const _ShiftChange({
+    required this.employeeId,
+    required this.shiftId,
+    required this.date,
+  });
 }

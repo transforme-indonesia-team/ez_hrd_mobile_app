@@ -182,4 +182,19 @@ class AttendanceService {
           : dateFormat.format(now),
     });
   }
+
+  Future<Map<String, dynamic>> getAttendanceList({
+    required String requestType,
+  }) async {
+    return _api.get(
+      '/attendance/attendance-list',
+      queryParameters: {'request_type': requestType},
+    );
+  }
+
+  Future<Map<String, dynamic>> updateSchedule({
+    required List<Map<String, dynamic>> schedules,
+  }) async {
+    return _api.put('/attendance/schedule', body: {'schedules': schedules});
+  }
 }

@@ -170,7 +170,48 @@ class BaseApiService {
   }
 
   // ===========================================================================
-  // POST (FormData) — payload TIDAK di-encrypt, response tetap di-handle
+  // PUT — same pattern as POST
+  // ===========================================================================
+
+  Future<Map<String, dynamic>> put(
+    String endpoint, {
+    required Map<String, dynamic> body,
+    String? errorMessage,
+    Map<String, String>? extraHeaders,
+  }) async {
+    try {
+      final dynamic data;
+      if (_isDebugMode) {
+        data = body;
+        debugPrint('DEBUG-API: PUT $endpoint - Plain payload');
+      } else {
+        final encrypted = _crypto.encryptPayload(body);
+        data = {'payload': encrypted};
+        debugPrint(
+          'DEBUG-API: PUT $endpoint - Encrypted (${encrypted.length} chars)',
+        );
+      }
+
+      final response = await _dio.put(
+        endpoint,
+        data: data,
+        options: _buildOptions(extraHeaders: extraHeaders),
+      );
+      debugPrint('DEBUG-API: PUT $endpoint - Status: ${response.statusCode}');
+
+      return _handleResponse(
+        response,
+        errorMessage: errorMessage,
+        endpoint: endpoint,
+      );
+    } on DioException catch (e) {
+      debugPrint(
+        'DEBUG-API: PUT $endpoint - DioException: ${e.type} - ${e.message}',
+      );
+      throw _handleDioError(e, errorMessage);
+    }
+  }
+
   // ===========================================================================
 
   Future<Map<String, dynamic>> postFormData(

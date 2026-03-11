@@ -136,7 +136,7 @@ class _FiturScreenState extends State<FiturScreen> {
   Widget build(BuildContext context) {
     final colors = context.colors;
     final role = context.read<AuthProvider>().user?.role ?? '';
-    debugPrint("APAROLESAATINI $role");
+    // debugPrint("APAROLESAATINI $role");
     final filteredSections = FiturData.search(_searchQuery, role);
 
     return Scaffold(

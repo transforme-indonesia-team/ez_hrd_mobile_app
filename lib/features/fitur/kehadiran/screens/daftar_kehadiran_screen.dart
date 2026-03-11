@@ -67,29 +67,9 @@ class _DaftarKehadiranScreenState extends State<DaftarKehadiranScreen> {
   }
 
   void _applyQuickFilter(AttendanceFilterType filter) {
-    final now = DateTime.now();
-    final today = DateTime(now.year, now.month, now.day);
-
     setState(() {
       _selectedFilter = filter;
     });
-
-    switch (filter) {
-      case AttendanceFilterType.today:
-        _filterStartDate = today;
-        _filterEndDate = today;
-        break;
-      case AttendanceFilterType.last30Days:
-        _filterStartDate = today.subtract(const Duration(days: 30));
-        _filterEndDate = today;
-        break;
-      case AttendanceFilterType.absentToday:
-        _filterStartDate = today;
-        _filterEndDate = today;
-        // Note: API might need special parameter for absent-only
-        break;
-    }
-
     _fetchData();
   }
 
@@ -97,20 +77,42 @@ class _DaftarKehadiranScreenState extends State<DaftarKehadiranScreen> {
     setState(() => _isLoading = true);
 
     try {
-      final response = await AttendanceService().getAbsentEmployee(
-        startDate: _filterStartDate,
-        endDate: _filterEndDate,
-      );
-
-      // Response bisa di response['original']['records'] atau langsung response['records']
       List<dynamic>? recordsRaw;
-      if (response['original'] != null) {
-        recordsRaw = response['original']['records'] as List<dynamic>?;
-      } else {
-        recordsRaw = response['records'] as List<dynamic>?;
+
+      switch (_selectedFilter) {
+        case AttendanceFilterType.today:
+          // Hit API: /attendance/attendance-list?request_type=ALL_TODAY
+          final response = await AttendanceService().getAttendanceList(
+            requestType: 'ALL_TODAY',
+          );
+          recordsRaw = _extractItems(response);
+          break;
+
+        case AttendanceFilterType.absentToday:
+          // Hit API: /attendance/attendance-list?request_type=ABSENT_TODAY
+          final response = await AttendanceService().getAttendanceList(
+            requestType: 'ABSENT_TODAY',
+          );
+          recordsRaw = _extractItems(response);
+          break;
+
+        case AttendanceFilterType.last30Days:
+          // Tetap pakai API lama
+          final now = DateTime.now();
+          final today = DateTime(now.year, now.month, now.day);
+          final response = await AttendanceService().getAbsentEmployee(
+            startDate:
+                _filterStartDate ?? today.subtract(const Duration(days: 30)),
+            endDate: _filterEndDate ?? today,
+          );
+          if (response['original'] != null) {
+            recordsRaw = response['original']['records'] as List<dynamic>?;
+          } else {
+            recordsRaw = response['records'] as List<dynamic>?;
+          }
+          break;
       }
 
-      // Handle case where records is empty list or null
       if (recordsRaw == null || recordsRaw.isEmpty) {
         setState(() {
           _isLoading = false;
@@ -120,35 +122,14 @@ class _DaftarKehadiranScreenState extends State<DaftarKehadiranScreen> {
         return;
       }
 
-      List<AttendanceEmployeeModel> allAttendances = recordsRaw
+      final attendances = recordsRaw
           .map(
             (e) => AttendanceEmployeeModel.fromJson(e as Map<String, dynamic>),
           )
           .toList();
 
-      // Apply local filter based on selected quick filter
-      List<AttendanceEmployeeModel> filteredAttendances;
-      switch (_selectedFilter) {
-        case AttendanceFilterType.today:
-          // Semua Hari Ini: hanya tampilkan yang sudah check-in
-          filteredAttendances = allAttendances
-              .where((a) => a.hasCheckIn)
-              .toList();
-          break;
-        case AttendanceFilterType.absentToday:
-          // Tidak hadir hari ini: tampilkan yang absent (belum check-in)
-          filteredAttendances = allAttendances
-              .where((a) => a.isAbsent)
-              .toList();
-          break;
-        case AttendanceFilterType.last30Days:
-          // 30 Hari Terakhir: tampilkan semua
-          filteredAttendances = allAttendances;
-          break;
-      }
-
       setState(() {
-        _attendances = filteredAttendances;
+        _attendances = attendances;
         _isLoading = false;
         _errorMessage = null;
       });
@@ -161,6 +142,18 @@ class _DaftarKehadiranScreenState extends State<DaftarKehadiranScreen> {
         });
       }
     }
+  }
+
+  /// Extract items dari response /attendance/attendance-list
+  /// Response structure: { original: { records: { items: [...] } } }
+  List<dynamic>? _extractItems(Map<String, dynamic> response) {
+    Map<String, dynamic>? records;
+    if (response['original'] != null) {
+      records = response['original']['records'] as Map<String, dynamic>?;
+    } else {
+      records = response['records'] as Map<String, dynamic>?;
+    }
+    return records?['items'] as List<dynamic>?;
   }
 
   void _showFilterBottomSheet() {

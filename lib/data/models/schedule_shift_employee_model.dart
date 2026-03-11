@@ -51,7 +51,8 @@ class ScheduleShiftDay {
   final String? date;
   final List<ScheduleShiftData> shiftData;
 
-  const ScheduleShiftDay({this.date, this.shiftData = const []});
+  ScheduleShiftDay({this.date, List<ScheduleShiftData>? shiftData})
+    : shiftData = shiftData ?? [];
 
   factory ScheduleShiftDay.fromJson(Map<String, dynamic> json) {
     final dataRaw = json['shift_data'] as List<dynamic>? ?? [];
@@ -79,12 +80,14 @@ class ScheduleShiftDay {
 }
 
 class ScheduleShiftData {
+  final String? shiftDailyId;
   final String? shiftName;
   final String? time;
   final String? shiftType;
   final int? productiveWorkTime;
 
   const ScheduleShiftData({
+    this.shiftDailyId,
     this.shiftName,
     this.time,
     this.shiftType,
@@ -93,6 +96,7 @@ class ScheduleShiftData {
 
   factory ScheduleShiftData.fromJson(Map<String, dynamic> json) {
     return ScheduleShiftData(
+      shiftDailyId: json['shift_daily_id'] as String?,
       shiftName: json['shift_name'] as String?,
       time: json['time'] as String?,
       shiftType: json['shift_type'] as String?,
