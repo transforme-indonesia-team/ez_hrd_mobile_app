@@ -935,22 +935,18 @@ class _PermohonanKaryawanScreenState extends State<PermohonanKaryawanScreen>
       case 'Permintaan Cuti Kehadiran':
         isAllSelected =
             _leaveRequests.isNotEmpty &&
-            _leaveRequests.every(
-              (item) => item.id != null && _selectedIds.contains(item.id),
-            );
+            _leaveRequests.every((item) => _selectedIds.contains(item.id));
         break;
       case 'Permintaan Lembur':
         isAllSelected =
             _overtimeRequests.isNotEmpty &&
-            _overtimeRequests.every(
-              (item) => item.id != null && _selectedIds.contains(item.id),
-            );
+            _overtimeRequests.every((item) => _selectedIds.contains(item.id));
         break;
       case 'Pembatalan Cuti':
         isAllSelected =
             _cancellationRequests.isNotEmpty &&
             _cancellationRequests.every(
-              (item) => item.id != null && _selectedIds.contains(item.id),
+              (item) => _selectedIds.contains(item.id),
             );
         break;
     }
@@ -1011,9 +1007,7 @@ class _PermohonanKaryawanScreenState extends State<PermohonanKaryawanScreen>
         return LeaveRequestCard(
           request: request,
           isApprovalMode: isApprovalMode,
-          isSelected: request.id != null
-              ? _selectedIds.contains(request.id)
-              : false,
+          isSelected: _selectedIds.contains(request.id),
           onSelectChanged: isApprovalMode
               ? (val) => _toggleSelect(request.id)
               : null,
@@ -1024,9 +1018,7 @@ class _PermohonanKaryawanScreenState extends State<PermohonanKaryawanScreen>
         return OvertimeRequestCard(
           request: request,
           isApprovalMode: isApprovalMode,
-          isSelected: request.id != null
-              ? _selectedIds.contains(request.id)
-              : false,
+          isSelected: _selectedIds.contains(request.id),
           onSelectChanged: isApprovalMode
               ? (val) => _toggleSelect(request.id)
               : null,
@@ -1037,9 +1029,7 @@ class _PermohonanKaryawanScreenState extends State<PermohonanKaryawanScreen>
         return LeaveRequestCard(
           request: request,
           isApprovalMode: isApprovalMode,
-          isSelected: request.id != null
-              ? _selectedIds.contains(request.id)
-              : false,
+          isSelected: _selectedIds.contains(request.id),
           onSelectChanged: isApprovalMode
               ? (val) => _toggleSelect(request.id)
               : null,
