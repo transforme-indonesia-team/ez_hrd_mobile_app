@@ -43,6 +43,29 @@ class AttendanceCorrectionService {
     return _api.postFormData('/attendance-correction', formData);
   }
 
+  Future<Map<String, dynamic>> getAttendanceCorrectionApproval({
+    String? pages,
+    String? sizes,
+    bool? search,
+    String? employeeId,
+    String? startDate,
+    String? endDate,
+    String? status,
+  }) async {
+    return _api.get(
+      '/attendance-correction-approval',
+      queryParameters: {
+        'pages': pages,
+        'sizes': sizes,
+        'search': search,
+        'employee_id': employeeId,
+        'start_date': startDate,
+        'end_date': endDate,
+        'status': status,
+      },
+    );
+  }
+
   Future<Map<String, dynamic>> deleteAttendanceCorrection(String id) async {
     return _api.delete('/attendance-correction/$id');
   }

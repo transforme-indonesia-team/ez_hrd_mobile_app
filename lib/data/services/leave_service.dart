@@ -118,6 +118,63 @@ class LeaveService {
     return _api.post('/leave/cancellation/$leaveId', {});
   }
 
+  Future<Map<String, dynamic>> getLeaveEmployeeApproval({
+    int? page,
+    int? limit,
+    String? search,
+    String? startDate,
+    String? endDate,
+  }) async {
+    return _api.get(
+      '/leave-approval',
+      queryParameters: {
+        if (page != null) 'page': page,
+        if (limit != null) 'sizes': limit,
+        if (search != null) 'search': search,
+        if (startDate != null) 'filter[start_date]': startDate,
+        if (endDate != null) 'filter[end_date]': endDate,
+      },
+    );
+  }
+
+  Future<Map<String, dynamic>> getLeaveCancellation({
+    int? page,
+    int? limit,
+    String? search,
+    String? startDate,
+    String? endDate,
+  }) async {
+    return _api.get(
+      '/leave-cancellation',
+      queryParameters: {
+        if (page != null) 'page': page,
+        if (limit != null) 'sizes': limit,
+        if (search != null) 'search': search,
+        if (startDate != null) 'filter[start_date]': startDate,
+        if (endDate != null) 'filter[end_date]': endDate,
+      },
+    );
+  }
+
+  Future<Map<String, dynamic>> getLeaveCancellationApproval({
+    int? page,
+    int? limit,
+    String? search,
+    String? startDate,
+    String? endDate,
+  }) async {
+    return _api.get(
+      '/leave-cancellation-approval',
+      queryParameters: {
+        if (page != null) 'page': page,
+        if (limit != null) 'sizes': limit,
+        if (search != null) 'search': search,
+        if (startDate != null) 'filter[start_date]': startDate,
+        if (endDate != null) 'filter[end_date]': endDate,
+      },
+    );
+  }
+
   Future<Map<String, dynamic>> leaveCalender({
     required String startDate,
     required String endDate,

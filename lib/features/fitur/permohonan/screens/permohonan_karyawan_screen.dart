@@ -3,12 +3,16 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hrd_app/core/theme/app_colors.dart';
 import 'package:hrd_app/core/theme/app_text_styles.dart';
 import 'package:hrd_app/core/widgets/empty_state_widget.dart';
+import 'package:hrd_app/data/models/attendance_correction_model.dart';
 import 'package:hrd_app/data/models/leave_employee_model.dart';
 import 'package:hrd_app/data/models/overtime_employee_model.dart';
+import 'package:hrd_app/data/services/attendance_correction_service.dart';
 import 'package:hrd_app/data/services/leave_service.dart';
 import 'package:hrd_app/data/services/overtime_service.dart';
 import 'package:hrd_app/features/fitur/cuti/screens/detail_cuti_screen.dart';
 import 'package:hrd_app/features/fitur/cuti/widgets/leave_request_card.dart';
+import 'package:hrd_app/features/fitur/koreksi_kehadiran/screens/detail_koreksi_kehadiran_screen.dart';
+import 'package:hrd_app/features/fitur/koreksi_kehadiran/widgets/attendance_correction_card.dart';
 import 'package:hrd_app/features/fitur/lembur/screens/detail_lembur_screen.dart';
 import 'package:hrd_app/features/fitur/lembur/widgets/overtime_request_card.dart';
 import 'package:hrd_app/features/fitur/lembur/widgets/pagination_widget.dart';
@@ -25,10 +29,12 @@ class _PermohonanKaryawanScreenState extends State<PermohonanKaryawanScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
-  // Dropdown
+  // Dropdown — 4 tipe permintaan seperti di notification
   final List<String> _tipePermintaan = [
-    'Permintaan Kehadiran',
+    'Permintaan Koreksi Kehadiran',
+    'Permintaan Cuti Kehadiran',
     'Permintaan Lembur',
+    'Pembatalan Cuti',
   ];
   String? _selectedTipe;
 
@@ -39,11 +45,11 @@ class _PermohonanKaryawanScreenState extends State<PermohonanKaryawanScreen>
   bool _isLoading = false;
   String? _errorMessage;
 
-  // Leave (Kehadiran) data
+  // Data lists per tipe
+  List<AttendanceCorrectionModel> _correctionRequests = [];
   List<LeaveEmployeeModel> _leaveRequests = [];
-
-  // Overtime (Lembur) data
   List<OvertimeEmployeeModel> _overtimeRequests = [];
+  List<LeaveEmployeeModel> _cancellationRequests = [];
 
   // Pagination
   int _currentPage = 1;
@@ -56,9 +62,16 @@ class _PermohonanKaryawanScreenState extends State<PermohonanKaryawanScreen>
     _tabController = TabController(length: 2, vsync: this);
     _tabController.addListener(() {
       if (_tabController.indexIsChanging) return;
-      setState(() {});
+      // Re-fetch data when switching tabs (different endpoint)
+      if (_selectedTipe != null) {
+        setState(() {
+          _currentPage = 1;
+        });
+        _fetchData();
+      } else {
+        setState(() {});
+      }
     });
-    // Tidak auto-fetch, tunggu user pilih tipe dulu
   }
 
   @override
@@ -67,6 +80,9 @@ class _PermohonanKaryawanScreenState extends State<PermohonanKaryawanScreen>
     super.dispose();
   }
 
+  /// Whether we are on the "Persetujuan" tab
+  bool get _isApprovalTab => _tabController.index == 1;
+
   Future<void> _fetchData() async {
     setState(() {
       _isLoading = true;
@@ -74,10 +90,19 @@ class _PermohonanKaryawanScreenState extends State<PermohonanKaryawanScreen>
     });
 
     try {
-      if (_selectedTipe == 'Permintaan Kehadiran') {
-        await _fetchLeaveData();
-      } else {
-        await _fetchOvertimeData();
+      switch (_selectedTipe) {
+        case 'Permintaan Koreksi Kehadiran':
+          await _fetchCorrectionData();
+          break;
+        case 'Permintaan Cuti Kehadiran':
+          await _fetchLeaveData();
+          break;
+        case 'Permintaan Lembur':
+          await _fetchOvertimeData();
+          break;
+        case 'Pembatalan Cuti':
+          await _fetchCancellationData();
+          break;
       }
     } catch (e) {
       debugPrint('Error fetching data: $e');
@@ -90,90 +115,162 @@ class _PermohonanKaryawanScreenState extends State<PermohonanKaryawanScreen>
     }
   }
 
-  Future<void> _fetchLeaveData() async {
-    final response = await LeaveService().getLeaveEmployee(
-      page: _currentPage,
-      limit: 10,
+  // ============ Fetch methods ============
+
+  Future<void> _fetchCorrectionData() async {
+    final response = _isApprovalTab
+        ? await AttendanceCorrectionService().getAttendanceCorrectionApproval(
+            pages: _currentPage.toString(),
+            sizes: '10',
+          )
+        : await AttendanceCorrectionService().getAttendanceCorrection(
+            pages: _currentPage.toString(),
+            sizes: '10',
+          );
+
+    _handlePaginatedResponse(
+      response,
+      onItems: (items) {
+        _correctionRequests = items
+            .map(
+              (e) =>
+                  AttendanceCorrectionModel.fromJson(e as Map<String, dynamic>),
+            )
+            .toList();
+      },
+      onEmpty: () => _correctionRequests = [],
     );
+  }
 
-    final recordsRaw = response['original']['records'];
+  Future<void> _fetchLeaveData() async {
+    final response = _isApprovalTab
+        ? await LeaveService().getLeaveEmployeeApproval(
+            page: _currentPage,
+            limit: 10,
+          )
+        : await LeaveService().getLeaveEmployee(page: _currentPage, limit: 10);
 
-    if (recordsRaw == null || recordsRaw is List) {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-          _leaveRequests = [];
-          _totalItems = 0;
-          _totalPages = 1;
-        });
-      }
-      return;
-    }
-
-    final records = recordsRaw as Map<String, dynamic>;
-    final items = records['items'] as List<dynamic>? ?? [];
-    final pagination = records['pagination'] as Map<String, dynamic>?;
-
-    if (mounted) {
-      setState(() {
-        _isLoading = false;
+    _handlePaginatedResponse(
+      response,
+      onItems: (items) {
         _leaveRequests = items
             .map((e) => LeaveEmployeeModel.fromJson(e as Map<String, dynamic>))
             .toList();
-        _totalItems = pagination?['total_data'] as int? ?? 0;
-        _totalPages = pagination?['total_pages'] as int? ?? 1;
-      });
-    }
+      },
+      onEmpty: () => _leaveRequests = [],
+    );
   }
 
   Future<void> _fetchOvertimeData() async {
-    final response = await OvertimeService().getOvertimeEmployee(
-      page: _currentPage,
-      limit: 10,
-    );
+    final response = _isApprovalTab
+        ? await OvertimeService().getOvertimeEmployeeApproval(
+            page: _currentPage,
+            limit: 10,
+          )
+        : await OvertimeService().getOvertimeEmployee(
+            page: _currentPage,
+            limit: 10,
+          );
 
-    final recordsRaw = response['original']['records'];
-
-    if (recordsRaw == null || recordsRaw is List) {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-          _overtimeRequests = [];
-          _totalItems = 0;
-          _totalPages = 1;
-        });
-      }
-      return;
-    }
-
-    final records = recordsRaw as Map<String, dynamic>;
-    final items = records['items'] as List<dynamic>? ?? [];
-    final pagination = records['pagination'] as Map<String, dynamic>?;
-
-    if (mounted) {
-      setState(() {
-        _isLoading = false;
+    _handlePaginatedResponse(
+      response,
+      onItems: (items) {
         _overtimeRequests = items
             .map(
               (e) => OvertimeEmployeeModel.fromJson(e as Map<String, dynamic>),
             )
             .toList();
+      },
+      onEmpty: () => _overtimeRequests = [],
+    );
+  }
+
+  Future<void> _fetchCancellationData() async {
+    final response = _isApprovalTab
+        ? await LeaveService().getLeaveCancellationApproval(
+            page: _currentPage,
+            limit: 10,
+          )
+        : await LeaveService().getLeaveCancellation(
+            page: _currentPage,
+            limit: 10,
+          );
+
+    _handlePaginatedResponse(
+      response,
+      onItems: (items) {
+        _cancellationRequests = items
+            .map((e) => LeaveEmployeeModel.fromJson(e as Map<String, dynamic>))
+            .toList();
+      },
+      onEmpty: () => _cancellationRequests = [],
+    );
+  }
+
+  /// Generic handler for paginated API responses
+  void _handlePaginatedResponse(
+    Map<String, dynamic> response, {
+    required void Function(List<dynamic> items) onItems,
+    required void Function() onEmpty,
+  }) {
+    final recordsRaw = response['original']['records'];
+
+    if (recordsRaw == null || recordsRaw is List) {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+          onEmpty();
+          _totalItems = 0;
+          _totalPages = 1;
+        });
+      }
+      return;
+    }
+
+    final records = recordsRaw as Map<String, dynamic>;
+    final items = records['items'] as List<dynamic>? ?? [];
+    final pagination = records['pagination'] as Map<String, dynamic>?;
+
+    if (mounted) {
+      setState(() {
+        _isLoading = false;
+        onItems(items);
         _totalItems = pagination?['total_data'] as int? ?? 0;
         _totalPages = pagination?['total_pages'] as int? ?? 1;
       });
     }
   }
+
+  // ============ Event handlers ============
 
   void _onTipeChanged(String? value) {
     if (value != null && value != _selectedTipe) {
       setState(() {
         _selectedTipe = value;
         _currentPage = 1;
+        _correctionRequests = [];
         _leaveRequests = [];
         _overtimeRequests = [];
+        _cancellationRequests = [];
       });
       _fetchData();
     }
+  }
+
+  // ============ Navigation ============
+
+  Future<void> _navigateToCorrectionDetail(
+    AttendanceCorrectionModel request,
+  ) async {
+    if (request.id == null) return;
+    final result = await Navigator.push<bool>(
+      context,
+      MaterialPageRoute(
+        builder: (context) =>
+            DetailKoreksiKehadiranScreen(correctionId: request.id!),
+      ),
+    );
+    if (result == true && mounted) _fetchData();
   }
 
   Future<void> _navigateToLeaveDetail(LeaveEmployeeModel request) async {
@@ -195,6 +292,18 @@ class _PermohonanKaryawanScreenState extends State<PermohonanKaryawanScreen>
     );
     if (result == true && mounted) _fetchData();
   }
+
+  Future<void> _navigateToCancellationDetail(LeaveEmployeeModel request) async {
+    final result = await Navigator.push<bool>(
+      context,
+      MaterialPageRoute(
+        builder: (context) => DetailCutiScreen(detailLeave: request),
+      ),
+    );
+    if (result == true && mounted) _fetchData();
+  }
+
+  // ============ Build methods ============
 
   @override
   Widget build(BuildContext context) {
@@ -379,10 +488,8 @@ class _PermohonanKaryawanScreenState extends State<PermohonanKaryawanScreen>
       );
     }
 
-    final bool isLeave = _selectedTipe == 'Permintaan Kehadiran';
-    final bool isEmpty = isLeave
-        ? _leaveRequests.isEmpty
-        : _overtimeRequests.isEmpty;
+    // Get appropriate list based on selected type
+    final (bool isEmpty, int itemCount) = _getListInfo();
 
     if (isEmpty) {
       return const EmptyStateWidget();
@@ -393,24 +500,8 @@ class _PermohonanKaryawanScreenState extends State<PermohonanKaryawanScreen>
         Expanded(
           child: ListView.builder(
             padding: EdgeInsets.only(top: 8.h),
-            itemCount: isLeave
-                ? _leaveRequests.length
-                : _overtimeRequests.length,
-            itemBuilder: (context, index) {
-              if (isLeave) {
-                final request = _leaveRequests[index];
-                return LeaveRequestCard(
-                  request: request,
-                  onTap: () => _navigateToLeaveDetail(request),
-                );
-              } else {
-                final request = _overtimeRequests[index];
-                return OvertimeRequestCard(
-                  request: request,
-                  onTap: () => _navigateToOvertimeDetail(request),
-                );
-              }
-            },
+            itemCount: itemCount,
+            itemBuilder: (context, index) => _buildCard(index),
           ),
         ),
         if (!isEmpty)
@@ -425,5 +516,53 @@ class _PermohonanKaryawanScreenState extends State<PermohonanKaryawanScreen>
           ),
       ],
     );
+  }
+
+  /// Returns (isEmpty, itemCount) based on selected type
+  (bool, int) _getListInfo() {
+    switch (_selectedTipe) {
+      case 'Permintaan Koreksi Kehadiran':
+        return (_correctionRequests.isEmpty, _correctionRequests.length);
+      case 'Permintaan Cuti Kehadiran':
+        return (_leaveRequests.isEmpty, _leaveRequests.length);
+      case 'Permintaan Lembur':
+        return (_overtimeRequests.isEmpty, _overtimeRequests.length);
+      case 'Pembatalan Cuti':
+        return (_cancellationRequests.isEmpty, _cancellationRequests.length);
+      default:
+        return (true, 0);
+    }
+  }
+
+  /// Build the correct card widget based on selected type
+  Widget _buildCard(int index) {
+    switch (_selectedTipe) {
+      case 'Permintaan Koreksi Kehadiran':
+        final request = _correctionRequests[index];
+        return AttendanceCorrectionCard(
+          request: request,
+          onTap: () => _navigateToCorrectionDetail(request),
+        );
+      case 'Permintaan Cuti Kehadiran':
+        final request = _leaveRequests[index];
+        return LeaveRequestCard(
+          request: request,
+          onTap: () => _navigateToLeaveDetail(request),
+        );
+      case 'Permintaan Lembur':
+        final request = _overtimeRequests[index];
+        return OvertimeRequestCard(
+          request: request,
+          onTap: () => _navigateToOvertimeDetail(request),
+        );
+      case 'Pembatalan Cuti':
+        final request = _cancellationRequests[index];
+        return LeaveRequestCard(
+          request: request,
+          onTap: () => _navigateToCancellationDetail(request),
+        );
+      default:
+        return const SizedBox.shrink();
+    }
   }
 }
