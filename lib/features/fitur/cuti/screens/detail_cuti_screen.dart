@@ -346,13 +346,13 @@ class _DetailCutiScreenState extends State<DetailCutiScreen> {
       Map<String, dynamic> response;
       if (widget.isCancellation) {
         response = await LeaveService().approvalLeaveCancellation(
-          leaveCancellationId: widget.detailLeave!.id!,
+          leaveCancellationId: widget.detailLeave!.id,
           status: status,
           remark: remark,
         );
       } else {
         response = await LeaveService().approvalLeaveEmployee(
-          leaveId: widget.detailLeave!.id!,
+          leaveId: widget.detailLeave!.id,
           status: status,
           remark: remark,
         );
