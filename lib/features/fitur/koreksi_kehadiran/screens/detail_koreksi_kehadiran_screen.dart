@@ -11,8 +11,13 @@ import 'package:hrd_app/features/fitur/lembur/widgets/detail_lembur_widgets.dart
 
 class DetailKoreksiKehadiranScreen extends StatefulWidget {
   final String correctionId;
+  final bool isApprovalMode;
 
-  const DetailKoreksiKehadiranScreen({super.key, required this.correctionId});
+  const DetailKoreksiKehadiranScreen({
+    super.key,
+    required this.correctionId,
+    this.isApprovalMode = false,
+  });
 
   @override
   State<DetailKoreksiKehadiranScreen> createState() =>
@@ -23,6 +28,7 @@ class _DetailKoreksiKehadiranScreenState
     extends State<DetailKoreksiKehadiranScreen> {
   bool _isLoading = true;
   bool _hasError = false;
+  bool _isProcessingApproval = false;
   String? _errorMessage;
   AttendanceCorrectionModel? _data;
 
@@ -155,7 +161,260 @@ class _DetailKoreksiKehadiranScreenState
       body: _buildContent(colors),
       bottomNavigationBar: _isLoading || _hasError || _data == null
           ? null
-          : _buildBottomButton(colors),
+          : (widget.isApprovalMode
+                ? _buildApprovalBottomBar(colors, _data!)
+                : _buildBottomButton(colors)),
+    );
+  }
+
+  Future<void> _handleApproval(String status) async {
+    String remark = '';
+
+    if (status != 'APPROVE') {
+      final bool? isProceed = await showDialog<bool>(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) {
+          final textController = TextEditingController();
+          final colors = context.colors;
+
+          return Dialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12.r),
+            ),
+            backgroundColor: colors.surface,
+            child: Padding(
+              padding: EdgeInsets.all(20.w),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Catatan', style: AppTextStyles.h4(colors.textPrimary)),
+                  SizedBox(height: 8.h),
+                  Text(
+                    'Berikan catatan untuk karyawan',
+                    style: AppTextStyles.body(colors.textSecondary),
+                  ),
+                  SizedBox(height: 16.h),
+                  Container(
+                    decoration: BoxDecoration(
+                      border: Border.all(color: colors.divider),
+                      borderRadius: BorderRadius.circular(8.r),
+                    ),
+                    child: TextField(
+                      controller: textController,
+                      maxLines: 3,
+                      minLines: 1,
+                      style: AppTextStyles.body(colors.textPrimary),
+                      decoration: InputDecoration(
+                        hintText: 'Masukkan alasan Anda',
+                        hintStyle: AppTextStyles.body(
+                          colors.textSecondary.withValues(alpha: 0.6),
+                        ),
+                        border: InputBorder.none,
+                        contentPadding: EdgeInsets.symmetric(
+                          horizontal: 12.w,
+                          vertical: 12.h,
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 24.h),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Expanded(
+                        child: TextButton(
+                          onPressed: () => Navigator.pop(context, false),
+                          style: TextButton.styleFrom(
+                            padding: EdgeInsets.symmetric(vertical: 12.h),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8.r),
+                            ),
+                          ),
+                          child: Text(
+                            'Batalkan',
+                            style: AppTextStyles.bodyMedium(colors.primaryBlue),
+                          ),
+                        ),
+                      ),
+                      SizedBox(width: 12.w),
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: () {
+                            remark = textController.text.trim();
+                            Navigator.pop(context, true);
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: colors.primaryBlue,
+                            padding: EdgeInsets.symmetric(vertical: 12.h),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8.r),
+                            ),
+                            elevation: 0,
+                          ),
+                          child: Text(
+                            'Simpan',
+                            style: AppTextStyles.bodyMedium(Colors.white),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      );
+
+      if (isProceed != true) return;
+    }
+
+    setState(() => _isProcessingApproval = true);
+
+    if (mounted) {
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => const Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    try {
+      final response = await AttendanceCorrectionService()
+          .approvalAttendanceCorrection(
+            attendanceCorrectionId: widget.correctionId,
+            status: status,
+            remark: remark,
+          );
+
+      if (mounted) {
+        Navigator.pop(context); // Close loading
+
+        final records = response['original'];
+        final isSuccess = records['status'] == true || records['code'] == 200;
+
+        if (isSuccess) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(records['message'] ?? 'Berhasil memproses data'),
+              backgroundColor: Colors.green,
+            ),
+          );
+
+          Navigator.pop(context, true); // true = refresh list
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(records['message'] ?? 'Gagal memproses data'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        Navigator.pop(context); // Close loading
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isProcessingApproval = false);
+    }
+  }
+
+  Widget _buildApprovalBottomBar(
+    ThemeColors colors,
+    AttendanceCorrectionModel data,
+  ) {
+    if (data.displayStatus.toUpperCase() != 'UNVERIFIED' &&
+        data.displayStatus.toUpperCase() != 'PENDING') {
+      return const SizedBox.shrink();
+    }
+
+    return Container(
+      padding: EdgeInsets.fromLTRB(16.w, 12.h, 16.w, 24.h),
+      decoration: BoxDecoration(
+        color: colors.surface,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.1),
+            blurRadius: 10,
+            offset: const Offset(0, -4),
+          ),
+        ],
+      ),
+      child: SafeArea(
+        child: Row(
+          children: [
+            // Button Reject (X)
+            Container(
+              decoration: BoxDecoration(
+                border: Border.all(color: colors.divider),
+                borderRadius: BorderRadius.circular(8.r),
+              ),
+              child: IconButton(
+                onPressed: _isProcessingApproval
+                    ? null
+                    : () => _handleApproval('REJECT'),
+                icon: Icon(Icons.close, color: Colors.red, size: 24.sp),
+                padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+              ),
+            ),
+            SizedBox(width: 12.w),
+            // Button Revisi
+            Expanded(
+              flex: 1,
+              child: OutlinedButton.icon(
+                onPressed: _isProcessingApproval
+                    ? null
+                    : () => _handleApproval('REVISE'),
+                icon: Icon(
+                  Icons.edit_outlined,
+                  color: colors.primaryBlue,
+                  size: 18.sp,
+                ),
+                label: Text(
+                  'Revisi',
+                  style: AppTextStyles.bodyMedium(colors.primaryBlue),
+                ),
+                style: OutlinedButton.styleFrom(
+                  padding: EdgeInsets.symmetric(vertical: 12.h),
+                  side: BorderSide(color: colors.divider),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8.r),
+                  ),
+                ),
+              ),
+            ),
+            SizedBox(width: 12.w),
+            // Button Menyetujui
+            Expanded(
+              flex: 2,
+              child: ElevatedButton.icon(
+                onPressed: _isProcessingApproval
+                    ? null
+                    : () => _handleApproval('APPROVE'),
+                icon: Icon(Icons.check, color: Colors.white, size: 18.sp),
+                label: Text(
+                  'Menyetujui',
+                  style: AppTextStyles.bodyMedium(Colors.white),
+                ),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: colors.primaryBlue,
+                  padding: EdgeInsets.symmetric(vertical: 12.h),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8.r),
+                  ),
+                  elevation: 0,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 

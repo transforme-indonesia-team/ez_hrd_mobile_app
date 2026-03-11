@@ -69,4 +69,27 @@ class AttendanceCorrectionService {
   Future<Map<String, dynamic>> deleteAttendanceCorrection(String id) async {
     return _api.delete('/attendance-correction/$id');
   }
+
+  Future<Map<String, dynamic>> approvalAttendanceCorrection({
+    required String attendanceCorrectionId,
+    required String status,
+    String? remark,
+  }) async {
+    return _api.post(
+      '/attendance-correction-approval/$attendanceCorrectionId',
+      {'status_approval': status, 'remark_approval': remark},
+    );
+  }
+
+  Future<Map<String, dynamic>> batchApprovalAttendanceCorrection({
+    required List<String> attendanceCorrectionIds,
+    required String status,
+    String? remark,
+  }) async {
+    return _api.post('/attendance-correction-approval/batch-approval', {
+      'status_approval': status,
+      'remark_approval': remark ?? '',
+      'attendance_correction_id': attendanceCorrectionIds,
+    });
+  }
 }

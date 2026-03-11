@@ -187,4 +187,51 @@ class LeaveService {
       },
     );
   }
+
+  Future<Map<String, dynamic>> approvalLeaveEmployee({
+    required String leaveId,
+    required String status,
+    String? remark,
+  }) async {
+    return _api.post('/leave-approval/$leaveId', {
+      'status_approval': status,
+      'remark_approval': remark,
+    });
+  }
+
+  Future<Map<String, dynamic>> batchApprovalLeaveEmployee({
+    required List<String> leaveIds,
+    required String status,
+    String? remark,
+  }) async {
+    return _api.post('/leave-approval/batch-approval', {
+      'status_approval': status,
+      'remark_approval': remark ?? '',
+      'leave_employee_id': leaveIds,
+    });
+  }
+
+  // buat leave cancellation approval
+  Future<Map<String, dynamic>> approvalLeaveCancellation({
+    required String leaveCancellationId,
+    required String status,
+    String? remark,
+  }) async {
+    return _api.post('/leave-cancellation-approval/$leaveCancellationId', {
+      'status_approval': status,
+      'remark_approval': remark,
+    });
+  }
+
+  Future<Map<String, dynamic>> batchApprovalLeaveCancellation({
+    required List<String> leaveCancellationIds,
+    required String status,
+    String? remark,
+  }) async {
+    return _api.post('/leave-cancellation-approval/batch-approval', {
+      'status_approval': status,
+      'remark_approval': remark ?? '',
+      'leave_cancellation_id': leaveCancellationIds,
+    });
+  }
 }

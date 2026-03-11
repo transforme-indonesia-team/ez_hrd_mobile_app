@@ -29,6 +29,10 @@ class _PermohonanKaryawanScreenState extends State<PermohonanKaryawanScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
+  // State untuk Batch Approval
+  Set<String> _selectedIds = {};
+  bool _isProcessingApproval = false;
+
   // Dropdown — 4 tipe permintaan seperti di notification
   final List<String> _tipePermintaan = [
     'Permintaan Koreksi Kehadiran',
@@ -252,8 +256,248 @@ class _PermohonanKaryawanScreenState extends State<PermohonanKaryawanScreen>
         _leaveRequests = [];
         _overtimeRequests = [];
         _cancellationRequests = [];
+        _selectedIds.clear();
       });
       _fetchData();
+    }
+  }
+
+  void _toggleSelectAll(bool? value) {
+    setState(() {
+      if (value == true) {
+        switch (_selectedTipe) {
+          case 'Permintaan Koreksi Kehadiran':
+            _selectedIds = _correctionRequests
+                .map((e) => e.id)
+                .whereType<String>()
+                .toSet();
+            break;
+          case 'Permintaan Cuti Kehadiran':
+            _selectedIds = _leaveRequests
+                .map((e) => e.id)
+                .whereType<String>()
+                .toSet();
+            break;
+          case 'Permintaan Lembur':
+            _selectedIds = _overtimeRequests
+                .map((e) => e.id)
+                .whereType<String>()
+                .toSet();
+            break;
+          case 'Pembatalan Cuti':
+            _selectedIds = _cancellationRequests
+                .map((e) => e.id)
+                .whereType<String>()
+                .toSet();
+            break;
+        }
+      } else {
+        _selectedIds.clear();
+      }
+    });
+  }
+
+  void _toggleSelect(String? id) {
+    if (id == null) return;
+    setState(() {
+      if (_selectedIds.contains(id)) {
+        _selectedIds.remove(id);
+      } else {
+        _selectedIds.add(id);
+      }
+    });
+  }
+
+  Future<void> _handleBatchApproval(String status) async {
+    if (_selectedIds.isEmpty) return;
+
+    String remark = '';
+
+    // Jika status bukan APPROVE (yaitu REJECT atau REVISE), tampilkan dialog alasan
+    if (status != 'APPROVE') {
+      final bool? isProceed = await showDialog<bool>(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) {
+          final textController = TextEditingController();
+          final colors = context.colors;
+
+          return Dialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12.r),
+            ),
+            backgroundColor: colors.surface,
+            child: Padding(
+              padding: EdgeInsets.all(20.w),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Catatan', style: AppTextStyles.h4(colors.textPrimary)),
+                  SizedBox(height: 8.h),
+                  Text(
+                    'Berikan catatan untuk karyawan',
+                    style: AppTextStyles.body(colors.textSecondary),
+                  ),
+                  SizedBox(height: 16.h),
+                  Container(
+                    decoration: BoxDecoration(
+                      border: Border.all(color: colors.divider),
+                      borderRadius: BorderRadius.circular(8.r),
+                    ),
+                    child: TextField(
+                      controller: textController,
+                      maxLines: 3,
+                      minLines: 1,
+                      style: AppTextStyles.body(colors.textPrimary),
+                      decoration: InputDecoration(
+                        hintText: 'Masukkan alasan Anda',
+                        hintStyle: AppTextStyles.body(
+                          colors.textSecondary.withValues(alpha: 0.6),
+                        ),
+                        border: InputBorder.none,
+                        contentPadding: EdgeInsets.symmetric(
+                          horizontal: 12.w,
+                          vertical: 12.h,
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 24.h),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Expanded(
+                        child: TextButton(
+                          onPressed: () => Navigator.pop(context, false),
+                          style: TextButton.styleFrom(
+                            padding: EdgeInsets.symmetric(vertical: 12.h),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8.r),
+                            ),
+                          ),
+                          child: Text(
+                            'Batalkan',
+                            style: AppTextStyles.bodyMedium(colors.primaryBlue),
+                          ),
+                        ),
+                      ),
+                      SizedBox(width: 12.w),
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: () {
+                            remark = textController.text.trim();
+                            Navigator.pop(context, true);
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: colors.primaryBlue,
+                            padding: EdgeInsets.symmetric(vertical: 12.h),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8.r),
+                            ),
+                            elevation: 0,
+                          ),
+                          child: Text(
+                            'Simpan',
+                            style: AppTextStyles.bodyMedium(Colors.white),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      );
+
+      if (isProceed != true) return;
+    }
+
+    setState(() => _isProcessingApproval = true);
+
+    // Tampilkan loading spinner
+    if (mounted) {
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => const Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    try {
+      Map<String, dynamic>? response;
+
+      switch (_selectedTipe) {
+        case 'Permintaan Koreksi Kehadiran':
+          response = await AttendanceCorrectionService()
+              .batchApprovalAttendanceCorrection(
+                attendanceCorrectionIds: _selectedIds.toList(),
+                status: status,
+                remark: remark,
+              );
+          break;
+        case 'Permintaan Cuti Kehadiran':
+          response = await LeaveService().batchApprovalLeaveEmployee(
+            leaveIds: _selectedIds.toList(),
+            status: status,
+            remark: remark,
+          );
+          break;
+        case 'Permintaan Lembur':
+          response = await OvertimeService().batchApprovalOvertime(
+            overtimeIds: _selectedIds.toList(),
+            status: status,
+            remark: remark,
+          );
+          break;
+        case 'Pembatalan Cuti':
+          response = await LeaveService().batchApprovalLeaveCancellation(
+            leaveCancellationIds: _selectedIds.toList(),
+            status: status,
+            remark: remark,
+          );
+          break;
+      }
+
+      if (mounted && response != null) {
+        Navigator.pop(context); // Close loading
+
+        final records = response['original'];
+        final isSuccess = records['status'] == true || records['code'] == 200;
+
+        if (isSuccess) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(records['message'] ?? 'Berhasil memproses data'),
+              backgroundColor: Colors.green,
+            ),
+          );
+
+          // Refresh list dan bersihkan seleksi
+          setState(() {
+            _selectedIds.clear();
+          });
+          _fetchData();
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(records['message'] ?? 'Gagal memproses data'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        Navigator.pop(context); // Close loading
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isProcessingApproval = false);
     }
   }
 
@@ -263,44 +507,75 @@ class _PermohonanKaryawanScreenState extends State<PermohonanKaryawanScreen>
     AttendanceCorrectionModel request,
   ) async {
     if (request.id == null) return;
+    final isApproval = _isApprovalTab && _selectedPersetujuanFilter == 0;
     final result = await Navigator.push<bool>(
       context,
       MaterialPageRoute(
-        builder: (context) =>
-            DetailKoreksiKehadiranScreen(correctionId: request.id!),
+        builder: (context) => DetailKoreksiKehadiranScreen(
+          correctionId: request.id!,
+          isApprovalMode: isApproval,
+        ),
       ),
     );
-    if (result == true && mounted) _fetchData();
+    if (result == true && mounted) {
+      _selectedIds.clear();
+      _fetchData();
+    }
   }
 
   Future<void> _navigateToLeaveDetail(LeaveEmployeeModel request) async {
+    final isApproval = _isApprovalTab && _selectedPersetujuanFilter == 0;
     final result = await Navigator.push<bool>(
       context,
       MaterialPageRoute(
-        builder: (context) => DetailCutiScreen(detailLeave: request),
+        builder: (context) => DetailCutiScreen(
+          detailLeave: request,
+          isApprovalMode: isApproval,
+          isCancellation: false,
+        ),
       ),
     );
-    if (result == true && mounted) _fetchData();
+    if (result == true && mounted) {
+      _selectedIds.clear();
+      _fetchData();
+    }
   }
 
   Future<void> _navigateToOvertimeDetail(OvertimeEmployeeModel request) async {
+    final isApproval = _isApprovalTab && _selectedPersetujuanFilter == 0;
+
     final result = await Navigator.push<bool>(
       context,
       MaterialPageRoute(
-        builder: (context) => DetailLemburScreen(detailOvertime: request),
+        builder: (context) => DetailLemburScreen(
+          detailOvertime: request,
+          isApprovalMode: isApproval,
+        ),
       ),
     );
-    if (result == true && mounted) _fetchData();
+
+    if (result == true && mounted) {
+      _selectedIds.clear(); // Bersihkan seleksi jika refresh
+      _fetchData();
+    }
   }
 
   Future<void> _navigateToCancellationDetail(LeaveEmployeeModel request) async {
+    final isApproval = _isApprovalTab && _selectedPersetujuanFilter == 0;
     final result = await Navigator.push<bool>(
       context,
       MaterialPageRoute(
-        builder: (context) => DetailCutiScreen(detailLeave: request),
+        builder: (context) => DetailCutiScreen(
+          detailLeave: request,
+          isApprovalMode: isApproval,
+          isCancellation: true,
+        ),
       ),
     );
-    if (result == true && mounted) _fetchData();
+    if (result == true && mounted) {
+      _selectedIds.clear();
+      _fetchData();
+    }
   }
 
   // ============ Build methods ============
@@ -346,6 +621,116 @@ class _PermohonanKaryawanScreenState extends State<PermohonanKaryawanScreen>
               controller: _tabController,
               children: [_buildContent(colors), _buildContent(colors)],
             ),
+          ),
+        ],
+      ),
+      bottomNavigationBar: _buildBatchApprovalBottomBar(colors),
+    );
+  }
+
+  Widget _buildBatchApprovalBottomBar(ThemeColors colors) {
+    // Tampilkan hanya jika di tab persetujuan, belum disetujui, dan ada yang dipilih
+    if (!_isApprovalTab ||
+        _selectedPersetujuanFilter != 0 ||
+        _selectedIds.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    return Container(
+      padding: EdgeInsets.fromLTRB(16.w, 12.h, 16.w, 24.h),
+      decoration: BoxDecoration(
+        color: colors.surface,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.1),
+            blurRadius: 10,
+            offset: const Offset(0, -4),
+          ),
+        ],
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.check_circle, color: colors.primaryBlue, size: 20.sp),
+              SizedBox(width: 8.w),
+              Text(
+                '${_selectedIds.length} item(s) selected',
+                style: AppTextStyles.bodyMedium(colors.primaryBlue),
+              ),
+            ],
+          ),
+          SizedBox(height: 12.h),
+          Row(
+            children: [
+              // Button Reject (X)
+              Container(
+                decoration: BoxDecoration(
+                  border: Border.all(color: colors.divider),
+                  borderRadius: BorderRadius.circular(8.r),
+                ),
+                child: IconButton(
+                  onPressed: _isProcessingApproval
+                      ? null
+                      : () => _handleBatchApproval('REJECT'),
+                  icon: Icon(Icons.close, color: Colors.red, size: 24.sp),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 16.w,
+                    vertical: 8.h,
+                  ),
+                ),
+              ),
+              SizedBox(width: 12.w),
+              // Button Revisi
+              Expanded(
+                flex: 1,
+                child: OutlinedButton.icon(
+                  onPressed: _isProcessingApproval
+                      ? null
+                      : () => _handleBatchApproval('REVISE'),
+                  icon: Icon(
+                    Icons.edit_outlined,
+                    color: colors.primaryBlue,
+                    size: 18.sp,
+                  ),
+                  label: Text(
+                    'Revisi',
+                    style: AppTextStyles.bodyMedium(colors.primaryBlue),
+                  ),
+                  style: OutlinedButton.styleFrom(
+                    padding: EdgeInsets.symmetric(vertical: 12.h),
+                    side: BorderSide(color: colors.divider),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8.r),
+                    ),
+                  ),
+                ),
+              ),
+              SizedBox(width: 12.w),
+              // Button Menyetujui
+              Expanded(
+                flex: 2,
+                child: ElevatedButton.icon(
+                  onPressed: _isProcessingApproval
+                      ? null
+                      : () => _handleBatchApproval('APPROVE'),
+                  icon: Icon(Icons.check, color: Colors.white, size: 18.sp),
+                  label: Text(
+                    'Menyetujui',
+                    style: AppTextStyles.bodyMedium(Colors.white),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: colors.primaryBlue,
+                    padding: EdgeInsets.symmetric(vertical: 12.h),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8.r),
+                    ),
+                    elevation: 0,
+                  ),
+                ),
+              ),
+            ],
           ),
         ],
       ),
@@ -497,6 +882,8 @@ class _PermohonanKaryawanScreenState extends State<PermohonanKaryawanScreen>
 
     return Column(
       children: [
+        if (_isApprovalTab && _selectedPersetujuanFilter == 0 && !isEmpty)
+          _buildSelectAllRow(colors),
         Expanded(
           child: ListView.builder(
             padding: EdgeInsets.only(top: 8.h),
@@ -534,31 +921,128 @@ class _PermohonanKaryawanScreenState extends State<PermohonanKaryawanScreen>
     }
   }
 
+  Widget _buildSelectAllRow(ThemeColors colors) {
+    bool isAllSelected = false;
+
+    switch (_selectedTipe) {
+      case 'Permintaan Koreksi Kehadiran':
+        isAllSelected =
+            _correctionRequests.isNotEmpty &&
+            _correctionRequests.every(
+              (item) => item.id != null && _selectedIds.contains(item.id),
+            );
+        break;
+      case 'Permintaan Cuti Kehadiran':
+        isAllSelected =
+            _leaveRequests.isNotEmpty &&
+            _leaveRequests.every(
+              (item) => item.id != null && _selectedIds.contains(item.id),
+            );
+        break;
+      case 'Permintaan Lembur':
+        isAllSelected =
+            _overtimeRequests.isNotEmpty &&
+            _overtimeRequests.every(
+              (item) => item.id != null && _selectedIds.contains(item.id),
+            );
+        break;
+      case 'Pembatalan Cuti':
+        isAllSelected =
+            _cancellationRequests.isNotEmpty &&
+            _cancellationRequests.every(
+              (item) => item.id != null && _selectedIds.contains(item.id),
+            );
+        break;
+    }
+
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+      color: colors.background,
+      child: Row(
+        children: [
+          Checkbox(
+            value: isAllSelected,
+            onChanged: _toggleSelectAll,
+            activeColor: colors.primaryBlue,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(4.r),
+            ),
+            side: BorderSide(
+              color: colors.textSecondary.withValues(alpha: 0.5),
+            ),
+            materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          ),
+          Expanded(
+            child: Text(
+              'Pilih Semua',
+              style: AppTextStyles.bodyMedium(colors.textPrimary),
+            ),
+          ),
+          if (_selectedIds.isNotEmpty)
+            Text(
+              '${_selectedIds.length} Terpilih',
+              style: AppTextStyles.bodyMedium(colors.primaryBlue),
+            ),
+        ],
+      ),
+    );
+  }
+
   /// Build the correct card widget based on selected type
   Widget _buildCard(int index) {
+    final isApprovalMode = _isApprovalTab && _selectedPersetujuanFilter == 0;
+
     switch (_selectedTipe) {
       case 'Permintaan Koreksi Kehadiran':
         final request = _correctionRequests[index];
         return AttendanceCorrectionCard(
           request: request,
+          isApprovalMode: isApprovalMode,
+          isSelected: request.id != null
+              ? _selectedIds.contains(request.id)
+              : false,
+          onSelectChanged: isApprovalMode
+              ? (val) => _toggleSelect(request.id)
+              : null,
           onTap: () => _navigateToCorrectionDetail(request),
         );
       case 'Permintaan Cuti Kehadiran':
         final request = _leaveRequests[index];
         return LeaveRequestCard(
           request: request,
+          isApprovalMode: isApprovalMode,
+          isSelected: request.id != null
+              ? _selectedIds.contains(request.id)
+              : false,
+          onSelectChanged: isApprovalMode
+              ? (val) => _toggleSelect(request.id)
+              : null,
           onTap: () => _navigateToLeaveDetail(request),
         );
       case 'Permintaan Lembur':
         final request = _overtimeRequests[index];
         return OvertimeRequestCard(
           request: request,
+          isApprovalMode: isApprovalMode,
+          isSelected: request.id != null
+              ? _selectedIds.contains(request.id)
+              : false,
+          onSelectChanged: isApprovalMode
+              ? (val) => _toggleSelect(request.id)
+              : null,
           onTap: () => _navigateToOvertimeDetail(request),
         );
       case 'Pembatalan Cuti':
         final request = _cancellationRequests[index];
         return LeaveRequestCard(
           request: request,
+          isApprovalMode: isApprovalMode,
+          isSelected: request.id != null
+              ? _selectedIds.contains(request.id)
+              : false,
+          onSelectChanged: isApprovalMode
+              ? (val) => _toggleSelect(request.id)
+              : null,
           onTap: () => _navigateToCancellationDetail(request),
         );
       default:

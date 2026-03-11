@@ -7,125 +7,156 @@ import 'package:hrd_app/data/models/attendance_correction_model.dart';
 class AttendanceCorrectionCard extends StatelessWidget {
   final AttendanceCorrectionModel request;
   final VoidCallback? onTap;
+  final bool isApprovalMode;
+  final bool isSelected;
+  final ValueChanged<bool?>? onSelectChanged;
 
   const AttendanceCorrectionCard({
     super.key,
     required this.request,
     this.onTap,
+    this.isApprovalMode = false,
+    this.isSelected = false,
+    this.onSelectChanged,
   });
 
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
 
+    Widget cardContent = Container(
+      decoration: BoxDecoration(
+        color: colors.background,
+        borderRadius: BorderRadius.circular(12.r),
+        border: Border.all(color: colors.divider),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.03),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: IntrinsicHeight(
+        child: Row(
+          children: [
+            // Left accent border
+            Container(
+              width: 4.w,
+              decoration: BoxDecoration(
+                color: _getAccentColor(),
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(12.r),
+                  bottomLeft: Radius.circular(12.r),
+                ),
+              ),
+            ),
+            // Card content
+            Expanded(
+              child: Padding(
+                padding: EdgeInsets.all(16.w),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Request number
+                    Text(
+                      request.displayRequestNo,
+                      style: AppTextStyles.bodySemiBold(colors.textPrimary),
+                    ),
+                    Divider(color: colors.divider, thickness: 1.h),
+                    SizedBox(height: 12.h),
+
+                    // Permintaan Untuk & Permintaan Oleh
+                    Row(
+                      children: [
+                        Expanded(
+                          child: _buildLabelValue(
+                            colors,
+                            'Permintaan Untuk',
+                            request.displayEmployeeName,
+                          ),
+                        ),
+                        SizedBox(width: 12.w),
+                        Expanded(
+                          child: _buildLabelValue(
+                            colors,
+                            'Permintaan Oleh',
+                            request.displayCreatedBy,
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 12.h),
+
+                    // Tanggal Mulai & Tanggal Berakhir
+                    Row(
+                      children: [
+                        Expanded(
+                          child: _buildLabelValue(
+                            colors,
+                            'Tanggal Mulai',
+                            request.displayStartDate,
+                          ),
+                        ),
+                        SizedBox(width: 12.w),
+                        Expanded(
+                          child: _buildLabelValue(
+                            colors,
+                            'Tanggal Berakhir',
+                            request.displayEndDate,
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 12.h),
+
+                    // Status
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Status',
+                          style: AppTextStyles.caption(colors.textSecondary),
+                        ),
+                        SizedBox(height: 4.h),
+                        _StatusBadge(status: request.displayStatus),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+
+    if (isApprovalMode) {
+      cardContent = Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Checkbox(
+            value: isSelected,
+            onChanged: onSelectChanged,
+            activeColor: colors.primaryBlue,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(4.r),
+            ),
+            side: BorderSide(
+              color: colors.textSecondary.withValues(alpha: 0.5),
+            ),
+            materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          ),
+          Expanded(child: cardContent),
+        ],
+      );
+    }
+
     return GestureDetector(
       onTap: onTap,
       child: Container(
         margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 6.h),
-        decoration: BoxDecoration(
-          color: colors.background,
-          borderRadius: BorderRadius.circular(12.r),
-          border: Border.all(color: colors.divider),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.03),
-              blurRadius: 8,
-              offset: const Offset(0, 2),
-            ),
-          ],
-        ),
-        child: IntrinsicHeight(
-          child: Row(
-            children: [
-              // Left accent border
-              Container(
-                width: 4.w,
-                decoration: BoxDecoration(
-                  color: _getAccentColor(),
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(12.r),
-                    bottomLeft: Radius.circular(12.r),
-                  ),
-                ),
-              ),
-              // Card content
-              Expanded(
-                child: Padding(
-                  padding: EdgeInsets.all(16.w),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Request number
-                      Text(
-                        request.displayRequestNo,
-                        style: AppTextStyles.bodySemiBold(colors.textPrimary),
-                      ),
-                      Divider(color: colors.divider, thickness: 1.h),
-                      SizedBox(height: 12.h),
-
-                      // Permintaan Untuk & Permintaan Oleh
-                      Row(
-                        children: [
-                          Expanded(
-                            child: _buildLabelValue(
-                              colors,
-                              'Permintaan Untuk',
-                              request.displayEmployeeName,
-                            ),
-                          ),
-                          SizedBox(width: 12.w),
-                          Expanded(
-                            child: _buildLabelValue(
-                              colors,
-                              'Permintaan Oleh',
-                              request.displayCreatedBy,
-                            ),
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: 12.h),
-
-                      // Tanggal Mulai & Tanggal Berakhir
-                      Row(
-                        children: [
-                          Expanded(
-                            child: _buildLabelValue(
-                              colors,
-                              'Tanggal Mulai',
-                              request.displayStartDate,
-                            ),
-                          ),
-                          SizedBox(width: 12.w),
-                          Expanded(
-                            child: _buildLabelValue(
-                              colors,
-                              'Tanggal Berakhir',
-                              request.displayEndDate,
-                            ),
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: 12.h),
-
-                      // Status
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Status',
-                            style: AppTextStyles.caption(colors.textSecondary),
-                          ),
-                          SizedBox(height: 4.h),
-                          _StatusBadge(status: request.displayStatus),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
+        child: cardContent,
       ),
     );
   }

@@ -137,4 +137,27 @@ class OvertimeService {
   }) async {
     return _api.post('/overtime/cancellation/$overtimeId', {});
   }
+
+  Future<Map<String, dynamic>> approvalOvertime({
+    required String overtimeId,
+    required String status,
+    String? remark,
+  }) async {
+    return _api.post('/overtime-approval/$overtimeId', {
+      'status_approval': status,
+      'remark_approval': remark,
+    });
+  }
+
+  Future<Map<String, dynamic>> batchApprovalOvertime({
+    required List<String> overtimeIds,
+    required String status,
+    String? remark,
+  }) async {
+    return _api.post('/overtime-approval/batch-approval', {
+      'status_approval': status,
+      'remark_approval': remark ?? '',
+      'overtime_employee_id': overtimeIds,
+    });
+  }
 }

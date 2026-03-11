@@ -22,7 +22,7 @@ class BaseApiService {
   // ============================================================================
 
   /// Apakah mode debug aktif (tanpa encrypt/decrypt)
-  static bool get _isDebugMode => _debugEnv != null;
+  static bool get _isDebugMode => true;
 
   final Dio _dio = Dio(
     BaseOptions(
@@ -87,7 +87,7 @@ class BaseApiService {
     String? contentType,
   }) {
     final Map<String, dynamic> headers = {};
-    if (_debugEnv != null) headers['env'] = _debugEnv;
+    headers['env'] = _debugEnv;
     if (extraHeaders != null) {
       extraHeaders.forEach((key, value) => headers[key] = value);
     }

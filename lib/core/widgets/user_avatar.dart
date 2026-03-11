@@ -22,6 +22,7 @@ class UserAvatar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final initials = name != null ? StringUtils.getInitials(name!) : '?';
+    final fullImageUrl = avatarUrl?.asFullImageUrl;
 
     return Container(
       width: size.w,
@@ -30,10 +31,10 @@ class UserAvatar extends StatelessWidget {
         shape: BoxShape.circle,
         color: ColorPalette.slate200,
       ),
-      child: avatarUrl != null && avatarUrl!.isNotEmpty
+      child: fullImageUrl != null && fullImageUrl.isNotEmpty
           ? ClipOval(
               child: Image.network(
-                avatarUrl.asFullImageUrl!,
+                fullImageUrl,
                 width: size.w,
                 height: size.w,
                 fit: BoxFit.cover,

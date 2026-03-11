@@ -8,154 +8,181 @@ class LeaveRequestCard extends StatelessWidget {
   final LeaveEmployeeModel request;
   final VoidCallback? onTap;
   final VoidCallback? onEdit;
+  final bool isApprovalMode;
+  final bool isSelected;
+  final ValueChanged<bool?>? onSelectChanged;
 
   const LeaveRequestCard({
     super.key,
     required this.request,
     this.onTap,
     this.onEdit,
+    this.isApprovalMode = false,
+    this.isSelected = false,
+    this.onSelectChanged,
   });
 
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
 
+    Widget cardContent = Container(
+      padding: EdgeInsets.all(16.w),
+      decoration: BoxDecoration(
+        color: colors.background,
+        borderRadius: BorderRadius.circular(12.r),
+        border: Border.all(color: colors.divider),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.03),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Header: Nama Karyawan with edit button
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      request.displayEmployeeName,
+                      style: AppTextStyles.h4(
+                        colors.textPrimary,
+                        fontSize: 15.sp,
+                      ),
+                    ),
+                    SizedBox(height: 2.h),
+                    Text(
+                      request.displayRequestNo,
+                      style: AppTextStyles.caption(colors.textSecondary),
+                    ),
+                  ],
+                ),
+              ),
+              if (request.isDraft && onEdit != null && !isApprovalMode)
+                GestureDetector(
+                  onTap: onEdit,
+                  child: Icon(
+                    Icons.edit,
+                    color: colors.primaryBlue,
+                    size: 18.sp,
+                  ),
+                ),
+            ],
+          ),
+          Divider(height: 12.h, color: colors.divider),
+
+          // Jenis Cuti
+          _buildLabelValue(colors, 'Jenis Cuti', request.displayLeaveTypeName),
+          SizedBox(height: 12.h),
+
+          // Date Range - 2 columns
+          Text(
+            'Date Range',
+            style: AppTextStyles.caption(colors.textSecondary),
+          ),
+          SizedBox(height: 4.h),
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  request.formattedStartDate,
+                  style: AppTextStyles.body(colors.textPrimary),
+                ),
+              ),
+              Expanded(
+                child: Text(
+                  request.formattedEndDate,
+                  style: AppTextStyles.body(colors.textPrimary),
+                ),
+              ),
+            ],
+          ),
+          Divider(height: 12.h, color: colors.divider),
+          SizedBox(height: 5.h),
+
+          // Status & Pembatalan - 2 columns
+          Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Status',
+                      style: AppTextStyles.caption(colors.textSecondary),
+                    ),
+                    SizedBox(height: 4.h),
+                    _StatusBadge(status: request.displayStatus),
+                  ],
+                ),
+              ),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Pembatalan',
+                      style: AppTextStyles.caption(colors.textSecondary),
+                    ),
+                    SizedBox(height: 4.h),
+                    Text(
+                      request.cancellationStatus,
+                      style: AppTextStyles.body(colors.textPrimary),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          Divider(height: 12.h, color: colors.divider),
+          SizedBox(height: 5.h),
+          Text(
+            'Keterangan',
+            style: AppTextStyles.caption(colors.textSecondary),
+          ),
+          SizedBox(height: 4.h),
+          Text(
+            request.displayRemark,
+            style: AppTextStyles.body(colors.textPrimary, fontSize: 12.sp),
+          ),
+        ],
+      ),
+    );
+
+    if (isApprovalMode) {
+      cardContent = Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Checkbox(
+            value: isSelected,
+            onChanged: onSelectChanged,
+            activeColor: colors.primaryBlue,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(4.r),
+            ),
+            side: BorderSide(
+              color: colors.textSecondary.withValues(alpha: 0.5),
+            ),
+            materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          ),
+          Expanded(child: cardContent),
+        ],
+      );
+    }
+
     return GestureDetector(
       onTap: onTap,
       child: Container(
         margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-        padding: EdgeInsets.all(16.w),
-        decoration: BoxDecoration(
-          color: colors.background,
-          borderRadius: BorderRadius.circular(12.r),
-          border: Border.all(color: colors.divider),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.03),
-              blurRadius: 8,
-              offset: const Offset(0, 2),
-            ),
-          ],
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Header: Nama Karyawan with edit button
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        request.displayEmployeeName,
-                        style: AppTextStyles.h4(
-                          colors.textPrimary,
-                          fontSize: 15.sp,
-                        ),
-                      ),
-                      SizedBox(height: 2.h),
-                      Text(
-                        request.displayRequestNo,
-                        style: AppTextStyles.caption(colors.textSecondary),
-                      ),
-                    ],
-                  ),
-                ),
-                if (request.isDraft && onEdit != null)
-                  GestureDetector(
-                    onTap: onEdit,
-                    child: Icon(
-                      Icons.edit,
-                      color: colors.primaryBlue,
-                      size: 18.sp,
-                    ),
-                  ),
-              ],
-            ),
-            Divider(height: 12.h, color: colors.divider),
-
-            // Jenis Cuti
-            _buildLabelValue(
-              colors,
-              'Jenis Cuti',
-              request.displayLeaveTypeName,
-            ),
-            SizedBox(height: 12.h),
-
-            // Date Range - 2 columns
-            Text(
-              'Date Range',
-              style: AppTextStyles.caption(colors.textSecondary),
-            ),
-            SizedBox(height: 4.h),
-            Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    request.formattedStartDate,
-                    style: AppTextStyles.body(colors.textPrimary),
-                  ),
-                ),
-                Expanded(
-                  child: Text(
-                    request.formattedEndDate,
-                    style: AppTextStyles.body(colors.textPrimary),
-                  ),
-                ),
-              ],
-            ),
-            Divider(height: 12.h, color: colors.divider),
-            SizedBox(height: 5.h),
-
-            // Status & Pembatalan - 2 columns
-            Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Status',
-                        style: AppTextStyles.caption(colors.textSecondary),
-                      ),
-                      SizedBox(height: 4.h),
-                      _StatusBadge(status: request.displayStatus),
-                    ],
-                  ),
-                ),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Pembatalan',
-                        style: AppTextStyles.caption(colors.textSecondary),
-                      ),
-                      SizedBox(height: 4.h),
-                      Text(
-                        request.cancellationStatus,
-                        style: AppTextStyles.body(colors.textPrimary),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-            Divider(height: 12.h, color: colors.divider),
-            SizedBox(height: 5.h),
-            Text(
-              'Keterangan',
-              style: AppTextStyles.caption(colors.textSecondary),
-            ),
-            SizedBox(height: 4.h),
-            Text(
-              request.displayRemark,
-              style: AppTextStyles.body(colors.textPrimary, fontSize: 12.sp),
-            ),
-          ],
-        ),
+        child: cardContent,
       ),
     );
   }

@@ -8,86 +8,117 @@ class OvertimeRequestCard extends StatelessWidget {
   final OvertimeEmployeeModel request;
   final VoidCallback? onTap;
   final VoidCallback? onEdit;
+  final bool isApprovalMode;
+  final bool isSelected;
+  final ValueChanged<bool?>? onSelectChanged;
 
   const OvertimeRequestCard({
     super.key,
     required this.request,
     this.onTap,
     this.onEdit,
+    this.isApprovalMode = false,
+    this.isSelected = false,
+    this.onSelectChanged,
   });
 
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
 
+    Widget cardContent = Container(
+      padding: EdgeInsets.all(16.w),
+      decoration: BoxDecoration(
+        color: colors.background,
+        borderRadius: BorderRadius.circular(12.r),
+        border: Border.all(color: colors.divider),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.03),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        spacing: 3.h,
+        children: [
+          // Header with title and edit button (if DRAFT)
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  'Nomor Permintaan',
+                  style: AppTextStyles.bodySemiBold(colors.textPrimary),
+                ),
+              ),
+              if (request.isDraft && onEdit != null && !isApprovalMode)
+                IconButton(
+                  onPressed: onEdit,
+                  icon: Icon(
+                    Icons.edit,
+                    color: colors.primaryBlue,
+                    size: 20.sp,
+                  ),
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(),
+                  tooltip: 'Edit',
+                ),
+            ],
+          ),
+          SizedBox(height: 2.h),
+          Text(
+            request.displayOvertimeRequestNo,
+            style: AppTextStyles.body(colors.textPrimary),
+          ),
+          SizedBox(height: 12.h),
+          _buildInlineRow(colors, 'Karyawan', request.displayEmployeeName),
+          SizedBox(height: 8.h),
+          _buildInlineRow(colors, 'Tanggal', request.displayDateOvertime),
+          SizedBox(height: 8.h),
+          _buildInlineRow(colors, 'Waktu', request.displayTimeRange),
+          SizedBox(height: 8.h),
+          _buildStatusRow(colors),
+          if (request.remarkOvertime != null &&
+              request.remarkOvertime!.isNotEmpty) ...[
+            SizedBox(height: 8.h),
+            _buildInlineRow(
+              colors,
+              'Keterangan',
+              request.remarkOvertime ?? '-',
+            ),
+          ],
+        ],
+      ),
+    );
+
+    if (isApprovalMode) {
+      cardContent = Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Checkbox(
+            value: isSelected,
+            onChanged: onSelectChanged,
+            activeColor: colors.primaryBlue,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(4.r),
+            ),
+            side: BorderSide(
+              color: colors.textSecondary.withValues(alpha: 0.5),
+            ),
+            materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          ),
+          Expanded(child: cardContent),
+        ],
+      );
+    }
+
     return GestureDetector(
       onTap: onTap,
       child: Container(
         margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-        padding: EdgeInsets.all(16.w),
-        decoration: BoxDecoration(
-          color: colors.background,
-          borderRadius: BorderRadius.circular(12.r),
-          border: Border.all(color: colors.divider),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.03),
-              blurRadius: 8,
-              offset: const Offset(0, 2),
-            ),
-          ],
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          spacing: 3.h,
-          children: [
-            // Header with title and edit button (if DRAFT)
-            Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    'Nomor Permintaan',
-                    style: AppTextStyles.bodySemiBold(colors.textPrimary),
-                  ),
-                ),
-                if (request.isDraft && onEdit != null)
-                  IconButton(
-                    onPressed: onEdit,
-                    icon: Icon(
-                      Icons.edit,
-                      color: colors.primaryBlue,
-                      size: 20.sp,
-                    ),
-                    padding: EdgeInsets.zero,
-                    constraints: const BoxConstraints(),
-                    tooltip: 'Edit',
-                  ),
-              ],
-            ),
-            SizedBox(height: 2.h),
-            Text(
-              request.displayOvertimeRequestNo,
-              style: AppTextStyles.body(colors.textPrimary),
-            ),
-            SizedBox(height: 12.h),
-            _buildInlineRow(colors, 'Karyawan', request.displayEmployeeName),
-            SizedBox(height: 8.h),
-            _buildInlineRow(colors, 'Tanggal', request.displayDateOvertime),
-            SizedBox(height: 8.h),
-            _buildInlineRow(colors, 'Waktu', request.displayTimeRange),
-            SizedBox(height: 8.h),
-            _buildStatusRow(colors),
-            if (request.remarkOvertime != null &&
-                request.remarkOvertime!.isNotEmpty) ...[
-              SizedBox(height: 8.h),
-              _buildInlineRow(
-                colors,
-                'Keterangan',
-                request.remarkOvertime ?? '-',
-              ),
-            ],
-          ],
-        ),
+        child: cardContent,
       ),
     );
   }
