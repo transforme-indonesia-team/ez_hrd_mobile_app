@@ -46,34 +46,102 @@ class _NotificationCategoryTabState extends State<NotificationCategoryTab>
     });
 
     try {
-      final response = await NotificationService().getNotification(
-        notifType: widget.notifType,
-      );
+      if (widget.notifType == 'APPROVAL') {
+        final responses = await Future.wait([
+          NotificationService().getNotification(notifType: 'APPROVAL'),
+          NotificationService().getNotification(notifType: 'HISTORY'),
+        ]);
 
-      final records = response['original']?['records'] ?? response['records'];
+        final recordsApproval =
+            responses[0]['original']?['records'] ?? responses[0]['records'];
+        final recordsHistory =
+            responses[1]['original']?['records'] ?? responses[1]['records'];
 
-      if (records == null || records is List) {
+        final categoriesApproval =
+            recordsApproval != null && recordsApproval is Map
+            ? NotificationCategory.fromApiRecords(
+                recordsApproval as Map<String, dynamic>,
+              )
+            : <NotificationCategory>[];
+
+        final categoriesHistory =
+            recordsHistory != null && recordsHistory is Map
+            ? NotificationCategory.fromApiRecords(
+                recordsHistory as Map<String, dynamic>,
+              )
+            : <NotificationCategory>[];
+
+        final List<NotificationCategory> mergedCategories = [];
+
+        for (final catApproval in categoriesApproval) {
+          final catHistory = categoriesHistory.firstWhere(
+            (c) => c.key == catApproval.key,
+            orElse: () => NotificationCategory(
+              key: catApproval.key,
+              label: catApproval.label,
+              icon: catApproval.icon,
+              itemCount: 0,
+              items: [],
+            ),
+          );
+
+          mergedCategories.add(
+            NotificationCategory(
+              key: catApproval.key,
+              label: catApproval.label,
+              icon: catApproval.icon,
+              itemCount: catApproval
+                  .itemCount, // Hanya tampilkan badge untuk yang PENDING/UNVERIFIED
+              items: [...catApproval.items, ...catHistory.items],
+            ),
+          );
+        }
+
+        // Sort by pending item count descending
+        mergedCategories.sort((a, b) => b.itemCount.compareTo(a.itemCount));
+
         if (mounted) {
           setState(() {
-            _categories = [];
+            _categories = mergedCategories;
             _isLoading = false;
           });
+          // Update parent badge count (only pending/approval count)
+          final totalPendingCount = categoriesApproval.fold(
+            0,
+            (sum, c) => sum + c.itemCount,
+          );
+          widget.onCountChanged?.call(totalPendingCount);
         }
-        return;
-      }
+      } else {
+        final response = await NotificationService().getNotification(
+          notifType: widget.notifType,
+        );
 
-      final categories = NotificationCategory.fromApiRecords(
-        records as Map<String, dynamic>,
-      );
+        final records = response['original']?['records'] ?? response['records'];
 
-      if (mounted) {
-        setState(() {
-          _categories = categories;
-          _isLoading = false;
-        });
-        // Notify parent of total count
-        final totalCount = categories.fold(0, (sum, c) => sum + c.itemCount);
-        widget.onCountChanged?.call(totalCount);
+        if (records == null || records is List) {
+          if (mounted) {
+            setState(() {
+              _categories = [];
+              _isLoading = false;
+            });
+          }
+          return;
+        }
+
+        final categories = NotificationCategory.fromApiRecords(
+          records as Map<String, dynamic>,
+        );
+
+        if (mounted) {
+          setState(() {
+            _categories = categories;
+            _isLoading = false;
+          });
+          // Notify parent of total count
+          final totalCount = categories.fold(0, (sum, c) => sum + c.itemCount);
+          widget.onCountChanged?.call(totalCount);
+        }
       }
     } catch (e) {
       debugPrint('Error fetching notifications: $e');
