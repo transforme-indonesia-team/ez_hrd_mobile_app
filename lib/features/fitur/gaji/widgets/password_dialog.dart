@@ -19,15 +19,15 @@ class PasswordDialog extends StatefulWidget {
   @override
   State<PasswordDialog> createState() => _PasswordDialogState();
 
-  /// Show dialog and return true if password is correct
-  static Future<bool?> show({
+  /// Show dialog and return true if password is correct, or 'NOT_SET' if password payroll isn't set
+  static Future<dynamic> show({
     required BuildContext context,
     required Future<bool> Function(String password, String passwordPayroll)
     onSubmit,
     String title = 'Masukkan Kata Sandi',
     String? subtitle,
   }) {
-    return showDialog<bool>(
+    return showDialog<dynamic>(
       context: context,
       barrierDismissible: false,
       builder: (context) =>
@@ -80,6 +80,12 @@ class _PasswordDialogState extends State<PasswordDialog> {
     } catch (e) {
       if (mounted) {
         String errorMsg = e.toString();
+
+        if (errorMsg.contains('PASSWORD_PAYROLL_NOT_SET')) {
+          Navigator.pop(context, 'NOT_SET');
+          return;
+        }
+
         if (errorMsg.startsWith('Exception: ')) {
           errorMsg = errorMsg.replaceFirst('Exception: ', '');
         }

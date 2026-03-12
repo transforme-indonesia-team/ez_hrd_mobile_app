@@ -5,11 +5,21 @@ import 'package:hrd_app/core/theme/app_text_styles.dart';
 import 'package:hrd_app/core/widgets/user_avatar.dart';
 import 'package:hrd_app/data/models/notification_model.dart';
 
+import 'package:hrd_app/core/utils/format_date.dart';
+
 class NotificationItemCard extends StatelessWidget {
   final NotificationItem item;
   final VoidCallback? onTap;
+  final bool showApprovalActions;
+  final ValueChanged<String>? onApprovalAction;
 
-  const NotificationItemCard({super.key, required this.item, this.onTap});
+  const NotificationItemCard({
+    super.key,
+    required this.item,
+    this.onTap,
+    this.showApprovalActions = false,
+    this.onApprovalAction,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -150,6 +160,10 @@ class NotificationItemCard extends StatelessWidget {
                         ],
                       ),
 
+                      // Details (Date range, etc)
+                      SizedBox(height: 8.h),
+                      _buildDetails(colors),
+
                       // Row 3: Remark
                       if (item.remark != null && item.remark!.isNotEmpty) ...[
                         SizedBox(height: 6.h),
@@ -160,6 +174,11 @@ class NotificationItemCard extends StatelessWidget {
                           overflow: TextOverflow.ellipsis,
                         ),
                       ],
+
+                      if (showApprovalActions) ...[
+                        SizedBox(height: 12.h),
+                        _buildActionButtons(colors),
+                      ],
                     ],
                   ),
                 ),
@@ -168,6 +187,94 @@ class NotificationItemCard extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildDetails(ThemeColors colors) {
+    if (item.startLeave != null && item.endLeave != null) {
+      final dateRange = FormatDate.dateRangeFromString(
+        item.startLeave,
+        item.endLeave,
+      );
+      return Text(dateRange, style: AppTextStyles.body(colors.textPrimary));
+    } else if (item.dateOvertime != null) {
+      final date = FormatDate.fromString(item.dateOvertime);
+      final timeRange =
+          '${item.startOvertime ?? ''} - ${item.endOvertime ?? ''}';
+      return Text(
+        '$date\n$timeRange',
+        style: AppTextStyles.body(colors.textPrimary),
+      );
+    } else if (item.startDateCorrection != null &&
+        item.endDateCorrection != null) {
+      final dateRange = FormatDate.dateRangeFromString(
+        item.startDateCorrection,
+        item.endDateCorrection,
+      );
+      return Text(dateRange, style: AppTextStyles.body(colors.textPrimary));
+    }
+    return const SizedBox.shrink();
+  }
+
+  Widget _buildActionButtons(ThemeColors colors) {
+    return Row(
+      children: [
+        Container(
+          decoration: BoxDecoration(
+            border: Border.all(color: colors.divider),
+            borderRadius: BorderRadius.circular(8.r),
+          ),
+          child: IconButton(
+            onPressed: () => onApprovalAction?.call('REJECT'),
+            icon: Icon(Icons.close, color: Colors.red, size: 20.sp),
+            padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
+            constraints: const BoxConstraints(),
+          ),
+        ),
+        SizedBox(width: 8.w),
+        Expanded(
+          flex: 1,
+          child: OutlinedButton.icon(
+            onPressed: () => onApprovalAction?.call('REVISE'),
+            icon: Icon(
+              Icons.edit_outlined,
+              color: colors.primaryBlue,
+              size: 16.sp,
+            ),
+            label: Text(
+              'Revisi',
+              style: AppTextStyles.bodyMedium(colors.primaryBlue),
+            ),
+            style: OutlinedButton.styleFrom(
+              padding: EdgeInsets.symmetric(vertical: 8.h),
+              side: BorderSide(color: colors.divider),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8.r),
+              ),
+            ),
+          ),
+        ),
+        SizedBox(width: 8.w),
+        Expanded(
+          flex: 2,
+          child: ElevatedButton.icon(
+            onPressed: () => onApprovalAction?.call('APPROVE'),
+            icon: Icon(Icons.check, color: Colors.white, size: 16.sp),
+            label: Text(
+              'Menyetujui',
+              style: AppTextStyles.bodyMedium(Colors.white),
+            ),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: colors.primaryBlue,
+              padding: EdgeInsets.symmetric(vertical: 8.h),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8.r),
+              ),
+              elevation: 0,
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

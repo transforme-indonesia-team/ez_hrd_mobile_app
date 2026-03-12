@@ -144,7 +144,10 @@ class _NotificationCategoryTabState extends State<NotificationCategoryTab>
               await Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (_) => NotificationListScreen(category: category),
+                  builder: (_) => NotificationListScreen(
+                    category: category,
+                    notifType: widget.notifType,
+                  ),
                 ),
               );
               // Refresh data when coming back

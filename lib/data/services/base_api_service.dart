@@ -358,6 +358,15 @@ class BaseApiService {
 
     // Validasi status
     final code = original['code'] as int?;
+
+    // Exception khusus untuk PASSWORD_PAYROLL_NOT_SET meskipun statusnya true / code 500
+    if (original['records'] != null && original['records'] is Map) {
+      final records = original['records'] as Map;
+      if (records['error'] == 'PASSWORD_PAYROLL_NOT_SET') {
+        throw Exception('PASSWORD_PAYROLL_NOT_SET');
+      }
+    }
+
     if (original['status'] != true ||
         code == null ||
         code < 200 ||
@@ -384,6 +393,14 @@ class BaseApiService {
       }
 
       final code = responseData['code'] as int?;
+
+      if (responseData['records'] != null && responseData['records'] is Map) {
+        final records = responseData['records'] as Map;
+        if (records['error'] == 'PASSWORD_PAYROLL_NOT_SET') {
+          throw Exception('PASSWORD_PAYROLL_NOT_SET');
+        }
+      }
+
       if (responseData['status'] != true ||
           code == null ||
           code < 200 ||
@@ -416,8 +433,21 @@ class BaseApiService {
       if (e.response?.statusCode == 401 && _hasAuthToken()) {
         return Exception('Sesi Anda telah berakhir. Silakan login kembali.');
       }
-      final message = e.response?.data['message'];
-      return Exception(message ?? errorMessage ?? 'Request gagal');
+
+      final data = e.response?.data;
+      if (data is Map) {
+        if (data['records'] != null && data['records'] is Map) {
+          final records = data['records'] as Map;
+          if (records['error'] == 'PASSWORD_PAYROLL_NOT_SET') {
+            return Exception('PASSWORD_PAYROLL_NOT_SET');
+          }
+        }
+
+        final message = data['message'];
+        return Exception(message ?? errorMessage ?? 'Request gagal');
+      }
+
+      return Exception(errorMessage ?? 'Request gagal');
     }
 
     return Exception('Tidak dapat terhubung ke server');

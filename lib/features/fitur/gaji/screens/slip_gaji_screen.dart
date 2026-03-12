@@ -9,6 +9,7 @@ import 'package:hrd_app/data/models/payroll_detail_model.dart';
 import 'package:hrd_app/data/models/payslip_model.dart';
 import 'package:hrd_app/data/services/slip_gaji_service.dart';
 import 'package:hrd_app/features/fitur/gaji/screens/detail_slip_gaji_screen.dart';
+import 'package:hrd_app/features/fitur/gaji/screens/kata_sandi_slip_gaji_screen.dart';
 import 'package:hrd_app/features/fitur/gaji/widgets/password_dialog.dart';
 import 'package:hrd_app/features/fitur/gaji/widgets/payslip_card.dart';
 
@@ -190,6 +191,20 @@ class _SlipGajiScreenState extends State<SlipGajiScreen> {
         }
       },
     );
+
+    // Handle specific NOT_SET case
+    if (result == 'NOT_SET' && mounted) {
+      context.showInfoSnackbar(
+        'Silakan atur kata sandi slip gaji terlebih dahulu',
+      );
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const KataSandiSlipGajiScreen(),
+        ),
+      );
+      return;
+    }
 
     // If password correct, navigate to detail
     if (result == true && mounted) {

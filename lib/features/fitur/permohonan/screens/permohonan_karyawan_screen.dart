@@ -19,7 +19,14 @@ import 'package:hrd_app/features/fitur/lembur/widgets/overtime_request_card.dart
 import 'package:hrd_app/features/fitur/lembur/widgets/pagination_widget.dart';
 
 class PermohonanKaryawanScreen extends StatefulWidget {
-  const PermohonanKaryawanScreen({super.key});
+  final int initialTab;
+  final String? initialTipePermintaan;
+
+  const PermohonanKaryawanScreen({
+    super.key,
+    this.initialTab = 0,
+    this.initialTipePermintaan,
+  });
 
   @override
   State<PermohonanKaryawanScreen> createState() =>
@@ -64,7 +71,13 @@ class _PermohonanKaryawanScreenState extends State<PermohonanKaryawanScreen>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this);
+    _tabController = TabController(
+      length: 2,
+      vsync: this,
+      initialIndex: widget.initialTab,
+    );
+    _selectedTipe = widget.initialTipePermintaan;
+
     _tabController.addListener(() {
       if (_tabController.indexIsChanging) return;
       // Re-fetch data when switching tabs (different endpoint)
@@ -77,6 +90,10 @@ class _PermohonanKaryawanScreenState extends State<PermohonanKaryawanScreen>
         setState(() {});
       }
     });
+
+    if (_selectedTipe != null) {
+      _fetchData();
+    }
   }
 
   @override

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hrd_app/core/theme/app_text_styles.dart';
 import 'package:hrd_app/core/utils/image_url_extension.dart';
+import 'package:hrd_app/features/beranda/widgets/company_switcher_bottom_sheet.dart';
 import 'package:hrd_app/features/profile/screens/pengaturan_personal_screen.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
@@ -94,9 +95,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 },
               ),
               MenuItemModel(
-                icon: Icons.local_parking_outlined,
-                title: 'EZ Parking',
-                onTap: () {},
+                icon: Icons.business_outlined,
+                title:
+                    authProvider.selectedCompany?.companyName ??
+                    'Pilih Perusahaan',
+                onTap: () {
+                  CompanySwitcherBottomSheet.show(context);
+                },
               ),
             ]),
             const SizedBox(height: 16),
