@@ -124,6 +124,7 @@ class LeaveService {
     String? search,
     String? startDate,
     String? endDate,
+    String? approvalStatus,
   }) async {
     return _api.get(
       '/leave-approval',
@@ -133,6 +134,7 @@ class LeaveService {
         if (search != null) 'search': search,
         if (startDate != null) 'filter[start_date]': startDate,
         if (endDate != null) 'filter[end_date]': endDate,
+        if (approvalStatus != null) 'approval_status': approvalStatus,
       },
     );
   }
@@ -162,6 +164,7 @@ class LeaveService {
     String? search,
     String? startDate,
     String? endDate,
+    String? approvalStatus,
   }) async {
     return _api.get(
       '/leave-cancellation-approval',
@@ -171,6 +174,7 @@ class LeaveService {
         if (search != null) 'search': search,
         if (startDate != null) 'filter[start_date]': startDate,
         if (endDate != null) 'filter[end_date]': endDate,
+        if (approvalStatus != null) 'approval_status': approvalStatus,
       },
     );
   }

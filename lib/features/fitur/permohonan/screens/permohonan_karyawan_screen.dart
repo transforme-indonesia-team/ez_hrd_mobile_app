@@ -140,10 +140,15 @@ class _PermohonanKaryawanScreenState extends State<PermohonanKaryawanScreen>
   // ============ Fetch methods ============
 
   Future<void> _fetchCorrectionData() async {
+    final approvalStatus = _isApprovalTab
+        ? (_selectedPersetujuanFilter == 0 ? 'UNAPPROVED' : 'HISTORY')
+        : null;
+
     final response = _isApprovalTab
         ? await AttendanceCorrectionService().getAttendanceCorrectionApproval(
             pages: _currentPage.toString(),
             sizes: '10',
+            approvalStatus: approvalStatus,
           )
         : await AttendanceCorrectionService().getAttendanceCorrection(
             pages: _currentPage.toString(),
@@ -165,10 +170,15 @@ class _PermohonanKaryawanScreenState extends State<PermohonanKaryawanScreen>
   }
 
   Future<void> _fetchLeaveData() async {
+    final approvalStatus = _isApprovalTab
+        ? (_selectedPersetujuanFilter == 0 ? 'UNAPPROVED' : 'HISTORY')
+        : null;
+
     final response = _isApprovalTab
         ? await LeaveService().getLeaveEmployeeApproval(
             page: _currentPage,
             limit: 10,
+            approvalStatus: approvalStatus,
           )
         : await LeaveService().getLeaveEmployee(page: _currentPage, limit: 10);
 
@@ -184,10 +194,15 @@ class _PermohonanKaryawanScreenState extends State<PermohonanKaryawanScreen>
   }
 
   Future<void> _fetchOvertimeData() async {
+    final approvalStatus = _isApprovalTab
+        ? (_selectedPersetujuanFilter == 0 ? 'UNAPPROVED' : 'HISTORY')
+        : null;
+
     final response = _isApprovalTab
         ? await OvertimeService().getOvertimeEmployeeApproval(
             page: _currentPage,
             limit: 10,
+            approvalStatus: approvalStatus,
           )
         : await OvertimeService().getOvertimeEmployee(
             page: _currentPage,
@@ -208,10 +223,15 @@ class _PermohonanKaryawanScreenState extends State<PermohonanKaryawanScreen>
   }
 
   Future<void> _fetchCancellationData() async {
+    final approvalStatus = _isApprovalTab
+        ? (_selectedPersetujuanFilter == 0 ? 'UNAPPROVED' : 'HISTORY')
+        : null;
+
     final response = _isApprovalTab
         ? await LeaveService().getLeaveCancellationApproval(
             page: _currentPage,
             limit: 10,
+            approvalStatus: approvalStatus,
           )
         : await LeaveService().getLeaveCancellation(
             page: _currentPage,
@@ -831,7 +851,20 @@ class _PermohonanKaryawanScreenState extends State<PermohonanKaryawanScreen>
                 padding: EdgeInsets.only(right: 8.w),
                 child: GestureDetector(
                   onTap: () {
-                    setState(() => _selectedPersetujuanFilter = index);
+                    if (_selectedPersetujuanFilter != index) {
+                      setState(() {
+                        _selectedPersetujuanFilter = index;
+                        _currentPage = 1;
+                        _correctionRequests = [];
+                        _leaveRequests = [];
+                        _overtimeRequests = [];
+                        _cancellationRequests = [];
+                        _selectedIds.clear();
+                      });
+                      if (_selectedTipe != null) {
+                        _fetchData();
+                      }
+                    }
                   },
                   child: Container(
                     padding: EdgeInsets.symmetric(

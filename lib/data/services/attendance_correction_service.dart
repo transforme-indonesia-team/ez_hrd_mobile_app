@@ -51,6 +51,7 @@ class AttendanceCorrectionService {
     String? startDate,
     String? endDate,
     String? status,
+    String? approvalStatus,
   }) async {
     return _api.get(
       '/attendance-approval',
@@ -62,6 +63,7 @@ class AttendanceCorrectionService {
         'start_date': startDate,
         'end_date': endDate,
         'status': status,
+        if (approvalStatus != null) 'approval_status': approvalStatus,
       },
     );
   }
