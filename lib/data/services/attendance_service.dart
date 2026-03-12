@@ -52,7 +52,7 @@ class AttendanceService {
       ),
       'employee_code': employeeCode,
       'absent': absentTime,
-      // 'absent': '2026-03-05 15:15:00', //hardcode
+      // 'absent': '2026-03-12 10:15:00', //hardcode
     });
 
     return _api.postFormData('/attendance/absent', formData);

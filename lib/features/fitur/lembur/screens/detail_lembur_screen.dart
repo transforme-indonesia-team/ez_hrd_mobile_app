@@ -11,6 +11,7 @@ import 'package:hrd_app/core/widgets/user_avatar.dart';
 import 'package:hrd_app/data/models/overtime_employee_model.dart';
 import 'package:hrd_app/data/services/overtime_service.dart';
 import 'package:hrd_app/features/fitur/lembur/widgets/detail_lembur_widgets.dart';
+import 'package:hrd_app/core/utils/snackbar_utils.dart';
 import 'package:hrd_app/features/fitur/lembur/screens/edit_lembur_screen.dart';
 
 class DetailLemburScreen extends StatefulWidget {
@@ -99,23 +100,15 @@ class _DetailLemburScreenState extends State<DetailLemburScreen> {
 
       if (isSuccess) {
         if (mounted) {
-          // Show success message
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(records['message'] ?? 'Lembur berhasil dibatalkan'),
-              backgroundColor: ColorPalette.green600,
-            ),
+          context.showSuccessSnackbar(
+            records['message'] ?? 'Lembur berhasil dibatalkan',
           );
-          // Navigate back to list
           Navigator.pop(context, true); // true = refresh list
         }
       } else {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(records['message'] ?? 'Gagal membatalkan lembur'),
-              backgroundColor: ColorPalette.red500,
-            ),
+          context.showErrorSnackbar(
+            records['message'] ?? 'Gagal membatalkan lembur',
           );
         }
       }
@@ -124,12 +117,7 @@ class _DetailLemburScreenState extends State<DetailLemburScreen> {
       if (mounted) Navigator.pop(context);
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error: $e'),
-            backgroundColor: ColorPalette.red500,
-          ),
-        );
+        context.showErrorSnackbar('Error: $e');
       }
     }
   }
@@ -358,29 +346,21 @@ class _DetailLemburScreenState extends State<DetailLemburScreen> {
         final isSuccess = records['status'] == true || records['code'] == 200;
 
         if (isSuccess) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(records['message'] ?? 'Berhasil memproses data'),
-              backgroundColor: Colors.green,
-            ),
+          context.showSuccessSnackbar(
+            records['message'] ?? 'Berhasil memproses data',
           );
 
           Navigator.pop(context, true); // true = refresh list
         } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(records['message'] ?? 'Gagal memproses data'),
-              backgroundColor: Colors.red,
-            ),
+          context.showErrorSnackbar(
+            records['message'] ?? 'Gagal memproses data',
           );
         }
       }
     } catch (e) {
       if (mounted) {
         Navigator.pop(context); // Close loading
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
-        );
+        context.showErrorSnackbar('Error: $e');
       }
     } finally {
       if (mounted) setState(() => _isProcessingApproval = false);

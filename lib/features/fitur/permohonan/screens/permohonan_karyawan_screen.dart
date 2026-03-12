@@ -14,6 +14,7 @@ import 'package:hrd_app/features/fitur/cuti/widgets/leave_request_card.dart';
 import 'package:hrd_app/features/fitur/koreksi_kehadiran/screens/detail_koreksi_kehadiran_screen.dart';
 import 'package:hrd_app/features/fitur/koreksi_kehadiran/widgets/attendance_correction_card.dart';
 import 'package:hrd_app/features/fitur/lembur/screens/detail_lembur_screen.dart';
+import 'package:hrd_app/core/utils/snackbar_utils.dart';
 import 'package:hrd_app/features/fitur/lembur/widgets/overtime_request_card.dart';
 import 'package:hrd_app/features/fitur/lembur/widgets/pagination_widget.dart';
 
@@ -468,11 +469,8 @@ class _PermohonanKaryawanScreenState extends State<PermohonanKaryawanScreen>
         final isSuccess = records['status'] == true || records['code'] == 200;
 
         if (isSuccess) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(records['message'] ?? 'Berhasil memproses data'),
-              backgroundColor: Colors.green,
-            ),
+          context.showSuccessSnackbar(
+            records['message'] ?? 'Berhasil memproses data',
           );
 
           // Refresh list dan bersihkan seleksi
@@ -481,20 +479,15 @@ class _PermohonanKaryawanScreenState extends State<PermohonanKaryawanScreen>
           });
           _fetchData();
         } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(records['message'] ?? 'Gagal memproses data'),
-              backgroundColor: Colors.red,
-            ),
+          context.showErrorSnackbar(
+            records['message'] ?? 'Gagal memproses data',
           );
         }
       }
     } catch (e) {
       if (mounted) {
         Navigator.pop(context); // Close loading
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
-        );
+        context.showErrorSnackbar('Error: $e');
       }
     } finally {
       if (mounted) setState(() => _isProcessingApproval = false);

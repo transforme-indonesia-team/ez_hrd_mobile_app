@@ -14,11 +14,14 @@ import 'package:provider/provider.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:file_picker/file_picker.dart';
 
+import 'package:hrd_app/data/models/attendance_correction_model.dart';
+
 class FormKoreksiKehadiranScreen extends StatefulWidget {
   final DateTime? initialStartDate;
   final DateTime? initialEndDate;
   final String? employeeProfile;
   final String? employeeName;
+  final AttendanceCorrectionModel? existingCorrection;
 
   const FormKoreksiKehadiranScreen({
     super.key,
@@ -26,6 +29,7 @@ class FormKoreksiKehadiranScreen extends StatefulWidget {
     this.initialEndDate,
     this.employeeProfile,
     this.employeeName,
+    this.existingCorrection,
   });
 
   @override
@@ -48,8 +52,25 @@ class _FormKoreksiKehadiranScreenState
   @override
   void initState() {
     super.initState();
-    _startDate = widget.initialStartDate ?? DateTime.now();
-    _endDate = widget.initialEndDate ?? DateTime.now();
+    if (widget.existingCorrection != null) {
+      try {
+        _startDate = DateTime.parse(
+          widget.existingCorrection!.startDateAttendanceCorrection ?? '',
+        );
+      } catch (e) {
+        _startDate = DateTime.now();
+      }
+      try {
+        _endDate = DateTime.parse(
+          widget.existingCorrection!.endDateAttendanceCorrection ?? '',
+        );
+      } catch (e) {
+        _endDate = DateTime.now();
+      }
+    } else {
+      _startDate = widget.initialStartDate ?? DateTime.now();
+      _endDate = widget.initialEndDate ?? DateTime.now();
+    }
   }
 
   Future<void> _selectDate({required bool isStart}) async {
@@ -235,6 +256,7 @@ class _FormKoreksiKehadiranScreenState
             scheduleShifts: shifts,
             employeeProfile: employeeProfile,
             employeeName: employeeName,
+            existingCorrection: widget.existingCorrection,
           ),
         ),
       );
@@ -264,7 +286,9 @@ class _FormKoreksiKehadiranScreenState
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
-          'Form Koreksi Kehadiran',
+          widget.existingCorrection != null
+              ? 'Edit Form Koreksi'
+              : 'Form Koreksi Kehadiran',
           style: AppTextStyles.h3(colors.textPrimary),
         ),
       ),

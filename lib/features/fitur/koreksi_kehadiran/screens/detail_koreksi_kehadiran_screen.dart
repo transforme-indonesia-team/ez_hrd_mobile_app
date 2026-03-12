@@ -7,6 +7,8 @@ import 'package:hrd_app/core/utils/format_date.dart';
 import 'package:hrd_app/core/widgets/user_avatar.dart';
 import 'package:hrd_app/data/models/attendance_correction_model.dart';
 import 'package:hrd_app/data/services/attendance_correction_service.dart';
+import 'package:hrd_app/features/fitur/koreksi_kehadiran/screens/form_koreksi_kehadiran_screen.dart';
+import 'package:hrd_app/core/utils/snackbar_utils.dart';
 import 'package:hrd_app/features/fitur/lembur/widgets/detail_lembur_widgets.dart';
 
 class DetailKoreksiKehadiranScreen extends StatefulWidget {
@@ -103,25 +105,15 @@ class _DetailKoreksiKehadiranScreenState
 
       if (isSuccess) {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                records['message'] ?? 'Koreksi kehadiran berhasil dibatalkan',
-              ),
-              backgroundColor: ColorPalette.green600,
-            ),
+          context.showSuccessSnackbar(
+            records['message'] ?? 'Koreksi kehadiran berhasil dibatalkan',
           );
           Navigator.pop(context, true); // true = refresh list
         }
       } else {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                records['message'] ?? 'Gagal membatalkan koreksi kehadiran',
-              ),
-              backgroundColor: ColorPalette.red500,
-            ),
+          context.showErrorSnackbar(
+            records['message'] ?? 'Gagal membatalkan koreksi kehadiran',
           );
         }
       }
@@ -130,12 +122,7 @@ class _DetailKoreksiKehadiranScreenState
       if (mounted) Navigator.pop(context);
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error: $e'),
-            backgroundColor: ColorPalette.red500,
-          ),
-        );
+        context.showErrorSnackbar('Error: $e');
       }
     }
   }
@@ -296,29 +283,21 @@ class _DetailKoreksiKehadiranScreenState
         final isSuccess = records['status'] == true || records['code'] == 200;
 
         if (isSuccess) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(records['message'] ?? 'Berhasil memproses data'),
-              backgroundColor: Colors.green,
-            ),
+          context.showSuccessSnackbar(
+            records['message'] ?? 'Berhasil memproses data',
           );
 
           Navigator.pop(context, true); // true = refresh list
         } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(records['message'] ?? 'Gagal memproses data'),
-              backgroundColor: Colors.red,
-            ),
+          context.showErrorSnackbar(
+            records['message'] ?? 'Gagal memproses data',
           );
         }
       }
     } catch (e) {
       if (mounted) {
         Navigator.pop(context); // Close loading
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
-        );
+        context.showErrorSnackbar('Error: $e');
       }
     } finally {
       if (mounted) setState(() => _isProcessingApproval = false);
@@ -952,78 +931,20 @@ class _DetailKoreksiKehadiranScreenState
             padding: EdgeInsets.symmetric(vertical: 8.h),
             child: Row(
               children: [
-                UserAvatar(
-                  avatarUrl: approver.approverProfile,
-                  name: approver.userName,
-                  size: 40,
-                  fontSize: 14,
-                ),
-                SizedBox(width: 12.w),
                 Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        approver.userName ?? '-',
-                        style: AppTextStyles.bodyMedium(
-                          colors.textPrimary,
-                        ).copyWith(fontWeight: FontWeight.w600),
-                        overflow: TextOverflow.ellipsis,
-                        maxLines: 1,
-                      ),
-                      Text(
-                        approver.jobGradeName ?? '-',
-                        style: AppTextStyles.caption(colors.textSecondary),
-                        overflow: TextOverflow.ellipsis,
-                        maxLines: 1,
-                      ),
-                    ],
-                  ),
-                ),
-                SizedBox(width: 12.w),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Container(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 12.w,
-                        vertical: 6.h,
-                      ),
-                      decoration: BoxDecoration(
-                        color: _getStatusColor(
-                          approver.statusAttendanceCorrection,
-                        ).withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(4.r),
-                        border: Border.all(
-                          color: _getStatusColor(
-                            approver.statusAttendanceCorrection,
-                          ).withValues(alpha: 0.3),
-                          width: 1,
-                        ),
-                      ),
-                      child: Text(
-                        _getStatusLabel(approver.statusAttendanceCorrection),
-                        style:
-                            AppTextStyles.caption(
-                              _getStatusColor(
-                                approver.statusAttendanceCorrection,
-                              ),
-                            ).copyWith(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 11.sp,
-                            ),
-                      ),
+                  child: ApprovalListItem(
+                    name: approver.userName ?? '-',
+                    role: approver.jobGradeName ?? '-',
+                    status: _getStatusLabel(
+                      approver.statusAttendanceCorrection,
                     ),
-                    if (approver.displayApprovalDate.isNotEmpty) ...[
-                      SizedBox(height: 4.h),
-                      Text(
-                        approver.displayApprovalDate,
-                        style: AppTextStyles.caption(
-                          colors.textSecondary,
-                        ).copyWith(fontSize: 10.sp),
-                      ),
-                    ],
-                  ],
+                    statusColor: _getStatusColor(
+                      approver.statusAttendanceCorrection,
+                    ),
+                    photoUrl: approver.approverProfile,
+                    date: approver.displayApprovalDate,
+                    remark: approver.remarkAttendanceCorrection,
+                  ),
                 ),
               ],
             ),
@@ -1074,8 +995,81 @@ class _DetailKoreksiKehadiranScreenState
 
   // ─── Bottom Action Button ─────────────────────────────────────
   Widget _buildBottomButton(ThemeColors colors) {
-    // UNVERIFIED → "Batalkan" (red filled)
-    if (_data!.isUnverified) {
+    final status = _data!.statusAttendanceCorrection?.toUpperCase();
+    final canCancel = status == 'UNVERIFIED' || status == 'PENDING';
+    final isRevised = status == 'REVISE' || status == 'REVISED';
+
+    if (!canCancel && !isRevised && !_data!.isApproved) {
+      return const SizedBox.shrink();
+    }
+
+    if (isRevised) {
+      return SafeArea(
+        child: Container(
+          padding: EdgeInsets.all(16.w),
+          child: Row(
+            children: [
+              Expanded(
+                child: SizedBox(
+                  height: 44.h,
+                  child: ElevatedButton(
+                    onPressed: () => _showCancelConfirmation(),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: ColorPalette.red500,
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8.r),
+                      ),
+                      elevation: 0,
+                    ),
+                    child: Text(
+                      'Batalkan',
+                      style: AppTextStyles.bodySemiBold(Colors.white),
+                    ),
+                  ),
+                ),
+              ),
+              SizedBox(width: 12.w),
+              Expanded(
+                child: SizedBox(
+                  height: 44.h,
+                  child: ElevatedButton(
+                    onPressed: () async {
+                      final result = await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => FormKoreksiKehadiranScreen(
+                            existingCorrection: _data,
+                          ),
+                        ),
+                      );
+                      if (result == true && mounted) {
+                        _fetchData();
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: colors.primaryBlue,
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8.r),
+                      ),
+                      elevation: 0,
+                    ),
+                    child: Text(
+                      'Ubah',
+                      style: AppTextStyles.bodySemiBold(Colors.white),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    // UNVERIFIED / PENDING → "Batalkan" (red filled)
+    if (canCancel) {
       return SafeArea(
         child: Container(
           padding: EdgeInsets.all(16.w),

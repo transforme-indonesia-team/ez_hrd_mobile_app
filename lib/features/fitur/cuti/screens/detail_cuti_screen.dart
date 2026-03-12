@@ -8,6 +8,8 @@ import 'package:hrd_app/core/widgets/empty_state_widget.dart';
 import 'package:hrd_app/core/widgets/skeleton_widget.dart';
 import 'package:hrd_app/data/models/leave_employee_model.dart';
 import 'package:hrd_app/data/services/leave_service.dart';
+import 'package:hrd_app/features/fitur/cuti/screens/form_permintaan_cuti.dart';
+import 'package:hrd_app/core/utils/snackbar_utils.dart';
 import 'package:hrd_app/features/fitur/lembur/widgets/detail_lembur_widgets.dart';
 
 class DetailCutiScreen extends StatefulWidget {
@@ -169,21 +171,15 @@ class _DetailCutiScreenState extends State<DetailCutiScreen> {
 
       if (isSuccess) {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(records['message'] ?? 'Cuti berhasil dibatalkan'),
-              backgroundColor: ColorPalette.green600,
-            ),
+          context.showSuccessSnackbar(
+            records['message'] ?? 'Cuti berhasil dibatalkan',
           );
           Navigator.pop(context, true);
         }
       } else {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(records['message'] ?? 'Gagal membatalkan cuti'),
-              backgroundColor: ColorPalette.red500,
-            ),
+          context.showErrorSnackbar(
+            records['message'] ?? 'Gagal membatalkan cuti',
           );
         }
       }
@@ -191,12 +187,7 @@ class _DetailCutiScreenState extends State<DetailCutiScreen> {
       if (mounted) Navigator.pop(context);
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error: $e'),
-            backgroundColor: ColorPalette.red500,
-          ),
-        );
+        context.showErrorSnackbar('Error: $e');
       }
     }
   }
@@ -365,29 +356,21 @@ class _DetailCutiScreenState extends State<DetailCutiScreen> {
         final isSuccess = records['status'] == true || records['code'] == 200;
 
         if (isSuccess) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(records['message'] ?? 'Berhasil memproses data'),
-              backgroundColor: Colors.green,
-            ),
+          context.showSuccessSnackbar(
+            records['message'] ?? 'Berhasil memproses data',
           );
 
           Navigator.pop(context, true); // true = refresh list
         } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(records['message'] ?? 'Gagal memproses data'),
-              backgroundColor: Colors.red,
-            ),
+          context.showErrorSnackbar(
+            records['message'] ?? 'Gagal memproses data',
           );
         }
       }
     } catch (e) {
       if (mounted) {
         Navigator.pop(context); // Close loading
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
-        );
+        context.showErrorSnackbar('Error: $e');
       }
     } finally {
       if (mounted) setState(() => _isProcessingApproval = false);
@@ -880,6 +863,8 @@ class _DetailCutiScreenState extends State<DetailCutiScreen> {
           status: _getStatusLabel(approver.statusApproval),
           statusColor: _getStatusColor(approver.statusApproval),
           photoUrl: approver.approverProfile,
+          date: FormatDate.fromStringWithTime(approver.approvalAt),
+          remark: approver.remarkLeaveEmployee,
         );
       },
     );
@@ -917,32 +902,92 @@ class _DetailCutiScreenState extends State<DetailCutiScreen> {
   }
 
   Widget _buildCancelButton(ThemeColors colors, LeaveEmployeeModel data) {
-    if (!_canCancel(data)) return const SizedBox.shrink();
+    final status = data.status?.toUpperCase();
+    final canCancel = status == 'UNVERIFIED' || status == 'PENDING';
+    final isRevised = status == 'REVISE' || status == 'REVISED';
+
+    if (!canCancel && !isRevised) return const SizedBox.shrink();
 
     return SafeArea(
       child: Container(
         padding: EdgeInsets.all(16.w),
-        child: SizedBox(
-          width: double.infinity,
-          height: 40.h,
-          child: ElevatedButton(
-            onPressed: () {
-              _showCancelConfirmation(context);
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: ColorPalette.red500,
-              foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8.r),
+        child: (isRevised && !widget.isCancellation)
+            ? Row(
+                children: [
+                  Expanded(
+                    child: SizedBox(
+                      height: 40.h,
+                      child: ElevatedButton(
+                        onPressed: () => _showCancelConfirmation(context),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: ColorPalette.red500,
+                          foregroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8.r),
+                          ),
+                          elevation: 0,
+                        ),
+                        child: Text(
+                          'Batalkan',
+                          style: AppTextStyles.bodySemiBold(Colors.white),
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 12.w),
+                  Expanded(
+                    child: SizedBox(
+                      height: 40.h,
+                      child: ElevatedButton(
+                        onPressed: () async {
+                          final result = await Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => FormPermintaanCutiScreeen(
+                                existingLeave: data,
+                              ),
+                            ),
+                          );
+                          if (result == true && mounted) {
+                            _fetchData();
+                          }
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: colors.primaryBlue,
+                          foregroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8.r),
+                          ),
+                          elevation: 0,
+                        ),
+                        child: Text(
+                          'Ubah',
+                          style: AppTextStyles.bodySemiBold(Colors.white),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              )
+            : SizedBox(
+                width: double.infinity,
+                height: 40.h,
+                child: ElevatedButton(
+                  onPressed: () => _showCancelConfirmation(context),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: ColorPalette.red500,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8.r),
+                    ),
+                    elevation: 0,
+                  ),
+                  child: Text(
+                    'Batalkan',
+                    style: AppTextStyles.bodySemiBold(Colors.white),
+                  ),
+                ),
               ),
-              elevation: 0,
-            ),
-            child: Text(
-              'Batalkan',
-              style: AppTextStyles.bodySemiBold(Colors.white),
-            ),
-          ),
-        ),
       ),
     );
   }

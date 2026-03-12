@@ -53,7 +53,7 @@ class AttendanceCorrectionService {
     String? status,
   }) async {
     return _api.get(
-      '/attendance-correction-approval',
+      '/attendance-approval',
       queryParameters: {
         'pages': pages,
         'sizes': sizes,
@@ -70,15 +70,26 @@ class AttendanceCorrectionService {
     return _api.delete('/attendance-correction/$id');
   }
 
+  Future<Map<String, dynamic>> updateAttendanceCorrection(
+    String id,
+    Map<String, dynamic> data,
+  ) async {
+    final formData = FormData.fromMap(data);
+    return _api.postFormData(
+      '/attendance-correction/$id?method=_PUT',
+      formData,
+    );
+  }
+
   Future<Map<String, dynamic>> approvalAttendanceCorrection({
     required String attendanceCorrectionId,
     required String status,
     String? remark,
   }) async {
-    return _api.post(
-      '/attendance-correction-approval/$attendanceCorrectionId',
-      {'status_approval': status, 'remark_approval': remark},
-    );
+    return _api.post('/attendance-approval/$attendanceCorrectionId', {
+      'status_approval': status,
+      'remark_approval': remark,
+    });
   }
 
   Future<Map<String, dynamic>> batchApprovalAttendanceCorrection({
@@ -86,7 +97,7 @@ class AttendanceCorrectionService {
     required String status,
     String? remark,
   }) async {
-    return _api.post('/attendance-correction-approval/batch-approval', {
+    return _api.post('/attendance-approval/batch-approval', {
       'status_approval': status,
       'remark_approval': remark ?? '',
       'attendance_correction_id': attendanceCorrectionIds,

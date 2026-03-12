@@ -14,6 +14,8 @@ import 'package:hrd_app/data/services/reservation_service.dart';
 import 'package:hrd_app/features/fitur/koreksi_kehadiran/widgets/form_detail_bottom_sheet.dart';
 import 'package:provider/provider.dart';
 
+import 'package:hrd_app/data/models/attendance_correction_model.dart';
+
 class KoreksiKehadiranReviewScreen extends StatefulWidget {
   final DateTime startDate;
   final DateTime endDate;
@@ -22,6 +24,7 @@ class KoreksiKehadiranReviewScreen extends StatefulWidget {
   final List<dynamic> scheduleShifts;
   final String? employeeProfile;
   final String? employeeName;
+  final AttendanceCorrectionModel? existingCorrection;
 
   const KoreksiKehadiranReviewScreen({
     super.key,
@@ -32,6 +35,7 @@ class KoreksiKehadiranReviewScreen extends StatefulWidget {
     this.scheduleShifts = const [],
     this.employeeProfile,
     this.employeeName,
+    this.existingCorrection,
   });
 
   @override
@@ -74,13 +78,30 @@ class _KoreksiKehadiranReviewScreenState
         final shiftData = shift['shift_data'] as Map<String, dynamic>?;
         final attendance = shift['attendance'] as Map<String, dynamic>?;
 
+        // Try to find existing detail if editing
+        AttendanceCorrectionDetailModel? existingDetail;
+        if (widget.existingCorrection != null) {
+          try {
+            existingDetail = widget.existingCorrection!.details.firstWhere(
+              (d) => d.dateScheduleCorrection == dateKey,
+            );
+          } catch (e) {
+            existingDetail = null;
+          }
+        }
+
         _details.add(
           CorrectionDetailEntry(
             date: current,
             shiftCode: shiftData?['shift_name'] as String?,
-            shiftId: shiftData?['shift_daily_id'] as String?,
+            shiftId:
+                existingDetail?.shiftDailyCodeCorrection ??
+                shiftData?['shift_daily_id'] as String?,
             checkInBefore: attendance?['check_in'] as String?,
             checkOutBefore: attendance?['check_out'] as String?,
+            checkInAfter: existingDetail?.checkInAfterCorrection,
+            checkOutAfter: existingDetail?.checkOutAfterCorrection,
+            remark: existingDetail?.remarkAttendanceCorrection,
           ),
         );
       } else {
@@ -176,13 +197,23 @@ class _KoreksiKehadiranReviewScreenState
       }
 
       // Step 3: Submit
-      await AttendanceCorrectionService().storeAttendanceCorrection(
-        formDataMap,
-      );
+      if (widget.existingCorrection != null &&
+          widget.existingCorrection!.id != null) {
+        await AttendanceCorrectionService().updateAttendanceCorrection(
+          widget.existingCorrection!.id!,
+          formDataMap,
+        );
+      } else {
+        await AttendanceCorrectionService().storeAttendanceCorrection(
+          formDataMap,
+        );
+      }
 
       if (mounted) {
         context.showSuccessSnackbar(
-          'Permintaan koreksi kehadiran berhasil diajukan',
+          widget.existingCorrection != null
+              ? 'Permintaan koreksi kehadiran berhasil diperbarui'
+              : 'Permintaan koreksi kehadiran berhasil diajukan',
         );
         // Pop back to list screen
         Navigator.of(context)
