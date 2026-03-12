@@ -378,9 +378,22 @@ class _NotificationListScreenState extends State<NotificationListScreen>
           context.showSuccessSnackbar(
             records['message'] ?? 'Berhasil memproses data',
           );
-          // Refresh list or remove item
+
           setState(() {
-            _items.removeWhere((i) => i.id == item.id);
+            final index = _items.indexWhere((i) => i.id == item.id);
+            if (index != -1) {
+              String newStatus;
+              if (status == 'APPROVE')
+                newStatus = 'APPROVED';
+              else if (status == 'REJECT')
+                newStatus = 'REJECTED';
+              else if (status == 'REVISE')
+                newStatus = 'REVISED';
+              else
+                newStatus = status;
+
+              _items[index] = _items[index].copyWithStatus(newStatus);
+            }
           });
         } else {
           context.showErrorSnackbar(

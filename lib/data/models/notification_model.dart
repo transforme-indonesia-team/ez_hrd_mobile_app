@@ -266,6 +266,42 @@ class NotificationItem {
       isRead: true,
     );
   }
+
+  /// Create a copy with a new status
+  NotificationItem copyWithStatus(String newStatus) {
+    return NotificationItem(
+      id: id,
+      employeeId: employeeId,
+      employeeName: employeeName,
+      profile: profile,
+      createdBy: createdBy,
+      createdByPhoto: createdByPhoto,
+      companyName: companyName,
+      status: newStatus,
+      remark: remark,
+      fileAttachment: fileAttachment,
+      fileName: fileName,
+      leaveRequestNo: leaveRequestNo,
+      overtimeRequestNo: overtimeRequestNo,
+      attendanceCorrectionRequestNo: attendanceCorrectionRequestNo,
+      leaveCancellationRequestNo: leaveCancellationRequestNo,
+      leaveEmployeeId: leaveEmployeeId,
+      startLeave: startLeave,
+      endLeave: endLeave,
+      leaveTypeName: leaveTypeName,
+      totalDays: totalDays,
+      remainingLeave: remainingLeave,
+      dateOvertime: dateOvertime,
+      startOvertime: startOvertime,
+      endOvertime: endOvertime,
+      totalMinutes: totalMinutes,
+      startDateCorrection: startDateCorrection,
+      endDateCorrection: endDateCorrection,
+      leaveCancellationId: leaveCancellationId,
+      approverRequest: approverRequest,
+      isRead: isRead,
+    );
+  }
 }
 
 /// A grouped category of notifications
