@@ -11,6 +11,7 @@ import 'package:hrd_app/core/widgets/user_avatar.dart';
 import 'package:hrd_app/data/models/overtime_employee_model.dart';
 import 'package:hrd_app/data/services/overtime_service.dart';
 import 'package:hrd_app/features/fitur/lembur/widgets/detail_lembur_widgets.dart';
+import 'package:hrd_app/features/fitur/lembur/screens/edit_lembur_screen.dart';
 
 class DetailLemburScreen extends StatefulWidget {
   final OvertimeEmployeeModel detailOvertime;
@@ -223,7 +224,7 @@ class _DetailLemburScreenState extends State<DetailLemburScreen> {
           ? null
           : (widget.isApprovalMode
                 ? _buildApprovalBottomBar(colors, _detailResponse!.data)
-                : _buildCancelButton(colors, _detailResponse!.data)),
+                : _buildActionButtons(colors, _detailResponse!.data)),
     );
   }
 
@@ -952,6 +953,8 @@ class _DetailLemburScreenState extends State<DetailLemburScreen> {
               status: _getStatusLabel(approver.statusApproval),
               statusColor: _getStatusColor(approver.statusApproval),
               photoUrl: approver.approverProfile,
+              date: FormatDate.fromStringWithTime(approver.approvalAt),
+              remark: approver.remarkApproval,
             );
           }),
       ],
@@ -966,6 +969,9 @@ class _DetailLemburScreenState extends State<DetailLemburScreen> {
         return 'Menunggu';
       case 'REJECT':
         return 'Ditolak';
+      case 'REVISE':
+      case 'REVISED':
+        return 'Revisi';
       default:
         return 'Menunggu';
     }
@@ -979,44 +985,100 @@ class _DetailLemburScreenState extends State<DetailLemburScreen> {
         return ColorPalette.orange500;
       case 'REJECT':
         return ColorPalette.red500;
+      case 'REVISE':
+      case 'REVISED':
+        return ColorPalette.red500;
       default:
         return ColorPalette.orange500;
     }
   }
 
-  /// Check if can cancel - only if status is DRAFT or PENDING
-  bool _canCancel(OvertimeEmployeeModel data) {
+  Widget _buildActionButtons(ThemeColors colors, OvertimeEmployeeModel data) {
     final status = data.status?.toUpperCase();
-    return status == 'UNVERIFIED' || status == 'PENDING';
-  }
+    final canCancel = status == 'UNVERIFIED' || status == 'PENDING';
+    final isRevised = status == 'REVISE' || status == 'REVISED';
 
-  Widget _buildCancelButton(ThemeColors colors, OvertimeEmployeeModel data) {
-    if (!_canCancel(data)) return const SizedBox.shrink();
+    if (!canCancel && !isRevised) return const SizedBox.shrink();
 
     return SafeArea(
       child: Container(
         padding: EdgeInsets.all(16.w),
-        child: SizedBox(
-          width: double.infinity,
-          height: 40.h,
-          child: ElevatedButton(
-            onPressed: () {
-              _showCancelConfirmation(context);
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: ColorPalette.red500,
-              foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8.r),
+        child: isRevised
+            ? Row(
+                children: [
+                  Expanded(
+                    child: SizedBox(
+                      height: 40.h,
+                      child: ElevatedButton(
+                        onPressed: () => _showCancelConfirmation(context),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: ColorPalette.red500,
+                          foregroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8.r),
+                          ),
+                          elevation: 0,
+                        ),
+                        child: Text(
+                          'Batalkan',
+                          style: AppTextStyles.bodySemiBold(Colors.white),
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 12.w),
+                  Expanded(
+                    child: SizedBox(
+                      height: 40.h,
+                      child: ElevatedButton(
+                        onPressed: () async {
+                          final result = await Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  EditLemburScreen(existingOvertime: data),
+                            ),
+                          );
+                          if (result == true && mounted) {
+                            _fetchData();
+                          }
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: colors.primaryBlue,
+                          foregroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8.r),
+                          ),
+                          elevation: 0,
+                        ),
+                        child: Text(
+                          'Ubah',
+                          style: AppTextStyles.bodySemiBold(Colors.white),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              )
+            : SizedBox(
+                width: double.infinity,
+                height: 40.h,
+                child: ElevatedButton(
+                  onPressed: () => _showCancelConfirmation(context),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: ColorPalette.red500,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8.r),
+                    ),
+                    elevation: 0,
+                  ),
+                  child: Text(
+                    'Batalkan',
+                    style: AppTextStyles.bodySemiBold(Colors.white),
+                  ),
+                ),
               ),
-              elevation: 0,
-            ),
-            child: Text(
-              'Batalkan',
-              style: AppTextStyles.bodySemiBold(Colors.white),
-            ),
-          ),
-        ),
       ),
     );
   }

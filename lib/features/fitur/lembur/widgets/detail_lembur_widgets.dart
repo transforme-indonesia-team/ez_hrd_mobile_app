@@ -262,6 +262,8 @@ class ApprovalListItem extends StatelessWidget {
   final String status;
   final Color statusColor;
   final String? photoUrl;
+  final String? date;
+  final String? remark;
 
   const ApprovalListItem({
     super.key,
@@ -270,6 +272,8 @@ class ApprovalListItem extends StatelessWidget {
     required this.status,
     required this.statusColor,
     this.photoUrl,
+    this.date,
+    this.remark,
   });
 
   @override
@@ -277,49 +281,108 @@ class ApprovalListItem extends StatelessWidget {
     final colors = context.colors;
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 8.h),
-      child: Row(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          UserAvatar(avatarUrl: photoUrl, name: name, size: 40, fontSize: 14),
-          SizedBox(width: 12.w),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  name,
-                  style: AppTextStyles.bodyMedium(
-                    colors.textPrimary,
-                  ).copyWith(fontWeight: FontWeight.w600),
-                  overflow: TextOverflow.ellipsis,
-                  maxLines: 1,
+          Row(
+            children: [
+              UserAvatar(
+                avatarUrl: photoUrl,
+                name: name,
+                size: 40,
+                fontSize: 14,
+              ),
+              SizedBox(width: 12.w),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      name,
+                      style: AppTextStyles.bodyMedium(
+                        colors.textPrimary,
+                      ).copyWith(fontWeight: FontWeight.w600),
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
+                    ),
+                    Text(
+                      role,
+                      style: AppTextStyles.caption(colors.textSecondary),
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
+                    ),
+                  ],
                 ),
-                Text(
-                  role,
-                  style: AppTextStyles.caption(colors.textSecondary),
-                  overflow: TextOverflow.ellipsis,
-                  maxLines: 1,
-                ),
-              ],
-            ),
+              ),
+              SizedBox(width: 12.w),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Container(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 12.w,
+                      vertical: 6.h,
+                    ),
+                    decoration: BoxDecoration(
+                      color: statusColor.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(4.r),
+                      border: Border.all(
+                        color: statusColor.withValues(alpha: 0.3),
+                        width: 1,
+                      ),
+                    ),
+                    child: Text(
+                      status,
+                      style: AppTextStyles.caption(
+                        statusColor,
+                      ).copyWith(fontWeight: FontWeight.w600, fontSize: 11.sp),
+                    ),
+                  ),
+                  if (date != null && date!.isNotEmpty) ...[
+                    SizedBox(height: 4.h),
+                    Text(
+                      date!,
+                      style: AppTextStyles.caption(
+                        colors.textSecondary,
+                      ).copyWith(fontSize: 10.sp),
+                    ),
+                  ],
+                ],
+              ),
+            ],
           ),
-          SizedBox(width: 12.w),
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
-            decoration: BoxDecoration(
-              color: statusColor.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(4.r),
-              border: Border.all(
-                color: statusColor.withValues(alpha: 0.3),
-                width: 1,
+          if (remark != null && remark!.isNotEmpty) ...[
+            SizedBox(height: 6.h),
+            Padding(
+              padding: EdgeInsets.only(left: 52.w),
+              child: Container(
+                width: double.infinity,
+                padding: EdgeInsets.all(6.w),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFFFF7ED), // orange50
+                  borderRadius: BorderRadius.circular(8.r),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Catatan',
+                      style: AppTextStyles.caption(
+                        colors.textSecondary,
+                      ).copyWith(fontSize: 10.sp),
+                    ),
+                    SizedBox(height: 4.h),
+                    Text(
+                      remark!,
+                      style: AppTextStyles.body(
+                        colors.textPrimary,
+                      ).copyWith(fontSize: 11.sp),
+                    ),
+                  ],
+                ),
               ),
             ),
-            child: Text(
-              status,
-              style: AppTextStyles.caption(
-                statusColor,
-              ).copyWith(fontWeight: FontWeight.w600, fontSize: 11.sp),
-            ),
-          ),
+          ],
         ],
       ),
     );

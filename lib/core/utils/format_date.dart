@@ -27,6 +27,10 @@ class FormatDate {
     return DateFormat('d MMM yyyy', 'id_ID').format(date);
   }
 
+  static String shortDateWithTime(DateTime date) {
+    return DateFormat('d MMM yyyy HH:mm', 'id_ID').format(date);
+  }
+
   static String dateRange(DateTime start, DateTime end) {
     return '${shortDateWithYear(start)} - ${shortDateWithYear(end)}';
   }
@@ -42,6 +46,18 @@ class FormatDate {
     try {
       final date = DateTime.parse(dateStr);
       return DateFormat('d MMM yyyy', 'id_ID').format(date);
+    } catch (e) {
+      return dateStr;
+    }
+  }
+
+  /// Parse date string and format to "15 Jan 2026 12:53"
+  /// Returns original string if parsing fails
+  static String fromStringWithTime(String? dateStr, {String fallback = '-'}) {
+    if (dateStr == null || dateStr.isEmpty) return fallback;
+    try {
+      final date = DateTime.parse(dateStr);
+      return DateFormat('d MMM yyyy HH:mm', 'id_ID').format(date);
     } catch (e) {
       return dateStr;
     }

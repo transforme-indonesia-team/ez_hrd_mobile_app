@@ -222,6 +222,7 @@ class OvertimeApproverModel {
   final String? approverProfile;
   final String? approverPosisition;
   final String? approvalAt;
+  final String? remarkApproval;
 
   const OvertimeApproverModel({
     this.approverId,
@@ -230,6 +231,7 @@ class OvertimeApproverModel {
     this.approverProfile,
     this.approverPosisition,
     this.approvalAt,
+    this.remarkApproval,
   });
 
   factory OvertimeApproverModel.fromJson(Map<String, dynamic> json) {
@@ -240,6 +242,10 @@ class OvertimeApproverModel {
       approverProfile: json['approver_profile'] as String?,
       approverPosisition: json['approver_position'] as String?,
       approvalAt: json['approval_at'] as String?,
+      remarkApproval:
+          json['remark_overtime_employee'] as String? ??
+          json['remark_approval'] as String? ??
+          json['remark'] as String?,
     );
   }
 
