@@ -209,7 +209,9 @@ class OvertimeDetailResponse {
         .toList();
     return OvertimeDetailResponse(
       data: OvertimeEmployeeModel.fromJson(records['data']),
-      detail: OvertimeDetailModel.fromJson(records['detail']),
+      detail: records['detail'] != null
+          ? OvertimeDetailModel.fromJson(records['detail'])
+          : const OvertimeDetailModel(),
       approverRequest: approverList,
     );
   }

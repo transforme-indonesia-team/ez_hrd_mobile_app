@@ -287,144 +287,148 @@ class _EditLemburScreenState extends State<EditLemburScreen> {
       backgroundColor: Colors.transparent,
       builder: (context) {
         final colors = context.colors;
-        return Container(
-          decoration: BoxDecoration(
-            color: colors.surface,
-            borderRadius: BorderRadius.vertical(top: Radius.circular(16.r)),
-          ),
-          padding: EdgeInsets.fromLTRB(
-            16.w,
-            24.h,
-            16.w,
-            MediaQuery.of(context).viewInsets.bottom + 24.h,
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        return StatefulBuilder(
+          builder: (context, setModalState) {
+            return Container(
+              decoration: BoxDecoration(
+                color: colors.surface,
+                borderRadius: BorderRadius.vertical(top: Radius.circular(16.r)),
+              ),
+              padding: EdgeInsets.fromLTRB(
+                16.w,
+                24.h,
+                16.w,
+                MediaQuery.of(context).viewInsets.bottom + 24.h,
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    'Edit Waktu Lembur',
-                    style: AppTextStyles.h4(colors.textPrimary),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Edit Waktu Lembur',
+                        style: AppTextStyles.h4(colors.textPrimary),
+                      ),
+                      IconButton(
+                        onPressed: () => Navigator.pop(context),
+                        icon: Icon(Icons.close, color: colors.textSecondary),
+                      ),
+                    ],
                   ),
-                  IconButton(
-                    onPressed: () => Navigator.pop(context),
-                    icon: Icon(Icons.close, color: colors.textSecondary),
+                  SizedBox(height: 16.h),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _buildLabel(colors, 'Mulai'),
+                            SizedBox(height: 6.h),
+                            GestureDetector(
+                              onTap: () async {
+                                await _selectTime(true);
+                                setModalState(() {}); // Trigger modal rebuild
+                              },
+                              child: Container(
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 12.w,
+                                  vertical: 12.h,
+                                ),
+                                decoration: BoxDecoration(
+                                  border: Border.all(color: colors.divider),
+                                  borderRadius: BorderRadius.circular(8.r),
+                                ),
+                                child: Row(
+                                  children: [
+                                    Expanded(
+                                      child: Text(
+                                        _formatTimeOfDay(_startTime),
+                                        style: AppTextStyles.body(
+                                          colors.textPrimary,
+                                        ),
+                                      ),
+                                    ),
+                                    Icon(
+                                      Icons.access_time,
+                                      size: 16.sp,
+                                      color: colors.textSecondary,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      SizedBox(width: 12.w),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _buildLabel(colors, 'Berakhir'),
+                            SizedBox(height: 6.h),
+                            GestureDetector(
+                              onTap: () async {
+                                await _selectTime(false);
+                                setModalState(() {}); // Trigger modal rebuild
+                              },
+                              child: Container(
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 12.w,
+                                  vertical: 12.h,
+                                ),
+                                decoration: BoxDecoration(
+                                  border: Border.all(color: colors.divider),
+                                  borderRadius: BorderRadius.circular(8.r),
+                                ),
+                                child: Row(
+                                  children: [
+                                    Expanded(
+                                      child: Text(
+                                        _formatTimeOfDay(_endTime),
+                                        style: AppTextStyles.body(
+                                          colors.textPrimary,
+                                        ),
+                                      ),
+                                    ),
+                                    Icon(
+                                      Icons.access_time,
+                                      size: 16.sp,
+                                      color: colors.textSecondary,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 24.h),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: () => Navigator.pop(context),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: colors.primaryBlue,
+                        padding: EdgeInsets.symmetric(vertical: 12.h),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8.r),
+                        ),
+                      ),
+                      child: Text(
+                        'Simpan Waktu',
+                        style: AppTextStyles.button(Colors.white),
+                      ),
+                    ),
                   ),
                 ],
               ),
-              SizedBox(height: 16.h),
-              Row(
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        _buildLabel(colors, 'Mulai'),
-                        SizedBox(height: 6.h),
-                        GestureDetector(
-                          onTap: () async {
-                            await _selectTime(true);
-                            setState(() {}); // Trigger rebuild
-                          },
-                          child: Container(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 12.w,
-                              vertical: 12.h,
-                            ),
-                            decoration: BoxDecoration(
-                              border: Border.all(color: colors.divider),
-                              borderRadius: BorderRadius.circular(8.r),
-                            ),
-                            child: Row(
-                              children: [
-                                Expanded(
-                                  child: Text(
-                                    _formatTimeOfDay(_startTime),
-                                    style: AppTextStyles.body(
-                                      colors.textPrimary,
-                                    ),
-                                  ),
-                                ),
-                                Icon(
-                                  Icons.access_time,
-                                  size: 16.sp,
-                                  color: colors.textSecondary,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  SizedBox(width: 12.w),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        _buildLabel(colors, 'Berakhir'),
-                        SizedBox(height: 6.h),
-                        GestureDetector(
-                          onTap: () async {
-                            await _selectTime(false);
-                            setState(() {}); // Trigger rebuild
-                          },
-                          child: Container(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 12.w,
-                              vertical: 12.h,
-                            ),
-                            decoration: BoxDecoration(
-                              border: Border.all(color: colors.divider),
-                              borderRadius: BorderRadius.circular(8.r),
-                            ),
-                            child: Row(
-                              children: [
-                                Expanded(
-                                  child: Text(
-                                    _formatTimeOfDay(_endTime),
-                                    style: AppTextStyles.body(
-                                      colors.textPrimary,
-                                    ),
-                                  ),
-                                ),
-                                Icon(
-                                  Icons.access_time,
-                                  size: 16.sp,
-                                  color: colors.textSecondary,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(height: 24.h),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () => Navigator.pop(context),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: colors.primaryBlue,
-                    padding: EdgeInsets.symmetric(vertical: 12.h),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8.r),
-                    ),
-                  ),
-                  child: Text(
-                    'Simpan Waktu',
-                    style: AppTextStyles.button(Colors.white),
-                  ),
-                ),
-              ),
-            ],
-          ),
+            );
+          },
         );
       },
     ).then((_) => setState(() {}));
