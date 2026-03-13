@@ -772,7 +772,7 @@ class _FormPermintaanCutiScreeenState extends State<FormPermintaanCutiScreeen> {
         color: colors.background,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 8,
             offset: const Offset(0, -2),
           ),
@@ -785,7 +785,7 @@ class _FormPermintaanCutiScreeenState extends State<FormPermintaanCutiScreeen> {
           style: ElevatedButton.styleFrom(
             backgroundColor: colors.primaryBlue,
             foregroundColor: Colors.white,
-            disabledBackgroundColor: colors.primaryBlue.withOpacity(0.5),
+            disabledBackgroundColor: colors.primaryBlue.withValues(alpha: 0.5),
             padding: EdgeInsets.symmetric(vertical: 12.h),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(8.r),

@@ -896,11 +896,6 @@ class _DetailCutiScreenState extends State<DetailCutiScreen> {
     }
   }
 
-  bool _canCancel(LeaveEmployeeModel data) {
-    final status = data.status?.toUpperCase();
-    return status == 'UNVERIFIED' || status == 'PENDING';
-  }
-
   Widget _buildCancelButton(ThemeColors colors, LeaveEmployeeModel data) {
     final status = data.status?.toUpperCase();
     final canCancel = status == 'UNVERIFIED' || status == 'PENDING';
