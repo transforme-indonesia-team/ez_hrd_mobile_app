@@ -383,9 +383,9 @@ class _NotificationListScreenState extends State<NotificationListScreen>
             final index = _items.indexWhere((i) => i.id == item.id);
             if (index != -1) {
               String newStatus;
-              if (status == 'APPROVE')
+              if (status == 'APPROVE') {
                 newStatus = 'APPROVED';
-              else if (status == 'REJECT')
+              } else if (status == 'REJECT')
                 newStatus = 'REJECTED';
               else if (status == 'REVISE')
                 newStatus = 'REVISED';
