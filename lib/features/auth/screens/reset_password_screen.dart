@@ -5,8 +5,23 @@ import 'package:hrd_app/core/theme/app_colors.dart';
 import 'package:hrd_app/core/utils/validators.dart';
 import 'package:hrd_app/core/providers/auth_provider.dart';
 import 'package:hrd_app/core/utils/snackbar_utils.dart';
+import 'package:hrd_app/core/constants/app_constants.dart';
 import 'package:hrd_app/routes/app_routes.dart';
 import 'package:provider/provider.dart';
+
+enum PasswordStrength {
+  none(0, 'Masukkan kata sandi', Colors.grey),
+  weak(0.2, 'Lemah', Colors.red),
+  fair(0.4, 'Cukup', Colors.orange),
+  good(0.7, 'Baik', Colors.lightGreen),
+  strong(1.0, 'Kuat', Colors.green);
+
+  final double value;
+  final String label;
+  final Color color;
+
+  const PasswordStrength(this.value, this.label, this.color);
+}
 
 class ResetPasswordScreen extends StatefulWidget {
   final String tokenReset;
@@ -27,10 +42,33 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
   bool _obscureConfirmPassword = true;
   bool _isLoading = false;
 
+  PasswordStrength get _passwordStrength {
+    final password = _passwordController.text;
+    if (password.isEmpty) return PasswordStrength.none;
+    if (password.length < 6) return PasswordStrength.weak;
+    if (password.length < 8) return PasswordStrength.fair;
+
+    bool hasUpperCase = password.contains(RegExp(r'[A-Z]'));
+    bool hasLowerCase = password.contains(RegExp(r'[a-z]'));
+    bool hasDigits = password.contains(RegExp(r'[0-9]'));
+    bool hasSpecialChars = password.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]'));
+
+    int score = 0;
+    if (hasUpperCase) score++;
+    if (hasLowerCase) score++;
+    if (hasDigits) score++;
+    if (hasSpecialChars) score++;
+    if (password.length >= 12) score++;
+
+    if (score >= 4) return PasswordStrength.strong;
+    if (score >= 2) return PasswordStrength.good;
+    return PasswordStrength.fair;
+  }
+
   bool get _isFormValid =>
       _passwordController.text.isNotEmpty &&
-      _confirmPasswordController.text.isNotEmpty &&
-      _passwordController.text == _confirmPasswordController.text;
+      _passwordController.text.length >= 8 &&
+      _confirmPasswordController.text == _passwordController.text;
 
   @override
   void initState() {
@@ -130,6 +168,89 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
     );
   }
 
+  Widget _buildPasswordStrengthIndicator(ThemeColors colors) {
+    final strength = _passwordStrength;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Text(
+              'Kekuatan: ',
+              style: AppTextStyles.caption(colors.textSubtitle),
+            ),
+            Text(
+              strength.label,
+              style: AppTextStyles.captionMedium(strength.color),
+            ),
+          ],
+        ),
+        SizedBox(height: 8.h),
+        ClipRRect(
+          borderRadius: BorderRadius.circular(4.r),
+          child: TweenAnimationBuilder<double>(
+            tween: Tween(begin: 0, end: strength.value),
+            duration: const Duration(
+              milliseconds: AppConstants.animationNormalMs,
+            ),
+            curve: Curves.easeOutCubic,
+            builder: (context, value, child) {
+              return LinearProgressIndicator(
+                value: value,
+                backgroundColor: colors.divider,
+                valueColor: AlwaysStoppedAnimation<Color>(strength.color),
+                minHeight: 6.h,
+              );
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildPasswordTips(ThemeColors colors) {
+    return Container(
+      padding: EdgeInsets.all(16.w),
+      decoration: BoxDecoration(
+        color: colors.surface,
+        borderRadius: BorderRadius.circular(12.r),
+        border: Border.all(color: colors.divider),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Tips Kata Sandi Kuat:',
+            style: AppTextStyles.body(colors.textPrimary),
+          ),
+          SizedBox(height: 8.h),
+          _buildTipItem('Minimal 8 karakter', colors),
+          _buildTipItem('Kombinasi huruf besar dan kecil', colors),
+          _buildTipItem('Sertakan angka (0-9)', colors),
+          _buildTipItem('Gunakan karakter khusus (!@#\$%)', colors),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTipItem(String text, ThemeColors colors) {
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 4.h),
+      child: Row(
+        children: [
+          Icon(
+            Icons.check_circle_outline,
+            size: 16.sp,
+            color: colors.textSubtitle,
+          ),
+          SizedBox(width: 8.w),
+          Text(text, style: AppTextStyles.caption(colors.textSubtitle)),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
@@ -206,10 +327,21 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                           });
                         },
                       ),
-                      validator: (value) =>
-                          Validators.password(value, maxLength: 20),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Password baru wajib diisi';
+                        }
+                        if (value.length < 8) {
+                          return 'Minimal 8 karakter';
+                        }
+                        return Validators.password(value, maxLength: 20);
+                      },
                     ),
                   ),
+                  if (_passwordController.text.isNotEmpty) ...[
+                    SizedBox(height: 12.h),
+                    _buildPasswordStrengthIndicator(colors),
+                  ],
                   SizedBox(height: 20.h),
                   Text(
                     'Konfirmasi Password',
@@ -329,6 +461,8 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                       ),
                     ),
                   ),
+                  SizedBox(height: 16.h),
+                  _buildPasswordTips(colors),
                 ],
               ),
             ),
