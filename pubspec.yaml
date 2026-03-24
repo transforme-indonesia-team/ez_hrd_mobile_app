@@ -50,3 +50,4 @@ flutter:
   assets:
     - .env
     - assets/images/
+    - lib/data/dummy/

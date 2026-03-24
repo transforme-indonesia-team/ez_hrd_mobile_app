@@ -23,6 +23,7 @@ import 'package:hrd_app/features/fitur/lembur/screens/daftar_lembur_screen.dart'
 import 'package:hrd_app/features/fitur/koreksi_kehadiran/screens/daftar_koreksi_kehadiran_screen.dart';
 import 'package:hrd_app/features/fitur/permohonan/screens/permohonan_karyawan_screen.dart';
 import 'package:hrd_app/features/fitur/jadwal_shift/screens/jadwal_shift_screen.dart';
+import 'package:hrd_app/features/fitur/company/screens/struktur_organisasi_screen.dart';
 import 'package:hrd_app/features/profile/screens/profile_detail_screen.dart';
 import 'package:provider/provider.dart';
 
@@ -70,6 +71,15 @@ class _FiturScreenState extends State<FiturScreen> {
             builder: (context) => const ProfilePerusahaanScreen(),
           ),
         );
+        break;
+      case 'struktur_organisasi':
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const StrukturOrganisasiScreen(),
+          ),
+        );
+        break;
       case 'data_personal':
         Navigator.push(
           context,
