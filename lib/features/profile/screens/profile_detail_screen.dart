@@ -16,17 +16,27 @@ import 'package:hrd_app/features/profile/widgets/profile_info_section.dart';
 import 'package:hrd_app/features/profile/widgets/profile_menu_item.dart';
 import 'package:hrd_app/features/profile/widgets/profile_empty_state.dart';
 import 'package:hrd_app/features/profile/detail/pribadi/pribadi_screen.dart';
+import 'package:hrd_app/data/services/employee_service.dart';
 
 class ProfileDetailScreen extends StatefulWidget {
-  const ProfileDetailScreen({super.key});
+  /// Jika null → profil sendiri (dari AuthProvider)
+  /// Jika diisi → fetch profil karyawan lain via getDetail API
+  final String? employeeCode;
+
+  const ProfileDetailScreen({super.key, this.employeeCode});
 
   @override
   State<ProfileDetailScreen> createState() => _ProfileDetailScreenState();
 }
 
 class _ProfileDetailScreenState extends State<ProfileDetailScreen> {
-  late ProfileDetailModel _profile;
-  late final List<ProfileMenuItemModel> _menuItems;
+  ProfileDetailModel? _profile;
+  List<ProfileMenuItemModel> _menuItems = [];
+  bool _isLoading = true;
+  String? _error;
+
+  /// Apakah ini profil sendiri
+  bool get _isSelfProfile => widget.employeeCode == null;
 
   @override
   void initState() {
@@ -37,8 +47,48 @@ class _ProfileDetailScreenState extends State<ProfileDetailScreen> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    final user = context.read<AuthProvider>().user;
-    _profile = ProfileDetailModel.fromUser(user);
+    if (_isSelfProfile) {
+      final user = context.read<AuthProvider>().user;
+      setState(() {
+        _profile = ProfileDetailModel.fromUser(user);
+        _isLoading = false;
+      });
+    } else if (_isLoading && _error == null) {
+      _fetchEmployeeProfile();
+    }
+  }
+
+  Future<void> _fetchEmployeeProfile() async {
+    try {
+      final response = await EmployeeService().getDetail(
+        employeeCode: widget.employeeCode,
+      );
+
+      if (!mounted) return;
+
+      final original = response['original'] as Map<String, dynamic>?;
+      final records = original?['records'] as Map<String, dynamic>?;
+
+      if (records != null) {
+        setState(() {
+          _profile = ProfileDetailModel.fromEmployeeDetail(records);
+          _isLoading = false;
+        });
+      } else {
+        setState(() {
+          _error = original?['message'] ?? 'Data karyawan tidak ditemukan';
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      debugPrint('ProfileDetail: Error fetching employee: $e');
+      if (mounted) {
+        setState(() {
+          _error = 'Gagal memuat data karyawan';
+          _isLoading = false;
+        });
+      }
+    }
   }
 
   void _initMenuItems() {
@@ -69,7 +119,7 @@ class _ProfileDetailScreenState extends State<ProfileDetailScreen> {
             context,
             MaterialPageRoute(
               builder: (context) =>
-                  PribadiScreen(profile: _profile, menuItems: pribadiSubItems),
+                  PribadiScreen(profile: _profile!, menuItems: pribadiSubItems),
             ),
           );
         },
@@ -83,7 +133,7 @@ class _ProfileDetailScreenState extends State<ProfileDetailScreen> {
             context,
             MaterialPageRoute(
               builder: (context) => KetenagakerjaanScreen(
-                profile: _profile,
+                profile: _profile!,
                 menuItems: ketenagakerjaanSubItems,
               ),
             ),
@@ -133,14 +183,15 @@ class _ProfileDetailScreenState extends State<ProfileDetailScreen> {
   }
 
   void _onQRTap() {
+    if (_profile == null) return;
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (context) => QrCodeBottomSheet(
-        employeeCode: _profile.employeeCode ?? '-',
-        name: _profile.name,
-        role: _profile.role,
+        employeeCode: _profile!.employeeCode ?? '-',
+        name: _profile!.name,
+        role: _profile!.role,
       ),
     );
   }
@@ -182,7 +233,6 @@ class _ProfileDetailScreenState extends State<ProfileDetailScreen> {
     final colors = context.colors;
 
     return Scaffold(
-      // backgroundColor: colors.backgroundDetail,
       appBar: AppBar(
         backgroundColor: colors.appBar,
         elevation: 0,
@@ -195,34 +245,64 @@ class _ProfileDetailScreenState extends State<ProfileDetailScreen> {
           style: AppTextStyles.h3(colors.textPrimary),
         ),
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            ProfileHeader(
-              profile: _profile,
-              onQRTap: _onQRTap,
-              onMenuTap: _onMoreMenuTap,
-            ),
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : _error != null
+          ? Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    _error!,
+                    style: AppTextStyles.body(colors.textSecondary),
+                    textAlign: TextAlign.center,
+                  ),
+                  SizedBox(height: 16.h),
+                  if (!_isSelfProfile)
+                    OutlinedButton(
+                      onPressed: () {
+                        setState(() {
+                          _isLoading = true;
+                          _error = null;
+                        });
+                        _fetchEmployeeProfile();
+                      },
+                      child: const Text('Coba Lagi'),
+                    ),
+                ],
+              ),
+            )
+          : SingleChildScrollView(
+              child: Column(
+                children: [
+                  ProfileHeader(
+                    profile: _profile!,
+                    onQRTap: _onQRTap,
+                    onMenuTap: _isSelfProfile ? _onMoreMenuTap : null,
+                  ),
 
-            ProfileInfoSection(
-              company: _profile.company,
-              organizationName: _profile.organizationName,
-              socialMediaLinks: _profile.socialMediaLinks,
-              onEditSocialMedia: _onEditSocialMedia,
-            ),
-            SizedBox(height: 16.h),
+                  ProfileInfoSection(
+                    company: _profile!.company,
+                    organizationName: _profile!.organizationName,
+                    socialMediaLinks: _profile!.socialMediaLinks,
+                    onEditSocialMedia: _isSelfProfile
+                        ? _onEditSocialMedia
+                        : null,
+                  ),
+                  SizedBox(height: 16.h),
 
-            Column(
-              children: _menuItems.map((item) {
-                return ProfileMenuItem(item: item);
-              }).toList(),
-            ),
+                  Column(
+                    children: _menuItems.map((item) {
+                      return ProfileMenuItem(item: item);
+                    }).toList(),
+                  ),
 
-            const ProfileEmptyState(),
-            SizedBox(height: 32.h),
-          ],
-        ),
-      ),
+                  const ProfileEmptyState(),
+
+                  SizedBox(height: 32.h),
+                ],
+              ),
+            ),
     );
   }
 }

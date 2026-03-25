@@ -4,6 +4,7 @@ import 'package:hrd_app/core/providers/auth_provider.dart';
 import 'package:hrd_app/core/theme/app_colors.dart';
 import 'package:hrd_app/core/theme/app_text_styles.dart';
 import 'package:hrd_app/features/beranda/widgets/company_switcher_bottom_sheet.dart';
+import 'package:hrd_app/features/beranda/widgets/search_member_bottom_sheet.dart';
 import 'package:provider/provider.dart';
 
 class BerandaAppBar extends StatelessWidget implements PreferredSizeWidget {
@@ -40,7 +41,7 @@ class BerandaAppBar extends StatelessWidget implements PreferredSizeWidget {
           ),
         ),
         IconButton(
-          onPressed: () {},
+          onPressed: () => SearchMemberBottomSheet.show(context),
           icon: Icon(Icons.search, color: colors.textSecondary, size: 24.sp),
         ),
         SizedBox(width: 8.w),

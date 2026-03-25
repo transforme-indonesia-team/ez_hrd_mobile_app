@@ -24,10 +24,18 @@ class EmployeeService {
     );
   }
 
-  Future<Map<String, dynamic>> getMember({String? employeeId}) async {
+  Future<Map<String, dynamic>> getMember({
+    String? employeeId,
+    String? search,
+    int? page,
+  }) async {
     return _api.get(
       '/employee/get-member',
-      queryParameters: {'employee_id': employeeId},
+      queryParameters: {
+        if (employeeId != null) 'employee_id': employeeId,
+        if (search != null) 'search': search,
+        if (page != null) 'page': page,
+      },
     );
   }
 }

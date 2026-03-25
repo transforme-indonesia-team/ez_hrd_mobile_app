@@ -41,6 +41,19 @@ class ProfileDetailModel {
       organizationName: user.position,
     );
   }
+
+  /// Buat dari response API getDetail (untuk karyawan lain)
+  factory ProfileDetailModel.fromEmployeeDetail(Map<String, dynamic> records) {
+    return ProfileDetailModel(
+      username: records['employee_code'] ?? '-',
+      employeeCode: records['employee_code'] ?? '-',
+      name: records['employee_name'] ?? 'Karyawan',
+      role: records['position_organization_name'] ?? 'Employee',
+      avatarUrl: records['profile'],
+      company: records['company_name'],
+      organizationName: records['organization_name'],
+    );
+  }
 }
 
 class SocialMediaLink {
