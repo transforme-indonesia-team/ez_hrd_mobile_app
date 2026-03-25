@@ -17,6 +17,7 @@ import 'package:hrd_app/features/profile/widgets/profile_menu_item.dart';
 import 'package:hrd_app/features/profile/widgets/profile_empty_state.dart';
 import 'package:hrd_app/features/profile/detail/pribadi/pribadi_screen.dart';
 import 'package:hrd_app/data/services/employee_service.dart';
+import 'package:hrd_app/features/fitur/company/screens/struktur_organisasi_screen.dart';
 
 class ProfileDetailScreen extends StatefulWidget {
   /// Jika null → profil sendiri (dari AuthProvider)
@@ -228,6 +229,24 @@ class _ProfileDetailScreenState extends State<ProfileDetailScreen> {
     context.showFeatureNotAvailable('Edit media sosial');
   }
 
+  void _onBaganTap() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => DraggableScrollableSheet(
+        initialChildSize: 0.95,
+        minChildSize: 0.5,
+        maxChildSize: 0.95,
+        expand: false,
+        builder: (context, scrollController) => ClipRRect(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(16.r)),
+          child: const StrukturOrganisasiScreen(isBottomSheet: true),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
@@ -278,6 +297,7 @@ class _ProfileDetailScreenState extends State<ProfileDetailScreen> {
                   ProfileHeader(
                     profile: _profile!,
                     onQRTap: _onQRTap,
+                    onBaganTap: _onBaganTap,
                     onMenuTap: _isSelfProfile ? _onMoreMenuTap : null,
                   ),
 

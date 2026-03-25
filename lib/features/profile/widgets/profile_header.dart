@@ -9,12 +9,14 @@ import 'package:hrd_app/features/profile/models/profile_detail_model.dart';
 class ProfileHeader extends StatelessWidget {
   final ProfileDetailModel profile;
   final VoidCallback? onQRTap;
+  final VoidCallback? onBaganTap;
   final VoidCallback? onMenuTap;
 
   const ProfileHeader({
     super.key,
     required this.profile,
     this.onQRTap,
+    this.onBaganTap,
     this.onMenuTap,
   });
 
@@ -49,23 +51,75 @@ class ProfileHeader extends StatelessWidget {
                 ),
                 SizedBox(height: 2.h),
                 Text(
-                  profile.employeeCode!,
+                  profile.employeeCode ?? '-',
                   style: AppTextStyles.caption(colors.textSecondary),
                 ),
               ],
             ),
           ),
-          if (onQRTap != null)
-            IconButton(
-              onPressed: onQRTap,
-              icon: Icon(
-                Icons.qr_code_2,
-                color: colors.textSecondary,
-                size: 24.sp,
-              ),
-              tooltip: 'QR Code',
+          // Bagan icon
+          if (onBaganTap != null)
+            _buildActionIcon(
+              icon: Icons.account_tree_outlined,
+              onTap: onBaganTap!,
+              colors: colors,
             ),
+          // 3-dot popup menu
+          _buildPopupMenu(colors),
         ],
+      ),
+    );
+  }
+
+  Widget _buildActionIcon({
+    required IconData icon,
+    required VoidCallback onTap,
+    required ThemeColors colors,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: 36.w,
+        height: 36.w,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(8.r),
+          border: Border.all(color: colors.divider, width: 1),
+        ),
+        child: Icon(icon, color: colors.primaryBlue, size: 20.sp),
+      ),
+    );
+  }
+
+  Widget _buildPopupMenu(ThemeColors colors) {
+    return PopupMenuButton<String>(
+      onSelected: (value) {
+        if (value == 'qr' && onQRTap != null) {
+          onQRTap!();
+        } else if (value == 'bagan' && onBaganTap != null) {
+          onBaganTap!();
+        }
+      },
+      offset: Offset(0, 40.h),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.r)),
+      itemBuilder: (context) => [
+        PopupMenuItem(
+          value: 'qr',
+          child: Text('Kode QR', style: AppTextStyles.body(colors.textPrimary)),
+        ),
+        PopupMenuItem(
+          value: 'bagan',
+          child: Text('Bagan', style: AppTextStyles.body(colors.textPrimary)),
+        ),
+      ],
+      child: Container(
+        width: 36.w,
+        height: 36.w,
+        margin: EdgeInsets.only(left: 8.w),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(8.r),
+          border: Border.all(color: colors.divider, width: 1),
+        ),
+        child: Icon(Icons.more_vert, color: colors.primaryBlue, size: 20.sp),
       ),
     );
   }

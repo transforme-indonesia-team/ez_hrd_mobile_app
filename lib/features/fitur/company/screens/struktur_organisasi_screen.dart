@@ -246,7 +246,9 @@ class _LinePainter extends CustomPainter {
 // SCREEN
 // ═══════════════════════════════════════════════════════════════════
 class StrukturOrganisasiScreen extends StatefulWidget {
-  const StrukturOrganisasiScreen({super.key});
+  final bool isBottomSheet;
+
+  const StrukturOrganisasiScreen({super.key, this.isBottomSheet = false});
   @override
   State<StrukturOrganisasiScreen> createState() =>
       _StrukturOrganisasiScreenState();
@@ -484,14 +486,18 @@ class _StrukturOrganisasiScreenState extends State<StrukturOrganisasiScreen>
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
+        centerTitle: widget.isBottomSheet,
+        automaticallyImplyLeading: !widget.isBottomSheet,
         title: Text(
           'Struktur Organisasi',
           style: AppTextStyles.h3(c.textPrimary),
         ),
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: c.textPrimary),
-          onPressed: () => Navigator.pop(context),
-        ),
+        leading: widget.isBottomSheet
+            ? null
+            : IconButton(
+                icon: Icon(Icons.arrow_back, color: c.textPrimary),
+                onPressed: () => Navigator.pop(context),
+              ),
       ),
       body: Column(
         children: [
