@@ -360,9 +360,9 @@ class _StrukturOrganisasiScreenState extends State<StrukturOrganisasiScreen>
 
     final s = MediaQuery.of(context).size;
     final vpW = s.width, vpH = s.height - 160;
-    final scale = expanding ? 1.4 : 0.9;
+    final scale = expanding ? 0.9 : 0.7;
     final tx = vpW / 2 - (ax + nw / 2) * scale;
-    final ty = (expanding ? vpH * 0.25 : vpH * 0.3) - (ay + nh / 2) * scale;
+    final ty = (expanding ? vpH * 0.35 : vpH * 0.3) - (ay + nh / 2) * scale;
     _animTo(_mat(scale, tx, ty));
   }
 
@@ -381,15 +381,15 @@ class _StrukturOrganisasiScreenState extends State<StrukturOrganisasiScreen>
     final lay = _buildLayout(_rootNode!);
     final s = MediaQuery.of(context).size;
     final vpH = s.height - 160;
-    final contentW = lay.w + 40.w;
-    final contentH = lay.h + 40.w;
-    final scaleW = s.width / contentW;
-    final scaleH = vpH / contentH;
-    // Fit to screen with slight zoom boost (1.15x)
-    final scale = math.min(0.8, math.min(scaleW, scaleH)) * 1.15;
-    final tx = (s.width - contentW * scale) / 2;
-    final ty = (vpH - contentH * scale) / 2;
-    _tc.value = _mat(scale, tx, math.max(8, ty));
+
+    // Focus on root node at readable zoom level instead of fitting everything
+    const scale = 1.0;
+    // Find root node position in layout
+    final rootNL = lay.nodes.firstWhere((n) => n.node.id == _rootNode!.id);
+    final rootCx = rootNL.x + rootNL.w / 2;
+    final tx = (s.width / 2) - rootCx * scale;
+    final ty = vpH * 0.15 - rootNL.y * scale;
+    _tc.value = _mat(scale, tx, ty);
   }
 
   void _zoomIn() => _zoomBy(1.3);
@@ -502,21 +502,19 @@ class _StrukturOrganisasiScreenState extends State<StrukturOrganisasiScreen>
           ),
         ),
         SizedBox(width: 12.w),
-        IconButton(
-          icon: Icon(Icons.zoom_in, color: c.textSecondary),
-          onPressed: _zoomIn,
-          padding: EdgeInsets.zero,
-          constraints: const BoxConstraints(),
-        ),
-        SizedBox(width: 16.w),
-        IconButton(
-          icon: Icon(Icons.zoom_out, color: c.textSecondary),
-          onPressed: _zoomOut,
-          padding: EdgeInsets.zero,
-          constraints: const BoxConstraints(),
-        ),
+        _zoomBtn(Icons.zoom_in, _zoomIn),
+        SizedBox(width: 8.w),
+        _zoomBtn(Icons.zoom_out, _zoomOut),
       ],
     ),
+  );
+
+  Widget _zoomBtn(IconData icon, VoidCallback onTap) => IconButton(
+    onPressed: onTap,
+    icon: Icon(icon, size: 22.sp, color: Colors.grey[600]),
+    padding: EdgeInsets.all(8.w),
+    constraints: const BoxConstraints(),
+    splashRadius: 20.r,
   );
 
   Widget _chart() {
