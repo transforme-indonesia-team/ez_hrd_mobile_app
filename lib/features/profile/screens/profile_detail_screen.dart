@@ -18,6 +18,7 @@ import 'package:hrd_app/features/profile/widgets/profile_empty_state.dart';
 import 'package:hrd_app/features/profile/detail/pribadi/pribadi_screen.dart';
 import 'package:hrd_app/data/services/employee_service.dart';
 import 'package:hrd_app/features/fitur/company/screens/struktur_organisasi_screen.dart';
+import 'package:hrd_app/features/profile/widgets/daftar_karyawan_bottom_sheet.dart';
 
 class ProfileDetailScreen extends StatefulWidget {
   /// Jika null → profil sendiri (dari AuthProvider)
@@ -247,6 +248,10 @@ class _ProfileDetailScreenState extends State<ProfileDetailScreen> {
     );
   }
 
+  void _onDaftarKaryawanTap() {
+    DaftarKaryawanBottomSheet.show(context);
+  }
+
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
@@ -298,6 +303,7 @@ class _ProfileDetailScreenState extends State<ProfileDetailScreen> {
                     profile: _profile!,
                     onQRTap: _onQRTap,
                     onBaganTap: _onBaganTap,
+                    onDaftarKaryawanTap: _onDaftarKaryawanTap,
                     onMenuTap: _isSelfProfile ? _onMoreMenuTap : null,
                   ),
 

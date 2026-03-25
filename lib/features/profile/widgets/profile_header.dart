@@ -10,6 +10,7 @@ class ProfileHeader extends StatelessWidget {
   final ProfileDetailModel profile;
   final VoidCallback? onQRTap;
   final VoidCallback? onBaganTap;
+  final VoidCallback? onDaftarKaryawanTap;
   final VoidCallback? onMenuTap;
 
   const ProfileHeader({
@@ -17,6 +18,7 @@ class ProfileHeader extends StatelessWidget {
     required this.profile,
     this.onQRTap,
     this.onBaganTap,
+    this.onDaftarKaryawanTap,
     this.onMenuTap,
   });
 
@@ -57,11 +59,11 @@ class ProfileHeader extends StatelessWidget {
               ],
             ),
           ),
-          // Bagan icon
-          if (onBaganTap != null)
+          // Daftar Karyawan icon
+          if (onDaftarKaryawanTap != null)
             _buildActionIcon(
               icon: Icons.account_tree_outlined,
-              onTap: onBaganTap!,
+              onTap: onDaftarKaryawanTap!,
               colors: colors,
             ),
           // 3-dot popup menu

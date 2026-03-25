@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hrd_app/core/theme/app_text_styles.dart';
 import 'package:hrd_app/core/utils/image_url_extension.dart';
 import 'package:hrd_app/features/beranda/widgets/company_switcher_bottom_sheet.dart';
+import 'package:hrd_app/features/beranda/widgets/search_member_bottom_sheet.dart';
 import 'package:hrd_app/features/profile/screens/pengaturan_personal_screen.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
@@ -59,7 +60,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         actions: [
           IconButton(
             icon: Icon(Icons.search, color: colors.textPrimary),
-            onPressed: () {},
+            onPressed: () => SearchMemberBottomSheet.show(context),
           ),
         ],
       ),
