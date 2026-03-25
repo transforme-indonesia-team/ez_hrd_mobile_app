@@ -263,6 +263,19 @@ class _StrukturOrganisasiScreenState extends State<StrukturOrganisasiScreen>
   Animation<Matrix4>? _matAnim;
   final GlobalKey _canvasKey = GlobalKey();
 
+  // Diagram type options
+  static const _diagramTypes = [
+    'Diagram Bagan',
+    'Diagram Struktur',
+    'Diagram Pengawasan',
+    'Diagram Manajerial',
+  ];
+  static const _diagramFiles = {
+    'Diagram Bagan': 'lib/data/dummy/org_structure_dummy.json',
+    'Diagram Struktur': 'lib/data/dummy/diagram_structure_dummy.json',
+  };
+  String _selectedDiagram = 'Diagram Bagan';
+
   @override
   void initState() {
     super.initState();
@@ -283,13 +296,32 @@ class _StrukturOrganisasiScreenState extends State<StrukturOrganisasiScreen>
     super.dispose();
   }
 
+  void _onDiagramChanged(String type) {
+    if (type == _selectedDiagram) return;
+    setState(() {
+      _selectedDiagram = type;
+      _isLoading = true;
+      _rootNode = null;
+      _nodeMap.clear();
+      _nodeKeys.clear();
+    });
+    _loadData();
+  }
+
   Future<void> _loadData() async {
     try {
+      final filePath = _diagramFiles[_selectedDiagram];
+      if (filePath == null) {
+        // No data available for this diagram type
+        setState(() {
+          _rootNode = null;
+          _isLoading = false;
+        });
+        return;
+      }
       // Simulate API latency (remove when using real API)
       await Future.delayed(const Duration(seconds: 2));
-      final raw = await rootBundle.loadString(
-        'lib/data/dummy/org_structure_dummy.json',
-      );
+      final raw = await rootBundle.loadString(filePath);
       final records = jsonDecode(raw)['data'] as List;
       final all = records.map((e) => OrgNodeModel.fromJson(e)).toList();
 
@@ -308,13 +340,28 @@ class _StrukturOrganisasiScreenState extends State<StrukturOrganisasiScreen>
           if (n.id == "-1" && root == null) root = n;
         }
       }
-      for (var n in all) {
-        if (n.parentId == "-1" && n.id != "-1") {
-          final p = _nodeMap["-1"];
-          if (p != null && !p.children.contains(n)) p.addChild(n);
+
+      // If root node exists (id=-1), attach orphan children
+      if (_nodeMap.containsKey("-1")) {
+        for (var n in all) {
+          if (n.parentId == "-1" && n.id != "-1") {
+            final p = _nodeMap["-1"];
+            if (p != null && !p.children.contains(n)) p.addChild(n);
+          }
         }
+        root ??= _nodeMap["-1"];
+      } else {
+        // No root node — create synthetic root for all top-level departments
+        final topLevel = all.where((n) => n.parentId == "-1").toList();
+        root = OrgNodeModel(
+          id: "-1",
+          parentId: "",
+          name: "EZ Parking",
+          children: topLevel,
+        );
+        _nodeMap["-1"] = root;
+        _nodeKeys["-1"] = GlobalKey();
       }
-      root ??= _nodeMap["-1"];
       root?.isExpanded = true;
 
       setState(() {
@@ -446,20 +493,32 @@ class _StrukturOrganisasiScreenState extends State<StrukturOrganisasiScreen>
           onPressed: () => Navigator.pop(context),
         ),
       ),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : _rootNode == null
-          ? Center(
-              child: Text(
-                "Data tidak ditemukan",
-                style: AppTextStyles.body(c.textPrimary),
-              ),
-            )
-          : Column(
-              children: [
-                _toolbar(c),
-                Expanded(
-                  child: InteractiveViewer(
+      body: Column(
+        children: [
+          _toolbar(c),
+          Expanded(
+            child: _isLoading
+                ? const Center(child: CircularProgressIndicator())
+                : _rootNode == null
+                ? Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.info_outline,
+                          size: 48.sp,
+                          color: Colors.grey[400],
+                        ),
+                        SizedBox(height: 12.h),
+                        Text(
+                          'Data $_selectedDiagram\nbelum tersedia',
+                          textAlign: TextAlign.center,
+                          style: AppTextStyles.body(c.textSecondary),
+                        ),
+                      ],
+                    ),
+                  )
+                : InteractiveViewer(
                     transformationController: _tc,
                     constrained: false,
                     boundaryMargin: const EdgeInsets.all(double.infinity),
@@ -471,9 +530,9 @@ class _StrukturOrganisasiScreenState extends State<StrukturOrganisasiScreen>
                       child: _chart(),
                     ),
                   ),
-                ),
-              ],
-            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -484,20 +543,27 @@ class _StrukturOrganisasiScreenState extends State<StrukturOrganisasiScreen>
       children: [
         Expanded(
           child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
+            padding: EdgeInsets.symmetric(horizontal: 12.w),
             decoration: BoxDecoration(
               border: Border.all(color: c.divider),
               borderRadius: BorderRadius.circular(8.r),
             ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Diagram Bagan',
-                  style: AppTextStyles.bodyMedium(c.textPrimary),
-                ),
-                Icon(Icons.keyboard_arrow_down, color: c.textSecondary),
-              ],
+            child: DropdownButtonHideUnderline(
+              child: DropdownButton<String>(
+                value: _selectedDiagram,
+                isExpanded: true,
+                icon: Icon(Icons.keyboard_arrow_down, color: c.textSecondary),
+                style: AppTextStyles.bodyMedium(c.textPrimary),
+                items: _diagramTypes
+                    .map(
+                      (type) =>
+                          DropdownMenuItem(value: type, child: Text(type)),
+                    )
+                    .toList(),
+                onChanged: (val) {
+                  if (val != null) _onDiagramChanged(val);
+                },
+              ),
             ),
           ),
         ),
