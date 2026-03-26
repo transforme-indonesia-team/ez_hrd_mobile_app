@@ -28,7 +28,7 @@ class FiturItemGrid extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          SizedBox(height: 2.h),
+          SizedBox(height: 1.h),
           Flexible(
             flex: 3,
             child: FittedBox(
@@ -49,15 +49,15 @@ class FiturItemGrid extends StatelessWidget {
               ),
             ),
           ),
-          SizedBox(height: 4.h),
+          SizedBox(height: 2.h),
           Flexible(
-            flex: 2,
+            flex: 3,
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 2.w),
               child: Text(
                 item.title,
                 textAlign: TextAlign.center,
-                maxLines: 2,
+                maxLines: 4,
                 overflow: TextOverflow.ellipsis,
                 style: AppTextStyles.xxSmall(colors.textPrimary),
               ),

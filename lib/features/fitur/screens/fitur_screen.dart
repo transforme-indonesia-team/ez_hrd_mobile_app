@@ -324,7 +324,7 @@ class _FiturScreenState extends State<FiturScreen> {
         physics: const NeverScrollableScrollPhysics(),
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 4,
-          childAspectRatio: 0.85,
+          childAspectRatio: 0.72,
           crossAxisSpacing: 8,
           mainAxisSpacing: 8,
         ),

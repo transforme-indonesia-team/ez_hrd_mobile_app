@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hrd_app/core/constants/app_constants.dart';
 import 'package:hrd_app/core/theme/app_colors.dart';
 import 'package:hrd_app/core/theme/app_text_styles.dart';
@@ -80,7 +81,7 @@ class _FiturBottomSheetState extends State<FiturBottomSheet> {
         return Container(
           decoration: BoxDecoration(
             color: colors.background,
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+            borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
           ),
           child: CustomScrollView(
             controller: scrollController,
@@ -90,21 +91,21 @@ class _FiturBottomSheetState extends State<FiturBottomSheet> {
                   children: [
                     Container(
                       width: double.infinity,
-                      padding: const EdgeInsets.only(top: 12, bottom: 8),
+                      padding: EdgeInsets.only(top: 12.h, bottom: 8.h),
                       child: Center(
                         child: Container(
-                          width: 40,
-                          height: 4,
+                          width: 40.w,
+                          height: 4.h,
                           decoration: BoxDecoration(
                             color: colors.divider,
-                            borderRadius: BorderRadius.circular(2),
+                            borderRadius: BorderRadius.circular(2.r),
                           ),
                         ),
                       ),
                     ),
 
                     Padding(
-                      padding: const EdgeInsets.fromLTRB(20, 8, 20, 8),
+                      padding: EdgeInsets.fromLTRB(20.w, 8.h, 20.w, 8.h),
                       child: Row(
                         children: [
                           Text(
@@ -113,7 +114,7 @@ class _FiturBottomSheetState extends State<FiturBottomSheet> {
                               colors.textSecondary,
                             ),
                           ),
-                          const SizedBox(width: 12),
+                          SizedBox(width: 12.w),
                           Expanded(child: Divider(color: colors.divider)),
                         ],
                       ),
@@ -142,7 +143,7 @@ class _FiturBottomSheetState extends State<FiturBottomSheet> {
                   child: _buildItemsGrid(context, widget.category, colors),
                 ),
 
-              const SliverToBoxAdapter(child: SizedBox(height: 20)),
+              SliverToBoxAdapter(child: SizedBox(height: 20.h)),
             ],
           ),
         );
@@ -161,7 +162,7 @@ class _FiturBottomSheetState extends State<FiturBottomSheet> {
         InkWell(
           onTap: () => _toggleCategory(index),
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+            padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 6.h),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -174,7 +175,7 @@ class _FiturBottomSheetState extends State<FiturBottomSheet> {
                       ? Icons.keyboard_arrow_up_rounded
                       : Icons.keyboard_arrow_down_rounded,
                   color: colors.textSecondary,
-                  size: 24,
+                  size: 24.sp,
                 ),
               ],
             ),
@@ -201,30 +202,35 @@ class _FiturBottomSheetState extends State<FiturBottomSheet> {
     // Gunakan backgroundColor/iconColor dari parent jika sub-category tidak punya
     final bgColor = category.backgroundColor ?? widget.category.backgroundColor;
     final icColor = category.iconColor ?? widget.category.iconColor;
+    final hasVeryLongTitle = category.items.any(
+      (item) => item.title.length > 32,
+    );
+    final rowHeight = hasVeryLongTitle ? 118.h : 94.h;
 
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
-      child: Align(
-        alignment: Alignment.centerLeft,
-        child: Wrap(
-          spacing: 16,
-          runSpacing: 16,
-          children: category.items.map((item) {
-            return SizedBox(
-              width: 72,
-              height: 90,
-              child: FiturItemGrid(
-                item: item,
-                categoryBackgroundColor: bgColor,
-                categoryIconColor: icColor,
-                onTap: () {
-                  Navigator.pop(context);
-                  widget.onItemTap(item);
-                },
-              ),
-            );
-          }).toList(),
+      padding: EdgeInsets.fromLTRB(16.w, 0, 16.w, 2.h),
+      child: GridView.builder(
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 4,
+          mainAxisExtent: rowHeight,
+          crossAxisSpacing: 8.w,
+          mainAxisSpacing: 4.h,
         ),
+        itemCount: category.items.length,
+        itemBuilder: (context, index) {
+          final item = category.items[index];
+          return FiturItemGrid(
+            item: item,
+            categoryBackgroundColor: bgColor,
+            categoryIconColor: icColor,
+            onTap: () {
+              Navigator.pop(context);
+              widget.onItemTap(item);
+            },
+          );
+        },
       ),
     );
   }
