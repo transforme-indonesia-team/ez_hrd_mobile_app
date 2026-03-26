@@ -157,7 +157,7 @@ class _LivenessScreenState extends State<LivenessScreen> {
             centerTitle: true,
           ),
 
-          // Konfigurasi challenge
+          // Konfigurasi challenge — dioptimasi untuk attendance (cepat & mudah)
           config: LivenessConfig(
             challengeTypes: [
               ChallengeType.blink,
@@ -165,23 +165,23 @@ class _LivenessScreenState extends State<LivenessScreen> {
               ChallengeType.turnRight,
               ChallengeType.smile,
             ],
-            numberOfRandomChallenges: 3,
+            numberOfRandomChallenges: 2, // Cukup 2 challenge agar cepat
             alwaysIncludeBlink: true,
+            sandwichNormalChallenge: false, // Tanpa extra "normal" step
             maxSessionDuration: const Duration(minutes: 2),
 
-            // Threshold deteksi
-            eyeBlinkThresholdOpen: 0.7,
-            eyeBlinkThresholdClosed: 0.3,
-            smileThresholdNeutral: 0.3,
-            smileThresholdSmiling: 0.7,
-            headTurnThreshold: 20.0,
-
+            // Threshold deteksi — di-relax agar lebih responsif
+            eyeBlinkThresholdOpen: 0.6, // Lebih mudah detect mata terbuka
+            eyeBlinkThresholdClosed: 0.4, // Lebih mudah detect mata tertutup
+            smileThresholdNeutral: 0.35,
+            smileThresholdSmiling: 0.45, // Senyum ringan sudah cukup
+            headTurnThreshold: 10.0, // Noleh sedikit sudah cukup
             // Oval guide — proporsional seperti app banking
             ovalHeightRatio: 0.45,
             ovalWidthRatio: 0.73,
             strokeWidth: 2.5,
 
-            // Anti-spoofing — relax untuk attendance (bukan banking)
+            // Anti-spoofing — relax untuk attendance
             enableGyroscopeCheck: false,
             enableRelaxedFacePositioningOnTiltDown: true,
             minDeviceMovementThreshold: 0.01,
