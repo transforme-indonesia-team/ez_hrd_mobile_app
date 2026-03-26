@@ -38,6 +38,8 @@ dependencies:
   barcode_widget: ^2.0.4
   mobile_scanner: ^6.0.2
   graphview: ^1.5.1
+  smart_liveliness_detection: ^0.3.2
+  camera_android: ^0.10.10+16
 
 dev_dependencies:
   flutter_test:

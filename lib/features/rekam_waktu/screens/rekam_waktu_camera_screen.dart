@@ -5,6 +5,7 @@ import 'package:hrd_app/core/theme/app_text_styles.dart';
 import 'package:camera/camera.dart';
 import 'package:hrd_app/core/theme/app_colors.dart';
 import 'package:hrd_app/core/utils/snackbar_utils.dart';
+import 'package:hrd_app/features/rekam_waktu/screens/liveness_screen.dart';
 import 'package:hrd_app/features/rekam_waktu/screens/rekam_waktu_confirm_screen.dart';
 
 class RekamWaktuCameraScreen extends StatefulWidget {
@@ -30,17 +31,66 @@ class _RekamWaktuCameraScreenState extends State<RekamWaktuCameraScreen> {
   bool _isCapturing = false;
   bool _isFlashOn = false;
   int _selectedCameraIndex = 1;
+  bool _livenessLaunched = false;
 
   @override
   void initState() {
     super.initState();
-    _initCamera();
+    // Langsung luncurkan liveness detection saat screen dibuka
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _launchLiveness();
+    });
   }
 
   @override
   void dispose() {
     _controller?.dispose();
     super.dispose();
+  }
+
+  /// Luncurkan liveness detection screen
+  Future<void> _launchLiveness() async {
+    if (_livenessLaunched) return;
+    _livenessLaunched = true;
+
+    final File? livenessPhoto = await Navigator.push<File>(
+      context,
+      MaterialPageRoute(
+        builder: (context) => LivenessScreen(
+          scannedEmployeeCode: widget.scannedEmployeeCode,
+          scannedEmployeeName: widget.scannedEmployeeName,
+          scannedProfileUrl: widget.scannedProfileUrl,
+        ),
+      ),
+    );
+
+    if (!mounted) return;
+
+    if (livenessPhoto != null) {
+      // Liveness berhasil → langsung ke confirm screen
+      final result = await Navigator.push<bool>(
+        context,
+        MaterialPageRoute(
+          builder: (context) => RekamWaktuConfirmScreen(
+            photo: livenessPhoto,
+            scannedEmployeeCode: widget.scannedEmployeeCode,
+            scannedEmployeeName: widget.scannedEmployeeName,
+            scannedProfileUrl: widget.scannedProfileUrl,
+          ),
+        ),
+      );
+
+      if (result == true && mounted) {
+        Navigator.pop(context); // Kembali ke beranda
+      } else if (mounted) {
+        // User kembali dari confirm → retry liveness
+        _livenessLaunched = false;
+        _launchLiveness();
+      }
+    } else {
+      // Liveness dibatalkan → kembali ke screen sebelumnya
+      Navigator.pop(context);
+    }
   }
 
   Future<void> _initCamera() async {
