@@ -181,6 +181,16 @@ class FiturData {
               title: 'Permintaan Lembur',
               icon: Icons.work_history_outlined,
             ),
+            FiturItemModel(
+              id: 'laporan_karyawan_lembur',
+              title: 'Laporan Karyawan Lembur',
+              icon: Icons.report_outlined,
+            ),
+            FiturItemModel(
+              id: 'laporan_permintaan_lembur',
+              title: 'Laporan Permintaan Lembur',
+              icon: Icons.report_off,
+            ),
           ],
         ),
       ],

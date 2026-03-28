@@ -9,6 +9,8 @@ import 'package:hrd_app/features/fitur/company/screens/profile_perusahaan.dart';
 import 'package:hrd_app/features/fitur/cuti/screens/jatah_cuti_screen.dart';
 import 'package:hrd_app/features/fitur/cuti/screens/kalender_cuti_screen.dart';
 import 'package:hrd_app/features/fitur/cuti/screens/permintaan_cuti.dart';
+import 'package:hrd_app/features/fitur/cuti/screens/laporan_cuti_screen.dart';
+import 'package:hrd_app/features/fitur/cuti/screens/laporan_jatah_cuti_screen.dart';
 import 'package:hrd_app/features/fitur/data/fitur_data.dart';
 import 'package:hrd_app/features/fitur/gaji/screens/kata_sandi_slip_gaji_screen.dart';
 import 'package:hrd_app/features/fitur/gaji/screens/slip_gaji_screen.dart';
@@ -26,6 +28,8 @@ import 'package:hrd_app/features/fitur/widgets/fitur_item_grid.dart';
 import 'package:hrd_app/features/fitur/widgets/fitur_item_list.dart';
 import 'package:hrd_app/features/fitur/widgets/fitur_bottom_sheet.dart';
 import 'package:hrd_app/features/fitur/lembur/screens/daftar_lembur_screen.dart';
+import 'package:hrd_app/features/fitur/lembur/screens/laporan_karyawan_lembur_screen.dart';
+import 'package:hrd_app/features/fitur/lembur/screens/laporan_permintaan_lembur_screen.dart';
 import 'package:hrd_app/features/fitur/koreksi_kehadiran/screens/daftar_koreksi_kehadiran_screen.dart';
 import 'package:hrd_app/features/fitur/permohonan/screens/permohonan_karyawan_screen.dart';
 import 'package:hrd_app/features/fitur/jadwal_shift/screens/jadwal_shift_screen.dart';
@@ -196,6 +200,38 @@ class _FiturScreenState extends State<FiturScreen> {
           context,
           MaterialPageRoute(
             builder: (context) => const LaporanLogKehadiranScreen(),
+          ),
+        );
+        break;
+      case 'laporan_cuti':
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const LaporanCutiScreen(),
+          ),
+        );
+        break;
+      case 'laporan_jatah_cuti':
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const LaporanJatahCutiScreen(),
+          ),
+        );
+        break;
+      case 'laporan_karyawan_lembur':
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const LaporanKaryawanLemburScreen(),
+          ),
+        );
+        break;
+      case 'laporan_permintaan_lembur':
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const LaporanPermintaanLemburScreen(),
           ),
         );
         break;
