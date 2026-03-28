@@ -12,8 +12,13 @@ import 'package:hrd_app/features/fitur/cuti/screens/permintaan_cuti.dart';
 import 'package:hrd_app/features/fitur/data/fitur_data.dart';
 import 'package:hrd_app/features/fitur/gaji/screens/kata_sandi_slip_gaji_screen.dart';
 import 'package:hrd_app/features/fitur/gaji/screens/slip_gaji_screen.dart';
-import 'package:hrd_app/features/fitur/kehadiran/screens/daftar_kehadiran_screen.dart';
 import 'package:hrd_app/features/fitur/kehadiran/screens/laporan_kehadiran_screen.dart';
+import 'package:hrd_app/features/fitur/kehadiran/screens/laporan_ringkasan_kehadiran_screen.dart';
+import 'package:hrd_app/features/fitur/kehadiran/screens/laporan_lokasi_kehadiran_screen.dart';
+import 'package:hrd_app/features/fitur/kehadiran/screens/laporan_kehadiran_yang_dicurigai_screen.dart';
+import 'package:hrd_app/features/fitur/kehadiran/screens/laporan_kehadiran_wajah_yang_dicurigai_screen.dart';
+import 'package:hrd_app/features/fitur/kehadiran/screens/laporan_koreksi_kehadiran_screen.dart';
+import 'package:hrd_app/features/fitur/kehadiran/screens/laporan_log_kehadiran_screen.dart';
 import 'package:hrd_app/features/fitur/models/fitur_item_model.dart';
 import 'package:hrd_app/features/fitur/widgets/fitur_search_bar.dart';
 import 'package:hrd_app/features/fitur/widgets/fitur_section_header.dart';
@@ -112,7 +117,7 @@ class _FiturScreenState extends State<FiturScreen> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => const DaftarKehadiranScreen(),
+            builder: (context) => const DaftarKoreksiKehadiranScreen(),
           ),
         );
         break;
@@ -143,6 +148,54 @@ class _FiturScreenState extends State<FiturScreen> {
           context,
           MaterialPageRoute(
             builder: (context) => const LaporanKehadiranScreen(),
+          ),
+        );
+        break;
+      case 'laporan_ringkasan_kehadiran':
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const LaporanRingkasanKehadiranScreen(),
+          ),
+        );
+        break;
+      case 'laporan_lokasi_kehadiran':
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const LaporanLokasiKehadiranScreen(),
+          ),
+        );
+        break;
+      case 'laporan_kehadiran_yang_dicurigai':
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const LaporanKehadiranYangDicurigaiScreen(),
+          ),
+        );
+        break;
+      case 'laporan_koreksi_kehadiran':
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const LaporanKoreksiKehadiranScreen(),
+          ),
+        );
+        break;
+      case 'laporan_kehadiran_wajah_yang_dicurigai':
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const LaporanKehadiranWajahYangDicurigaiScreen(),
+          ),
+        );
+        break;
+      case 'laporan_log_kehadiran':
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const LaporanLogKehadiranScreen(),
           ),
         );
         break;

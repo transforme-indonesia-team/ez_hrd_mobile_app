@@ -4,6 +4,7 @@ import 'package:hrd_app/core/theme/app_colors.dart';
 import 'package:hrd_app/core/theme/app_text_styles.dart';
 
 enum DownloadOption {
+  pdf,
   excel,
   email,
   viewDirectly,
@@ -11,13 +12,26 @@ enum DownloadOption {
 }
 
 class DownloadOptionsBottomSheet extends StatelessWidget {
-  const DownloadOptionsBottomSheet({super.key});
+  final List<DownloadOption> options;
 
-  static Future<DownloadOption?> show(BuildContext context) {
+  const DownloadOptionsBottomSheet({super.key, required this.options});
+
+  static Future<DownloadOption?> show(
+    BuildContext context, {
+    List<DownloadOption>? options,
+  }) {
     return showModalBottomSheet<DownloadOption>(
       context: context,
       backgroundColor: Colors.transparent,
-      builder: (context) => const DownloadOptionsBottomSheet(),
+      builder: (context) => DownloadOptionsBottomSheet(
+        options: options ??
+            const [
+              DownloadOption.excel,
+              DownloadOption.email,
+              DownloadOption.viewDirectly,
+              DownloadOption.dailyAttendance,
+            ],
+      ),
     );
   }
 
@@ -34,42 +48,72 @@ class DownloadOptionsBottomSheet extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           _buildDragHandle(colors),
-          _buildOptionItem(
-            context,
-            colors: colors,
-            iconAsset: 'XLS',
-            label: 'Unduh sebagai Excel',
-            option: DownloadOption.excel,
-          ),
-          _buildOptionItem(
-            context,
-            colors: colors,
-            icon: Icons.mail_outline,
-            iconColor: colors.textSecondary.withValues(alpha: 0.8),
-            label: 'Kirim ke Email',
-            option: DownloadOption.email,
-          ),
-          _buildOptionItem(
-            context,
-            colors: colors,
-            icon: Icons.open_in_new,
-            iconColor: colors.textSecondary.withValues(alpha: 0.8),
-            label: 'Lihat Langsung',
-            option: DownloadOption.viewDirectly,
-          ),
-          _buildOptionItem(
-            context,
-            colors: colors,
-            icon: Icons.open_in_new,
-            iconColor: colors.textSecondary.withValues(alpha: 0.8),
-            label: 'Kehadiran per Hari',
-            option: DownloadOption.dailyAttendance,
-            hideBorder: true,
-          ),
+          ...options.asMap().entries.map((entry) {
+            final isLast = entry.key == options.length - 1;
+            return _mapOption(context, colors, entry.value, isLast);
+          }),
           SizedBox(height: MediaQuery.of(context).padding.bottom + 8.h),
         ],
       ),
     );
+  }
+
+  Widget _mapOption(
+    BuildContext context,
+    ThemeColors colors,
+    DownloadOption option,
+    bool isLast,
+  ) {
+    switch (option) {
+      case DownloadOption.pdf:
+        return _buildOptionItem(
+          context,
+          colors: colors,
+          iconAsset: 'PDF',
+          label: 'Unduh sebagai PDF',
+          option: option,
+          hideBorder: isLast,
+        );
+      case DownloadOption.excel:
+        return _buildOptionItem(
+          context,
+          colors: colors,
+          iconAsset: 'XLS',
+          label: 'Unduh sebagai Excel',
+          option: option,
+          hideBorder: isLast,
+        );
+      case DownloadOption.email:
+        return _buildOptionItem(
+          context,
+          colors: colors,
+          icon: Icons.mail_outline,
+          iconColor: colors.textSecondary.withValues(alpha: 0.8),
+          label: 'Kirim ke Email',
+          option: option,
+          hideBorder: isLast,
+        );
+      case DownloadOption.viewDirectly:
+        return _buildOptionItem(
+          context,
+          colors: colors,
+          icon: Icons.open_in_new,
+          iconColor: colors.textSecondary.withValues(alpha: 0.8),
+          label: 'Lihat Langsung',
+          option: option,
+          hideBorder: isLast,
+        );
+      case DownloadOption.dailyAttendance:
+        return _buildOptionItem(
+          context,
+          colors: colors,
+          icon: Icons.open_in_new,
+          iconColor: colors.textSecondary.withValues(alpha: 0.8),
+          label: 'Kehadiran per Hari',
+          option: option,
+          hideBorder: isLast,
+        );
+    }
   }
 
   Widget _buildDragHandle(ThemeColors colors) {
@@ -110,17 +154,20 @@ class DownloadOptionsBottomSheet extends StatelessWidget {
             SizedBox(
               width: 20.w,
               height: 20.w,
-              child: iconAsset == 'XLS'
+              child: (iconAsset == 'XLS' || iconAsset == 'PDF')
                   ? Container(
                       decoration: BoxDecoration(
-                        color: const Color(0xFF1D6F42), // Excel green
+                        color: iconAsset == 'XLS' 
+                            ? const Color(0xFF1D6F42) 
+                            : const Color(0xFFE53935), // PDF Red
                         borderRadius: BorderRadius.circular(4.r),
                       ),
                       alignment: Alignment.center,
                       child: Text(
-                        'XLS',
+                        iconAsset ?? '',
                         style: AppTextStyles.buttonSmall(Colors.white)
-                            .copyWith(fontSize: 8.sp, fontWeight: FontWeight.bold),
+                            .copyWith(
+                                fontSize: 8.sp, fontWeight: FontWeight.bold),
                       ),
                     )
                   : Icon(icon, color: iconColor, size: 20.sp),
