@@ -4,6 +4,8 @@ import 'package:hrd_app/core/theme/app_colors.dart';
 import 'package:hrd_app/core/theme/app_text_styles.dart';
 import 'package:hrd_app/core/utils/format_date.dart';
 import 'package:hrd_app/features/fitur/kehadiran/widgets/rentang_tanggal_bottom_sheet.dart';
+import 'package:hrd_app/features/fitur/kehadiran/widgets/multi_select_employee_bottom_sheet.dart';
+import 'package:hrd_app/features/fitur/kehadiran/widgets/download_options_bottom_sheet.dart';
 
 class LaporanKehadiranScreen extends StatefulWidget {
   const LaporanKehadiranScreen({super.key});
@@ -16,6 +18,7 @@ class _LaporanKehadiranScreenState extends State<LaporanKehadiranScreen> {
   bool _showUnknownStatus = false;
   bool _showLocationDetails = false;
   DateTimeRange? _selectedDateRange;
+  List<MemberData> _selectedEmployees = [];
 
   @override
   void initState() {
@@ -41,6 +44,18 @@ class _LaporanKehadiranScreenState extends State<LaporanKehadiranScreen> {
     if (result != null) {
       setState(() {
         _selectedDateRange = result;
+      });
+    }
+  }
+
+  void _showEmployeeSelector() async {
+    final result = await MultiSelectEmployeeBottomSheet.show(
+      context,
+      initialSelectedItems: _selectedEmployees,
+    );
+    if (result != null) {
+      setState(() {
+        _selectedEmployees = result;
       });
     }
   }
@@ -77,10 +92,15 @@ class _LaporanKehadiranScreenState extends State<LaporanKehadiranScreen> {
           children: [
             _buildLabel(colors, 'Karyawan'),
             SizedBox(height: 4.h),
-            _buildTextField(
-              colors,
-              hint: 'Pilih Karyawan',
-              suffixIcon: Icons.people_outline,
+            GestureDetector(
+              onTap: _showEmployeeSelector,
+              child: _buildTextField(
+                colors,
+                hint: _selectedEmployees.isEmpty
+                    ? 'Pilih Karyawan'
+                    : '${_selectedEmployees.length} Terpilih',
+                suffixIcon: Icons.people_outline,
+              ),
             ),
             SizedBox(height: 12.h),
 
@@ -215,8 +235,11 @@ class _LaporanKehadiranScreenState extends State<LaporanKehadiranScreen> {
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          onTap: () {
-            // TODO: Tambahkan fungsi unduh
+          onTap: () async {
+            final option = await DownloadOptionsBottomSheet.show(context);
+            if (option != null && context.mounted) {
+              // TODO: Implement specific option
+            }
           },
           borderRadius: BorderRadius.circular(8.r),
           child: Center(

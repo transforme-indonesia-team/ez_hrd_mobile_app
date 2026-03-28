@@ -55,6 +55,11 @@ void main() async {
 void _handleUnauthorized() async {
   await _authProviderRef?.logout();
 
+  if (navigatorKey.currentContext != null) {
+    Navigator.of(navigatorKey.currentContext!, rootNavigator: true)
+        .popUntil((route) => route.isFirst);
+  }
+
   navigatorKey.currentState?.pushNamedAndRemoveUntil(
     AppRoutes.login,
     (route) => false,

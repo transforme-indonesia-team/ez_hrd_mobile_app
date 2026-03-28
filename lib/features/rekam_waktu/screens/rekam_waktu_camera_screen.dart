@@ -24,7 +24,8 @@ class RekamWaktuCameraScreen extends StatefulWidget {
   State<RekamWaktuCameraScreen> createState() => _RekamWaktuCameraScreenState();
 }
 
-class _RekamWaktuCameraScreenState extends State<RekamWaktuCameraScreen> {
+class _RekamWaktuCameraScreenState extends State<RekamWaktuCameraScreen>
+    with WidgetsBindingObserver {
   CameraController? _controller;
   List<CameraDescription>? _cameras;
   bool _isCameraReady = false;
@@ -36,6 +37,7 @@ class _RekamWaktuCameraScreenState extends State<RekamWaktuCameraScreen> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     // Langsung luncurkan liveness detection saat screen dibuka
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _launchLiveness();
@@ -43,7 +45,30 @@ class _RekamWaktuCameraScreenState extends State<RekamWaktuCameraScreen> {
   }
 
   @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    final CameraController? cameraController = _controller;
+
+    // Jika app state berubah sebelum init selesai atau controller NULL, return.
+    if (cameraController == null || !cameraController.value.isInitialized) {
+      return;
+    }
+
+    if (state == AppLifecycleState.inactive || state == AppLifecycleState.paused) {
+      // Hancurkan resource memori kamera saat app di background (panggilan masuk / minimize)
+      cameraController.dispose();
+      setState(() {
+        _isCameraReady = false;
+        _controller = null;
+      });
+    } else if (state == AppLifecycleState.resumed) {
+      // Hidupkan kembali kamera saat app kembali dibuka
+      _initCamera();
+    }
+  }
+
+  @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _controller?.dispose();
     super.dispose();
   }
