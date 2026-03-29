@@ -35,6 +35,7 @@ import 'package:hrd_app/features/fitur/koreksi_kehadiran/screens/daftar_koreksi_
 import 'package:hrd_app/features/fitur/permohonan/screens/permohonan_karyawan_screen.dart';
 import 'package:hrd_app/features/fitur/jadwal_shift/screens/jadwal_shift_screen.dart';
 import 'package:hrd_app/features/fitur/company/screens/struktur_organisasi_screen.dart';
+import 'package:hrd_app/features/fitur/saran/screens/saran_screen.dart';
 import 'package:hrd_app/features/profile/screens/profile_detail_screen.dart';
 import 'package:provider/provider.dart';
 
@@ -241,6 +242,14 @@ class _FiturScreenState extends State<FiturScreen> {
           context,
           MaterialPageRoute(
             builder: (context) => const TugasScreen(),
+          ),
+        );
+        break;
+      case 'saran':
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const SaranScreen(),
           ),
         );
         break;
