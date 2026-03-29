@@ -18,7 +18,7 @@ class _LaporanJatahCutiScreenState extends State<LaporanJatahCutiScreen> {
   DateTimeRange? _selectedDateRange;
   List<MemberData> _selectedEmployees = [];
   String? _selectedJenisCuti;
-  
+
   bool _tampilkanRentangTanggal = false;
   String _statusSaldo = 'Semua';
 
@@ -87,10 +87,7 @@ class _LaporanJatahCutiScreenState extends State<LaporanJatahCutiScreen> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(
-                title,
-                style: AppTextStyles.h4(colors.textPrimary),
-              ),
+              Text(title, style: AppTextStyles.h4(colors.textPrimary)),
               SizedBox(height: 16.h),
               Divider(height: 1, color: colors.divider),
               ...options.map(
@@ -106,9 +103,7 @@ class _LaporanJatahCutiScreenState extends State<LaporanJatahCutiScreen> {
                       horizontal: 20.w,
                     ),
                     decoration: BoxDecoration(
-                      border: Border(
-                        bottom: BorderSide(color: colors.divider),
-                      ),
+                      border: Border(bottom: BorderSide(color: colors.divider)),
                     ),
                     child: Text(
                       item,
@@ -181,7 +176,8 @@ class _LaporanJatahCutiScreenState extends State<LaporanJatahCutiScreen> {
               },
               child: _buildTextField(
                 colors,
-                hint: _selectedJenisCuti == null || _selectedJenisCuti == 'Pilih'
+                hint:
+                    _selectedJenisCuti == null || _selectedJenisCuti == 'Pilih'
                     ? 'Pilih Jenis Cuti'
                     : _selectedJenisCuti!,
                 suffixIcon: Icons.keyboard_arrow_down,
@@ -200,7 +196,7 @@ class _LaporanJatahCutiScreenState extends State<LaporanJatahCutiScreen> {
                       _tampilkanRentangTanggal = val;
                     });
                   },
-                  activeColor: colors.primaryBlue,
+                  activeThumbColor: colors.primaryBlue,
                 ),
               ],
             ),
@@ -267,7 +263,11 @@ class _LaporanJatahCutiScreenState extends State<LaporanJatahCutiScreen> {
     );
   }
 
-  Widget _buildRadio(ThemeColors colors, {required String title, required String value}) {
+  Widget _buildRadio(
+    ThemeColors colors, {
+    required String title,
+    required String value,
+  }) {
     return Row(
       children: [
         Radio<String>(
