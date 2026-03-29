@@ -37,6 +37,9 @@ import 'package:hrd_app/features/fitur/jadwal_shift/screens/jadwal_shift_screen.
 import 'package:hrd_app/features/fitur/company/screens/struktur_organisasi_screen.dart';
 import 'package:hrd_app/features/fitur/saran/screens/saran_screen.dart';
 import 'package:hrd_app/features/fitur/manajemen_tugas/screens/manajemen_jenis_tugas_screen.dart';
+import 'package:hrd_app/features/fitur/tugas/screens/laporan_tugas_screen.dart';
+import 'package:hrd_app/features/fitur/saran/screens/laporan_saran_screen.dart';
+import 'package:hrd_app/features/fitur/aktivitas/screens/laporan_rekam_aktivitas_screen.dart';
 import 'package:hrd_app/features/profile/screens/profile_detail_screen.dart';
 import 'package:provider/provider.dart';
 
@@ -259,6 +262,30 @@ class _FiturScreenState extends State<FiturScreen> {
           context,
           MaterialPageRoute(
             builder: (context) => const ManajemenJenisTugasScreen(),
+          ),
+        );
+        break;
+      case 'laporan_tugas':
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const LaporanTugasScreen(),
+          ),
+        );
+        break;
+      case 'laporan_saran':
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const LaporanSaranScreen(),
+          ),
+        );
+        break;
+      case 'laporan_rekam_aktivitas':
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const LaporanRekamAktivitasScreen(),
           ),
         );
         break;
