@@ -223,7 +223,7 @@ class FiturData {
               name: 'Manajemen',
               items: [
                 FiturItemModel(
-                  id: 'manajemen_tugas',
+                  id: 'manajemen_jenis_tugas',
                   title: 'Manajemen Jenis Tugas',
                   icon: Icons.task_alt_outlined,
                 ),

@@ -1,0 +1,85 @@
+{
+    "page": 1,
+    "limit": 20,
+    "total": 7,
+    "total_page": 1,
+    "data": [
+        {
+            "custom_field": "task",
+            "payroll_code": null,
+            "created_by": "90033526",
+            "created_date": "2025-05-20T17:11:31.000Z",
+            "modified_by": "90033526",
+            "modified_date": "2026-01-04T20:49:02.000Z",
+            "company_id": 29081,
+            "activity_type_code": "1747735891937",
+            "activity_type_name": "Checklist 01 ( Pkl 10 : 00 )"
+        },
+        {
+            "custom_field": "task",
+            "payroll_code": null,
+            "created_by": "90033526",
+            "created_date": "2025-05-20T17:13:54.000Z",
+            "modified_by": "90033526",
+            "modified_date": "2026-01-04T20:48:48.000Z",
+            "company_id": 29081,
+            "activity_type_code": "1747736034246",
+            "activity_type_name": "Checklist 02 ( Pkl 16 : 30 )"
+        },
+        {
+            "custom_field": "task",
+            "payroll_code": null,
+            "created_by": "90033526",
+            "created_date": "2025-05-20T17:14:43.000Z",
+            "modified_by": "90033526",
+            "modified_date": "2026-01-04T20:50:38.000Z",
+            "company_id": 29081,
+            "activity_type_code": "1747736083917",
+            "activity_type_name": "Checklist 03 ( Pkl 22 : 00 )"
+        },
+        {
+            "custom_field": "task",
+            "payroll_code": null,
+            "created_by": "90033526",
+            "created_date": "2026-01-04T20:46:53.000Z",
+            "modified_by": "90033526",
+            "modified_date": "2026-01-04T20:48:11.000Z",
+            "company_id": 29081,
+            "activity_type_code": "1767534413846",
+            "activity_type_name": "Holiday Checklist ( Pkl 05:00 - 06:00 ) "
+        },
+        {
+            "custom_field": "task",
+            "payroll_code": null,
+            "created_by": "90033526",
+            "created_date": "2026-01-04T20:41:55.000Z",
+            "modified_by": "90033526",
+            "modified_date": "2026-01-04T20:41:55.000Z",
+            "company_id": 29081,
+            "activity_type_code": "1767534115705",
+            "activity_type_name": "Maintenance"
+        },
+        {
+            "custom_field": "task",
+            "payroll_code": null,
+            "created_by": "90033526",
+            "created_date": "2025-05-20T17:05:58.000Z",
+            "modified_by": "90033526",
+            "modified_date": "2026-01-04T20:42:13.000Z",
+            "company_id": 29081,
+            "activity_type_code": "1747735558900",
+            "activity_type_name": "Patroli Area"
+        },
+        {
+            "custom_field": "task",
+            "payroll_code": null,
+            "created_by": "90035857",
+            "created_date": "2026-01-21T14:50:58.000Z",
+            "modified_by": "90035857",
+            "modified_date": "2026-01-21T14:50:58.000Z",
+            "company_id": 29081,
+            "activity_type_code": "1768981858531",
+            "activity_type_name": "TEST"
+        }
+    ]
+}

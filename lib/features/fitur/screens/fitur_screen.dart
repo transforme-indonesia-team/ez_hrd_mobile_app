@@ -36,6 +36,7 @@ import 'package:hrd_app/features/fitur/permohonan/screens/permohonan_karyawan_sc
 import 'package:hrd_app/features/fitur/jadwal_shift/screens/jadwal_shift_screen.dart';
 import 'package:hrd_app/features/fitur/company/screens/struktur_organisasi_screen.dart';
 import 'package:hrd_app/features/fitur/saran/screens/saran_screen.dart';
+import 'package:hrd_app/features/fitur/manajemen_tugas/screens/manajemen_jenis_tugas_screen.dart';
 import 'package:hrd_app/features/profile/screens/profile_detail_screen.dart';
 import 'package:provider/provider.dart';
 
@@ -250,6 +251,14 @@ class _FiturScreenState extends State<FiturScreen> {
           context,
           MaterialPageRoute(
             builder: (context) => const SaranScreen(),
+          ),
+        );
+        break;
+      case 'manajemen_jenis_tugas':
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const ManajemenJenisTugasScreen(),
           ),
         );
         break;
