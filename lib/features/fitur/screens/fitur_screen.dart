@@ -30,6 +30,7 @@ import 'package:hrd_app/features/fitur/widgets/fitur_bottom_sheet.dart';
 import 'package:hrd_app/features/fitur/lembur/screens/daftar_lembur_screen.dart';
 import 'package:hrd_app/features/fitur/lembur/screens/laporan_karyawan_lembur_screen.dart';
 import 'package:hrd_app/features/fitur/lembur/screens/laporan_permintaan_lembur_screen.dart';
+import 'package:hrd_app/features/fitur/tugas/screens/tugas_screen.dart';
 import 'package:hrd_app/features/fitur/koreksi_kehadiran/screens/daftar_koreksi_kehadiran_screen.dart';
 import 'package:hrd_app/features/fitur/permohonan/screens/permohonan_karyawan_screen.dart';
 import 'package:hrd_app/features/fitur/jadwal_shift/screens/jadwal_shift_screen.dart';
@@ -232,6 +233,14 @@ class _FiturScreenState extends State<FiturScreen> {
           context,
           MaterialPageRoute(
             builder: (context) => const LaporanPermintaanLemburScreen(),
+          ),
+        );
+        break;
+      case 'tugas':
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const TugasScreen(),
           ),
         );
         break;

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_quill/flutter_quill.dart' show FlutterQuillLocalizations;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
@@ -85,6 +87,16 @@ class MyApp extends StatelessWidget {
               theme: AppTheme.lightTheme,
               darkTheme: AppTheme.darkTheme,
               themeMode: themeProvider.themeMode,
+              localizationsDelegates: const [
+                GlobalMaterialLocalizations.delegate,
+                GlobalWidgetsLocalizations.delegate,
+                GlobalCupertinoLocalizations.delegate,
+                FlutterQuillLocalizations.delegate,
+              ],
+              supportedLocales: const [
+                Locale('id', 'ID'),
+                Locale('en', 'US'),
+              ],
               initialRoute: authProvider.isAuthenticated
                   ? AppRoutes.dashboard
                   : AppRoutes.initialRoute,
