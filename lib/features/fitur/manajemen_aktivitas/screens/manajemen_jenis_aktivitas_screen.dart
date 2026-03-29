@@ -4,17 +4,17 @@ import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hrd_app/core/theme/app_colors.dart';
 import 'package:hrd_app/core/theme/app_text_styles.dart';
-import 'package:hrd_app/features/fitur/manajemen_tugas/screens/buat_jenis_tugas_screen.dart';
+import 'package:hrd_app/features/fitur/manajemen_aktivitas/screens/buat_jenis_aktivitas_screen.dart';
 
-class ManajemenJenisTugasScreen extends StatefulWidget {
-  const ManajemenJenisTugasScreen({super.key});
+class ManajemenJenisAktivitasScreen extends StatefulWidget {
+  const ManajemenJenisAktivitasScreen({super.key});
 
   @override
-  State<ManajemenJenisTugasScreen> createState() => _ManajemenJenisTugasScreenState();
+  State<ManajemenJenisAktivitasScreen> createState() => _ManajemenJenisAktivitasScreenState();
 }
 
-class _ManajemenJenisTugasScreenState extends State<ManajemenJenisTugasScreen> {
-  List<dynamic> _tugasList = [];
+class _ManajemenJenisAktivitasScreenState extends State<ManajemenJenisAktivitasScreen> {
+  List<dynamic> _aktivitasList = [];
   bool _isLoading = true;
 
   @override
@@ -25,17 +25,17 @@ class _ManajemenJenisTugasScreenState extends State<ManajemenJenisTugasScreen> {
 
   Future<void> _loadDummyData() async {
     try {
-      final String response = await rootBundle.loadString('lib/data/dummy/manajemen_tugas_dummy.json');
+      final String response = await rootBundle.loadString('lib/data/dummy/manajemen_jenis_aktivitas_dummy.json');
       final data = json.decode(response);
       setState(() {
-        _tugasList = data['data'];
+        _aktivitasList = data['data'];
         _isLoading = false;
       });
     } catch (e) {
       setState(() {
         _isLoading = false;
       });
-      debugPrint('Error loading dummy data: $e');
+      debugPrint('Error loading dummy aktivitas data: $e');
     }
   }
 
@@ -121,7 +121,7 @@ class _ManajemenJenisTugasScreenState extends State<ManajemenJenisTugasScreen> {
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
-          'Manajemen Jenis Tugas',
+          'Manajemen Jenis Aktivitas',
           style: AppTextStyles.h4(colors.textPrimary),
         ),
         actions: [
@@ -137,10 +137,10 @@ class _ManajemenJenisTugasScreenState extends State<ManajemenJenisTugasScreen> {
           ? const Center(child: CircularProgressIndicator())
           : ListView.separated(
               padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
-              itemCount: _tugasList.length,
+              itemCount: _aktivitasList.length,
               separatorBuilder: (context, index) => SizedBox(height: 8.h),
               itemBuilder: (context, index) {
-                final item = _tugasList[index];
+                final item = _aktivitasList[index];
                 return Container(
                   padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
                   decoration: BoxDecoration(
@@ -152,11 +152,23 @@ class _ManajemenJenisTugasScreenState extends State<ManajemenJenisTugasScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Expanded(
-                        child: Text(
-                          item['activity_type_name'] ?? 'Tugas',
-                          style: AppTextStyles.body(colors.textPrimary).copyWith(
-                            fontSize: 13.sp,
-                          ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              item['activity_type_name'] ?? 'Aktivitas',
+                              style: AppTextStyles.body(colors.textPrimary).copyWith(
+                                fontSize: 13.sp,
+                              ),
+                            ),
+                            SizedBox(height: 4.h),
+                            Text(
+                              '-',
+                              style: AppTextStyles.caption(colors.textSecondary).copyWith(
+                                fontSize: 12.sp,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                       InkWell(
@@ -188,7 +200,7 @@ class _ManajemenJenisTugasScreenState extends State<ManajemenJenisTugasScreen> {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const BuatJenisTugasScreen()),
+                  MaterialPageRoute(builder: (context) => const BuatJenisAktivitasScreen()),
                 );
               },
               icon: const Icon(Icons.add, color: Colors.white, size: 20),
@@ -197,7 +209,7 @@ class _ManajemenJenisTugasScreenState extends State<ManajemenJenisTugasScreen> {
                 style: AppTextStyles.button(Colors.white),
               ),
               style: ElevatedButton.styleFrom(
-                backgroundColor: colors.primaryBlue, // Using global style
+                backgroundColor: colors.primaryBlue,
                 padding: EdgeInsets.symmetric(vertical: 14.h),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8.r),

@@ -5,6 +5,7 @@ import 'package:hrd_app/core/theme/app_colors.dart';
 import 'package:hrd_app/core/theme/app_text_styles.dart';
 import 'package:hrd_app/core/utils/snackbar_utils.dart';
 import 'package:hrd_app/core/widgets/empty_state_widget.dart';
+import 'package:hrd_app/features/fitur/aktivitas/screens/aktivitas_harian_screen.dart';
 import 'package:hrd_app/features/fitur/company/screens/profile_perusahaan.dart';
 import 'package:hrd_app/features/fitur/cuti/screens/jatah_cuti_screen.dart';
 import 'package:hrd_app/features/fitur/cuti/screens/kalender_cuti_screen.dart';
@@ -40,6 +41,7 @@ import 'package:hrd_app/features/fitur/manajemen_tugas/screens/manajemen_jenis_t
 import 'package:hrd_app/features/fitur/tugas/screens/laporan_tugas_screen.dart';
 import 'package:hrd_app/features/fitur/saran/screens/laporan_saran_screen.dart';
 import 'package:hrd_app/features/fitur/aktivitas/screens/laporan_rekam_aktivitas_screen.dart';
+import 'package:hrd_app/features/fitur/manajemen_aktivitas/screens/manajemen_jenis_aktivitas_screen.dart';
 import 'package:hrd_app/features/profile/screens/profile_detail_screen.dart';
 import 'package:provider/provider.dart';
 
@@ -197,7 +199,8 @@ class _FiturScreenState extends State<FiturScreen> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => const LaporanKehadiranWajahYangDicurigaiScreen(),
+            builder: (context) =>
+                const LaporanKehadiranWajahYangDicurigaiScreen(),
           ),
         );
         break;
@@ -212,9 +215,7 @@ class _FiturScreenState extends State<FiturScreen> {
       case 'laporan_cuti':
         Navigator.push(
           context,
-          MaterialPageRoute(
-            builder: (context) => const LaporanCutiScreen(),
-          ),
+          MaterialPageRoute(builder: (context) => const LaporanCutiScreen()),
         );
         break;
       case 'laporan_jatah_cuti':
@@ -244,17 +245,13 @@ class _FiturScreenState extends State<FiturScreen> {
       case 'tugas':
         Navigator.push(
           context,
-          MaterialPageRoute(
-            builder: (context) => const TugasScreen(),
-          ),
+          MaterialPageRoute(builder: (context) => const TugasScreen()),
         );
         break;
       case 'saran':
         Navigator.push(
           context,
-          MaterialPageRoute(
-            builder: (context) => const SaranScreen(),
-          ),
+          MaterialPageRoute(builder: (context) => const SaranScreen()),
         );
         break;
       case 'manajemen_jenis_tugas':
@@ -268,16 +265,20 @@ class _FiturScreenState extends State<FiturScreen> {
       case 'laporan_tugas':
         Navigator.push(
           context,
-          MaterialPageRoute(
-            builder: (context) => const LaporanTugasScreen(),
-          ),
+          MaterialPageRoute(builder: (context) => const LaporanTugasScreen()),
         );
         break;
       case 'laporan_saran':
         Navigator.push(
           context,
+          MaterialPageRoute(builder: (context) => const LaporanSaranScreen()),
+        );
+        break;
+      case 'aktivitas_harian':
+        Navigator.push(
+          context,
           MaterialPageRoute(
-            builder: (context) => const LaporanSaranScreen(),
+            builder: (context) => const AktivitasHarianScreen(),
           ),
         );
         break;
@@ -286,6 +287,14 @@ class _FiturScreenState extends State<FiturScreen> {
           context,
           MaterialPageRoute(
             builder: (context) => const LaporanRekamAktivitasScreen(),
+          ),
+        );
+        break;
+      case 'manajemen_jenis_aktivitas':
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const ManajemenJenisAktivitasScreen(),
           ),
         );
         break;

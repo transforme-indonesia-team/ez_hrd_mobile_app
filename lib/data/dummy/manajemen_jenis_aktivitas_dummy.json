@@ -1,0 +1,52 @@
+{
+    "page": 1,
+    "limit": 20,
+    "total": 4,
+    "total_page": 1,
+    "data": [
+        {
+            "custom_field": "activity",
+            "payroll_code": null,
+            "created_by": "3515176510860001",
+            "created_date": "2024-07-06T08:11:56.000Z",
+            "modified_by": "3515176510860001",
+            "modified_date": "2024-07-06T08:11:56.000Z",
+            "company_id": null,
+            "activity_type_code": "1720228316232",
+            "activity_type_name": "KKWT"
+        },
+        {
+            "custom_field": "activity",
+            "payroll_code": null,
+            "created_by": "90033526",
+            "created_date": "2025-01-08T21:08:44.000Z",
+            "modified_by": "90033526",
+            "modified_date": "2025-01-08T21:08:44.000Z",
+            "company_id": 29081,
+            "activity_type_code": "1736345324491",
+            "activity_type_name": "PATROLI AREA / CHECKLIST"
+        },
+        {
+            "custom_field": "activity",
+            "payroll_code": null,
+            "created_by": "3515176510860001",
+            "created_date": "2024-07-06T08:12:19.000Z",
+            "modified_by": "3515176510860001",
+            "modified_date": "2024-07-06T08:12:19.000Z",
+            "company_id": null,
+            "activity_type_code": "1720228339763",
+            "activity_type_name": "Perijinan"
+        },
+        {
+            "custom_field": "activity",
+            "payroll_code": null,
+            "created_by": "3515176510860001",
+            "created_date": "2024-07-06T08:11:20.000Z",
+            "modified_by": "3515176510860001",
+            "modified_date": "2024-07-06T08:11:20.000Z",
+            "company_id": null,
+            "activity_type_code": "1720228280667",
+            "activity_type_name": "Rekruitment"
+        }
+    ]
+}
